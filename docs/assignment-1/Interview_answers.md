@@ -6,7 +6,7 @@
 
 | **Field** | **Information** |
 |----------|-----------------|
-| **Date** | Tuesday 27/01/25 |
+| **Date** | Tuesday 27/01/26 |
 | **Time** | 17:00 – 18:00 |
 | **Place of interview** | Blodbanken Haukeland |
 
@@ -15,6 +15,7 @@
 | **Field** | **Information** |
 |----------|-----------------|
 | **Name** | Anonymized |
+| **Age** | 25 |
 | **Experience with giving blood** | Just joined |
 
 ## Spørsmål og svar (på norsk)
@@ -108,7 +109,7 @@ Får informasjon via SMS.
 
 | **Field** | **Information** |
 |----------|-----------------|
-| **Date** | Wednesday 28/01/25 |
+| **Date** | Wednesday 28/01/26 |
 | **Time** | 18:00 – 19:30 |
 | **Place of interview** | Video Call |
 
@@ -117,6 +118,7 @@ Får informasjon via SMS.
 | **Field** | **Information** |
 |----------|-----------------|
 | **Name** | Anonymized |
+| **Age** | 25 |
 | **Experience with giving blood** | Gave blood between 2021-2023 |
 
 ## Spørsmål og svar (på norsk)
@@ -233,6 +235,179 @@ Ikke aktuelt da jeg ikke gir blod nå.
 
 Erlend ønsket å bli blodgiver i Kongsberg og ringte den lokale blodbanken. Han var fortsatt registrert i systemet i Stavanger, der han studerte og først begynte å gi blod. Han ble henvist tilbake til Stavanger for å bli slettet i systemet. Etter ny kontakt med Kongsberg måtte det opprettes en helt ny bruker.
 
+
+# Interview 3
+
+### Interview Details
+
+| **Field** | **Information** |
+|----------|-----------------|
+| **Date** | Sunday 01/02/26   |
+| **Time** | 10:00 – 11:00 |
+| **Place of interview** | Hemsedal |
+
+### Participant Information
+
+| **Field** | **Information** |
+|----------|-----------------|
+| **Name** | Anonymized |
+| **Age** | 64 |
+| **Experience with giving blood** | Gave blood from the age of 18-50 |
+
+---
+
+## Norwegian answers
+
+## Motivasjon
+
+### Hvordan og hvorfor begynte du å gi blod?
+- Startet å gi blod i millitæret (saniteten) så fikk en god introduksjon til det å gi blod.
+- Familien har gitt blod, mor har gitt blod. Føler også på et samfunnsansvar.
+- Har hatt jobber der det har vært enkelt å gi blod i arbeidstiden
+
+### Hvor ofte gav du blod?
+- Gav maks fire ganger
+
+### Hvordan fikk du vite hvor du kunne gi blod?
+- Måtte ringe og fikk informasjon om hvilken blodbank som var aktuell for meg (den som var nærmest jobb).
+
+### Føler du at systemet ga deg god og oversiktlig informasjon over kravene til å kunne gi blod?
+- Ja (Telefonsystem og snakke med ansatte når jeg gav blod)
+
+### Føler du systemet var oversiktlig nok til at du fant informasjonen du trengte?
+- Ja
+
+---
+
+## Prosessen ved å registrere seg som blodgiver
+
+### Hvordan registrerte du deg som blodgiver?
+- Ringte blodbanken og den som snakket med meg avtalte et tidspunkt og la det inn i booking systemet deres.
+
+### Hva opplevde du som de største vanskelighetene i prosessen, og hva ville du eventuelt endret?
+- Ingen vanskeligheter da, de svarte fort og prosessen var enkel.  
+- Kapasiteten på telefonlinjene var så bra at jeg aldri ventet i kø.
+
+### Hva var du fornøyd med, eller mener fungerte godt?
+- Det tok kort tid før de svarte på telefonen, og alt var lagt opp til at det skulle være enkelt å gi blod.
+- Jeg fikk gratis parkering, så det kostet meg ikke noe å gi blod.
+- Hvis jeg måtte betale for parkering ville blodbanken overføre pengene det kostet meg.
+- Vi fikk også et beløp på 50–100kr for hver gang vi gav blod.
+- Vi fikk brus/kjeks/jerntabletter hvis det var nødvendig.
+- Ringe til nærmeste blodbank.
+- De setter opp en time for deg.
+- Hvis du måtte avlyse time/skifte time måtte du ringe dem opp.
+- Når du møter opp for å gi blod blir du gitt spørsmål, du gir blod.
+- Når du er ferdig med å gi blod går du i skranken og en ny time blir satt opp med en gang.
+- Da vet du allerede når neste time er.
+
+---
+
+## Hvordan ville ditt ideelle bookingsystem fungert?
+
+- Det viktigste er at prosessen skal oppleves som raskt og enkelt siden dette er noe man gjør frivillig.
+- Siden man bruker sin personlige tid skal det ikke være nødvendig å måtte vente/føle at prosessen er treg.
+- Det skal ikke koste noe for deg å komme deg dit.
+- Tilgjengelig parkeringsplass.
+- Det eneste du trenger å gi er blodet ditt.
+
+### Innlogging og booking
+- Du logger deg inn med personnr og adresse.
+- Når appen har tilgang til bostedet ditt kan du få forslag om nærmeste blodbank.
+- Enkelt kalenderssystem for booking.
+- Bookingssystemet skal fungere akkurat som å bestille legetime igjennom HelseNorge.
+- Får svar raskt og tilgang til en app.
+
+### Funksjoner i appen
+- Logger inn i blodbanken
+  - Sende inn forespørsel om timeavtale.
+  - Kunne endre time i appen.
+  - Svare på spørsmål i appen.
+    - Om du må gå igjennom noe ekstra får du svar på dette og tillegspørsmål i appen.
+    - Det burde også være mulighet for video intervju for førstegangsgivere.
+- Hvis du er godkjent blodgiver i en blodbank burde du være godkjent i alle.
+- Få et sertifikat i appen om at du er blodgiver.
+
+### Nødssituasjoner
+- Alarm nødssituasjon på appen hvis det hastes å få tak i blod.
+- Vi trenger blodet ditt før registrert time.
+- Køsystem 10 stk.
+- Send ut melding når de har funnet noen.
+- Hvis du ikke får svar innen en viss tid, da er neste trinnet å ringe.
+- Sett grensen på en time.
+
+### Tilbakemelding og informasjon
+- Få tilbakemelding på blodverdiene dine i appen.
+
+#### Egil mener dette om å få informasjon om hva blodet ditt blir brukt til:
+- Generell informasjon om hvordan blodet blir brukt, men ikke noe mer enn det.
+- Mener det ikke er riktig.
+- Lager jobb for en informasjonsmedarbeider.
+- Det skal ikke skattepengene mine gå til.
+- Hvis folk er villig til å betale så kan man.
+- Men det er utafor systemet.
+- Gode historier om hvorfor å gi blod er nødvendig på nettside/app, men ikke for hver enkelt.
+
+---
+
+## Notat fra Sara
+- Vi diskuterte at systemene burde fungere akkurat som apotekene operer.
+- Hvis du logger inn på HelseNorge kan du fornye resept med en gang.
+- Du kan også gå til hvilket som helst apotek (uavhengig av eier) i landet, for å hente resepten.
+- Systemene fungerer bra sammen og alle har tilgang til reseptene dine.
+- Hvis timeavtaler fungerte på samme måte, der du kan logge deg inn igjennom HelseNorge og alle blodbankene i Norge har tilgang til bookingsystemet, selv om blodbankene har forskjellige eiere (RødeKors, forskjellige sykehus osv).
+
+- Han diskuterte også at det er forskjell på studenter og dem som er ute i jobb.
+- De som er ute i jobb har mer ressurser til å kunne gi blod (mtp på penger hvis man må reise).
+- Studenter er begrenset økonomisk.
+- Ref det som ble snakket om gratis parkering og at systemet skal være gratis og enkelt.
+
+- I appen burde det være enkelt å hoppe mellom systemene.
+- Siden blodbankene har forskjellige eiere (blodbanker på sykehus, røde kors eier flere også), burde appen kunne navigere mellom disse systemene akkurat som resepter fungerer.
+- Forskjellige eiere, men alle henter informasjon fra samme system.
+
+---
+
+## Prosessen ved å være aktiv blodgiver
+
+### Ble du innkalt til å gi blod fra din lokale blodgiverstasjon? Hvordan avtalte dere tidspunkt?
+- For hver gang jeg gav blod, ble timen avtalt i skranken før jeg dro fra timen.
+- Så jeg visste når jeg skulle gi blod neste gang.
+
+### Hvordan kunne du endre/avbestille timen?
+- Hvis timen ikke passet kunne jeg ringe dem og vi avtalte en ny tid på telefon.
+
+---
+
+## Bloddonasjon
+
+### Hvilken blodbank ga du blod til? Måtte du skifte blodbank ilø av tiden du gav blod?
+- Gav mest blod i sentrum av Oslo (Ullevål sykehus).
+- Ellers gav jeg blod i saniteten i millitæret.
+
+---
+
+## Timeavtale
+
+### Hvordan håndterte du timene dine?
+- Ble avtalt hver gang jeg var hos blodbanken for å gi blod.
+
+### Hvordan visste du når og hvor du skulle møte opp?
+- Helt i begynnelsen fikk jeg post.
+- Så skrev jeg det ned i kalenderen (før det var melding system).
+- Etter hvert fikk jeg bekreftelse på melding.
+
+### Hvordan kunne du skifte timeavtale eller avbestille?
+- Måtte ringe dem.
+
+### Måtte du si ifra når du ikke kunne gi blod lengre?
+- Jeg spurte, siden jeg fikk blodpropp når jeg var 50 måtte jeg stoppe å gi blod.
+
+---
+
+## Notat
+- HelseNorge intervjue de og hvordan deres bookingsystem fungerer.
+- Lovmessig informasjon? Siden de må logge inn med personnr.
 
 
 
