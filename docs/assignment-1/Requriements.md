@@ -58,6 +58,15 @@
     - number of donations
     - test results of donations
 
+### Algorithmic part
+
+- Low on blood reserves: 
+    - Query DB of Users 
+    - take in account donation frequency 
+    - Only notify users that are "available" to donate again also important monitor blood quality and take in account
+    - Then take "likely" donors in account -> usually donate on this day etc.
+    - Don't call people that don't always agree frequently (someone who only donates every 6 month, don't notify every 3 months)
+
 ## Non-Functional
 
 ### Security
