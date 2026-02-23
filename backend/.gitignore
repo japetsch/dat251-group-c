@@ -1,0 +1,13 @@
+__pycache__
+
+.idea
+.vscode
+
+.DS_Store
+desktop.ini
+
+db.sqlite3
+test.sqlite3
+.env
+
+db/schema.sql
