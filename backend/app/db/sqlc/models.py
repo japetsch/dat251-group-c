@@ -2,9 +2,21 @@
 # versions:
 #   sqlc v1.30.0
 import pydantic
-from typing import Any, Optional
+from typing import Any
 
 
-class FirstTable(pydantic.BaseModel):
+class Appointment(pydantic.BaseModel):
     id: Any
-    a: Optional[Any]
+    user_id: Any
+    time: Any
+    location_id: Any
+
+
+class Bloodbank(pydantic.BaseModel):
+    id: Any
+    name: Any
+
+
+class User(pydantic.BaseModel):
+    id: Any
+    name: Any

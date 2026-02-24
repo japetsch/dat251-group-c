@@ -5,7 +5,7 @@ from fastapi.routing import APIRoute
 
 from .config import Settings
 from .db.db import create_db_engine
-from .routes.index_router import IndexRouter
+from .routes.appointment_router import AppointmentRouter
 
 
 class Main:
@@ -23,7 +23,7 @@ class Main:
         )
 
         # Include custom routers here
-        self.app.include_router(IndexRouter())
+        self.app.include_router(AppointmentRouter(), prefix="/appointment")
 
         # Make the OpenAPI operation ids match the route function name
         # Ensures nicer names on the generated client
