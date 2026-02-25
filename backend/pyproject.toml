@@ -16,8 +16,11 @@ dependencies = [
 [dependency-groups]
 dev = [
     "black>=26.1.0",
+    "httpx>=0.28.0",
     "isort>=8.0.0",
     "pyright>=1.1.408",
+    "pytest>=8.0.0",
+    "pytest-asyncio>=0.25.0",
 ]
 
 [tool.pyright]
@@ -35,3 +38,9 @@ include_trailing_comma = true
 force_grid_wrap = 0
 combine_as_imports = true
 skip_glob = ["app/db/sqlc/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+log_cli = true
+log_cli_level = "INFO"

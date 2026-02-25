@@ -46,9 +46,39 @@ jobs:
       - run: uv sync --locked
       - run: uv run pyright
 
+  test:
+    name: Tests (pytest)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: bloodbank
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - name: Install dbmate
+        run: |
+          curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64
+          chmod +x /usr/local/bin/dbmate
+      - run: uv sync --locked
+      - run: uv run pytest
+        env:
+          DB_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/bloodbank
+          TEST_DB_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/bloodbank_test
+
   docker:
     name: Build & publish OCI image
-    needs: [sqlc, pyright]
+    needs: [sqlc, pyright, test]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
