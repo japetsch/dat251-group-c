@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.routing import APIRoute
 
 from .config import Settings
-from .db.db import create_db_engine
+from .db.db import DBManager
 from .routes.appointment_router import AppointmentRouter
 
 
@@ -40,7 +40,7 @@ class Main:
         settings = Settings.get_settings()
 
         print("Creating SQLAlchemy engine...")
-        app.state.db_engine = create_db_engine(settings)
+        app.state.db_engine = DBManager.create_db_engine(settings)
 
         yield
 

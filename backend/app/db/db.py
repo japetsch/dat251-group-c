@@ -7,19 +7,23 @@ from sqlalchemy.ext.asyncio import AsyncConnection, AsyncEngine, create_async_en
 from app.config import Settings
 
 
-def create_db_engine(settings: Settings) -> AsyncEngine:
-    return create_async_engine(settings.database_url)
+class DBManager:
+    @classmethod
+    def create_db_engine(cls, settings: Settings) -> AsyncEngine:
+        return create_async_engine(settings.DB_URL)
 
-
-async def _get_db_connection(request: Request) -> AsyncGenerator[AsyncConnection, None]:
-    """
-    Provides a connection and a transaction context.
-    Handles transaction (commit on success, rollback on error) automatically.
-    """
-    engine: AsyncEngine = request.app.state.db_engine
-    async with engine.begin() as conn:
-        yield conn
+    @classmethod
+    async def get_db_connection(
+        cls, request: Request
+    ) -> AsyncGenerator[AsyncConnection, None]:
+        """
+        Provides a connection and a transaction context.
+        Handles transaction (commit on success, rollback on error) automatically.
+        """
+        engine: AsyncEngine = request.app.state.db_engine
+        async with engine.begin() as conn:
+            yield conn
 
 
 # Injectable dependency for our routes
-DBConnection = Annotated[AsyncConnection, Depends(_get_db_connection)]
+DBConnection = Annotated[AsyncConnection, Depends(DBManager.get_db_connection)]

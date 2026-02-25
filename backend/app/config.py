@@ -13,16 +13,8 @@ class Settings(BaseSettings):
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
 
-    DB_PATH: str
-    TEST_DB_PATH: str
-
-    @property
-    def database_url(self) -> str:
-        return f"sqlite+aiosqlite:///./{self.DB_PATH}"
-
-    @property
-    def test_database_url(self) -> str:
-        return f"sqlite+aiosqlite:///./{self.TEST_DB_PATH}"
+    DB_URL: str
+    TEST_DB_URL: str
 
     @classmethod
     @lru_cache

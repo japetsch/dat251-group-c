@@ -2,8 +2,9 @@
 # versions:
 #   sqlc v1.30.0
 # source: appointment.sql
+import datetime
 import pydantic
-from typing import Any, AsyncIterator
+from typing import AsyncIterator
 
 import sqlalchemy
 import sqlalchemy.ext.asyncio
@@ -13,15 +14,15 @@ from app.db.sqlc import models
 
 GET_ALL_APPOINTMENTS = """-- name: get_all_appointments \\:many
 SELECT u.name as username, b.name as locationname, a.time FROM appointment a
-	INNER JOIN user u on a.user_id = u.id
+	INNER JOIN "user" u on a.user_id = u.id
 	INNER JOIN bloodbank b on a.location_id = b.id
 """
 
 
 class GetAllAppointmentsRow(pydantic.BaseModel):
-    username: Any
-    locationname: Any
-    time: Any
+    username: str
+    locationname: str
+    time: datetime.datetime
 
 
 class AsyncQuerier:
