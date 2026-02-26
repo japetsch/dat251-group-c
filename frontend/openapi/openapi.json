@@ -1,0 +1,56 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Blood Bank API",
+    "description": "API for the Blood Bank project",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/appointment": {
+      "get": {
+        "summary": "Find All",
+        "operationId": "find_all",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GetAllAppointmentsRow"
+                  },
+                  "type": "array",
+                  "title": "Response Find All"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GetAllAppointmentsRow": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "locationname": {
+            "type": "string",
+            "title": "Locationname"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          }
+        },
+        "type": "object",
+        "required": ["username", "locationname", "time"],
+        "title": "GetAllAppointmentsRow"
+      }
+    }
+  }
+}
