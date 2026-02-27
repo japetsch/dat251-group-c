@@ -1,11 +1,14 @@
 ```plantuml
 @startuml
 class Person {
-  id
-  name
+  firstName
+  lastName
   dateOfBirth
-  contactInfo
+  phoneNumber
+  eMail
 }
+
+Person "1..*" -- "1..*" Address : has a
 
 class Donor extends Person {
   bloodType
@@ -17,32 +20,36 @@ class Administrator extends Person {
   role
 }
 
-Donor "0..1" --> "0..*" Appointment : books
-Administrator "1..*" --> "0..*" Appointment : manages
+Donor "0..1" -- "0..*" Appointment : books
+Administrator "1..*" -- "0..*" Appointment : manages
 
 class Appointment {
-  id
   scheduledTime
   status
 }
 
-Appointment "0..*" --> "1" Location : has
+Appointment "0..*" -- "1" BloodBank : has
 
-class Location {
-  id
-  name
-  adress
+class BloodBank {
+  name  
+}
+
+class Address {
+  street
+  city
+  zipCode
   coordinates
   directions
 }
 
+BloodBank "1" -- "1" Address : has a
+
 class Donation {
-  id
   volumeMl
   donationDate
 }
 
-Appointment "1" --> "0..1" Donation : has
+Appointment "1" -- "0..1" Donation : has
 
 class BloodUnit {
   unitId
@@ -51,7 +58,6 @@ class BloodUnit {
   status
 }
 
-Donation "1" --> "1..*" BloodUnit : produces
-
+Donation "1" -- "1..*" BloodUnit : produces
 @enduml
 ```
