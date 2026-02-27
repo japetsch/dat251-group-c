@@ -22,6 +22,29 @@ def migrate_test_db():
     subprocess.run(["dbmate", "drop"], env=env, check=True)
     subprocess.run(["dbmate", "up"], env=env, check=True)
 
+    cat = subprocess.Popen(
+        ["cat", "./tests/db_mocks.sql"],
+        stdout=subprocess.PIPE,
+    )
+
+    subprocess.run(
+        [
+            "docker",
+            "exec",
+            "-i",
+            "postgres",
+            "psql",
+            "-h",
+            "localhost",
+            "-U",
+            "postgres",
+            "-f-",
+        ],
+        stdin=cat.stdout,
+        check=True,
+        env=env,
+    )
+
 
 async def _override_get_db_connection():
     settings = Settings.get_settings()
