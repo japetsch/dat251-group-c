@@ -1,8 +1,10 @@
 import logging
 import os
 import subprocess
+from pathlib import Path
 
 import pytest
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from app.config import Settings
@@ -13,7 +15,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 @pytest.fixture(scope="session", autouse=True)
-def migrate_test_db():
+async def migrate_test_db():
     """Create a fresh testing DB for the entire lifetime of the testing session"""
     settings = Settings.get_settings()
     db_url = settings.TEST_DB_URL.replace("+asyncpg", "") + "?sslmode=disable"
@@ -22,28 +24,15 @@ def migrate_test_db():
     subprocess.run(["dbmate", "drop"], env=env, check=True)
     subprocess.run(["dbmate", "up"], env=env, check=True)
 
-    cat = subprocess.Popen(
-        ["cat", "./tests/db_mocks.sql"],
-        stdout=subprocess.PIPE,
-    )
+    sql = Path("./tests/db_mocks.sql").read_text()
 
-    subprocess.run(
-        [
-            "docker",
-            "exec",
-            "-i",
-            "postgres",
-            "psql",
-            "-h",
-            "localhost",
-            "-U",
-            "postgres",
-            "-f-",
-        ],
-        stdin=cat.stdout,
-        check=True,
-        env=env,
-    )
+    engine = create_async_engine(settings.TEST_DB_URL)
+
+    statements = [stmt.strip() for stmt in sql.split(";") if stmt.strip()]
+
+    async with engine.begin() as conn:
+        for stmt in statements:
+            await conn.execute(text(stmt))
 
 
 async def _override_get_db_connection():

@@ -1,5 +1,3 @@
-\c bloodbank_test
-
 INSERT INTO "user" (name) VALUES
   ('Olav'),
   ('Peter'),
