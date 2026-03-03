@@ -1,3 +1,5 @@
+import os
+import sys
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -6,13 +8,14 @@ from fastapi.routing import APIRoute
 from .config import Settings
 from .db.db import DBManager
 from .routes.appointment_router import AppointmentRouter
+from .swagger import SwaggerJsonGenerator
 
 
 class Main:
     app: FastAPI
 
     def __init__(self):
-        self.app = FastAPI(
+        self.app: FastAPI = FastAPI(
             lifespan=self.lifespan,
             title="Blood Bank API",
             description="API for the Blood Bank project",
@@ -30,6 +33,11 @@ class Main:
         for route in self.app.routes:
             if isinstance(route, APIRoute):
                 route.operation_id = route.name
+
+        SwaggerJsonGenerator.save_openapi_schema(self.app)
+        name = os.getenv("GENERATE_SWAGGER_ONLY")
+        if name == "true":
+            sys.exit(0)
 
     @classmethod
     @asynccontextmanager
