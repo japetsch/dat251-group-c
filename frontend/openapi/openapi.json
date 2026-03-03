@@ -20,7 +20,7 @@
                     "$ref": "#/components/schemas/GetAllAppointmentsRow"
                   },
                   "type": "array",
-                  "title": "Response Find All"
+                  "title": "Response Find All Appointment Get"
                 }
               }
             }
@@ -48,7 +48,11 @@
           }
         },
         "type": "object",
-        "required": ["username", "locationname", "time"],
+        "required": [
+          "username",
+          "locationname",
+          "time"
+        ],
         "title": "GetAllAppointmentsRow"
       }
     }
