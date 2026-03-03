@@ -18,6 +18,24 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        /** Update */
+        patch: operations["update"];
+        trace?: never;
+    };
+    "/appointment/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete One */
+        delete: operations["delete_one"];
+        options?: never;
+        head?: never;
         patch?: never;
         trace?: never;
     };
@@ -25,8 +43,34 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Appointment */
+        Appointment: {
+            /** Id */
+            id: number;
+            /** User Id */
+            user_id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /** Location Id */
+            location_id: number;
+        };
+        /** AppointmentUpdateRequest */
+        AppointmentUpdateRequest: {
+            /** Id */
+            id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+        };
         /** GetAllAppointmentsRow */
         GetAllAppointmentsRow: {
+            /** Id */
+            id: number;
             /** Username */
             username: string;
             /** Locationname */
@@ -36,6 +80,24 @@ export interface components {
              * Format: date-time
              */
             time: string;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+            /** Input */
+            input?: unknown;
+            /** Context */
+            ctx?: Record<string, never>;
         };
     };
     responses: never;
@@ -62,6 +124,70 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GetAllAppointmentsRow"][];
+                };
+            };
+        };
+    };
+    update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointmentUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Appointment"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_one: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Appointment"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

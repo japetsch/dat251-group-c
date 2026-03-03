@@ -4,7 +4,7 @@
 # source: appointment.sql
 import datetime
 import pydantic
-from typing import AsyncIterator
+from typing import AsyncIterator, Optional
 
 import sqlalchemy
 import sqlalchemy.ext.asyncio
@@ -12,28 +12,65 @@ import sqlalchemy.ext.asyncio
 from app.db.sqlc import models
 
 
+DELETE_APPOINTMENT_BY_ID = """-- name: delete_appointment_by_id \\:one
+DELETE FROM appointment a WHERE a.id=:p1 RETURNING id, user_id, time, location_id
+"""
+
+
 GET_ALL_APPOINTMENTS = """-- name: get_all_appointments \\:many
-SELECT u.name as username, b.name as locationname, a.time FROM appointment a
+SELECT a.id as id, u.name as username, b.name as locationname, a.time FROM appointment a
 	INNER JOIN "user" u on a.user_id = u.id
 	INNER JOIN bloodbank b on a.location_id = b.id
 """
 
 
 class GetAllAppointmentsRow(pydantic.BaseModel):
+    id: int
     username: str
     locationname: str
     time: datetime.datetime
+
+
+UPDATE_APPOINTMENT = """-- name: update_appointment \\:one
+UPDATE appointment
+SET time=:p1
+WHERE id=:p2
+RETURNING id, user_id, time, location_id
+"""
 
 
 class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
         self._conn = conn
 
+    async def delete_appointment_by_id(self, *, id: int) -> Optional[models.Appointment]:
+        row = (await self._conn.execute(sqlalchemy.text(DELETE_APPOINTMENT_BY_ID), {"p1": id})).first()
+        if row is None:
+            return None
+        return models.Appointment(
+            id=row[0],
+            user_id=row[1],
+            time=row[2],
+            location_id=row[3],
+        )
+
     async def get_all_appointments(self) -> AsyncIterator[GetAllAppointmentsRow]:
         result = await self._conn.stream(sqlalchemy.text(GET_ALL_APPOINTMENTS))
         async for row in result:
             yield GetAllAppointmentsRow(
-                username=row[0],
-                locationname=row[1],
-                time=row[2],
+                id=row[0],
+                username=row[1],
+                locationname=row[2],
+                time=row[3],
             )
+
+    async def update_appointment(self, *, time: datetime.datetime, id: int) -> Optional[models.Appointment]:
+        row = (await self._conn.execute(sqlalchemy.text(UPDATE_APPOINTMENT), {"p1": time, "p2": id})).first()
+        if row is None:
+            return None
+        return models.Appointment(
+            id=row[0],
+            user_id=row[1],
+            time=row[2],
+            location_id=row[3],
+        )
