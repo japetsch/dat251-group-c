@@ -39,7 +39,7 @@ class AppointmentRouter(APIRouter):
     ) -> Appointment:
         q = AppointmentQuerier(engine)
 
-        updatedAppointment: Appointment = await q.update_appointment(
+        updatedAppointment: Appointment | None = await q.update_appointment(
             id=updateRequest.id, time=updateRequest.time
         )
         if updatedAppointment is None:
@@ -48,7 +48,7 @@ class AppointmentRouter(APIRouter):
 
     async def delete_one(self, id: int, engine: DBConnection) -> Appointment:
         q = AppointmentQuerier(engine)
-        deletedAppointment: Appointment = await q.delete_appointment_by_id(id=id)
+        deletedAppointment: Appointment | None = await q.delete_appointment_by_id(id=id)
         if deletedAppointment is None:
             raise HTTPException(status_code=404, detail="Appointment not found")
         return deletedAppointment
