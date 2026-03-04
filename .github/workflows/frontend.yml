@@ -10,6 +10,38 @@ permissions:
     contents: read
 
 jobs:
+    verify-swagger-json:
+        runs-on: ubuntu-latest
+        defaults:
+          run:
+            working-directory: backend
+        steps:
+          - uses: actions/checkout@v4
+          - uses: astral-sh/setup-uv@v5
+            with:
+              enable-cache: true
+          - run: GENERATE_SWAGGER_ONLY="true" uv run uvicorn app.main:app
+          - run: |
+              if [[ ! -z $(git diff --name-only) ]]; then
+                echo "Error: swagger json in frontend not up to date"
+                exit 1
+              fi
+    verify-swagger-api:
+        runs-on: ubuntu-latest
+        defaults:
+          run:
+            working-directory: frontend
+        steps:
+          - uses: actions/checkout@v4
+          - uses: actions/setup-node@v4
+            with:
+              enable-cache: true
+          - run: npm run generate-api 
+          - run: |
+              if [[ ! -z $(git diff --name-only) ]]; then
+                echo "Error: swagger client codegen in frontend not up to date"
+                exit 1
+              fi
     ci:
         runs-on: ubuntu-latest
         defaults:
