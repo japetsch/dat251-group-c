@@ -60,6 +60,28 @@ Now, everything is ready for you to run the app!
 
 Go to http://localhost:8000/docs in the browser to verify it is running and see the API docs.
 
+### Testing endpoints while developing
+
+To send requests to the endpoints you can use the [request.http file](./tests/requests.http) in the test folder.
+Creating new requests can be done using the following structure:
+```http
+###
+# Comment about the request
+<REQUEST_TYPE> http://localhost:8080/api/<path> HTTP/1.1
+Accept: application/json
+
+{
+    "optional json request body": ""
+}
+```
+
+Most editors support sending requests via this file either natively or via a plugin.
+> Intellij native I believe
+>
+> VSCode [REST Client](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+>
+> Neovim [kulala](https://github.com/mistweaverco/kulala.nvim)
+
 ### Other useful commands
 
 - Run the tests with `uv run pytest`
