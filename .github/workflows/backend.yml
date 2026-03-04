@@ -2,7 +2,9 @@ name: Backend
 
 on:
   push:
-    paths: [backend/**]
+    paths:
+      - backend/**
+      - ".github/workflows/backend.yml"
 
 defaults:
   run:
