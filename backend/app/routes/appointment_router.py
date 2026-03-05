@@ -9,12 +9,12 @@ from ..db.sqlc.appointment import (
     AsyncQuerier as AppointmentQuerier,
     GetAllAppointmentsRow,
 )
-from ..db.sqlc.models import Appointment
-
 from ..db.sqlc.free_appointment import (
     AsyncQuerier as FreeAppointmentQuerier,
     GetAvailableAppointmentsRow,
 )
+from ..db.sqlc.models import Appointment
+
 
 class AppointmentRouter(APIRouter):
     def __init__(self) -> None:
@@ -63,14 +63,18 @@ class AppointmentRouter(APIRouter):
             raise HTTPException(status_code=404, detail="Appointment not found")
         return deletedAppointment
 
-    async def get_available(self, engine: DBConnection) -> list[GetAvailableAppointmentsRow]:
+    async def get_available(
+        self, engine: DBConnection
+    ) -> list[GetAvailableAppointmentsRow]:
         q = FreeAppointmentQuerier(engine)
         rows: list[GetAvailableAppointmentsRow] = []
         async for x in q.get_available_appointments():
             rows.append(x)
         return rows
-    
-    async def book(self, request: BookAppointmentRequest, engine: DBConnection) -> Appointment:
+
+    async def book(
+        self, request: BookAppointmentRequest, engine: DBConnection
+    ) -> Appointment:
         q = AppointmentQuerier(engine)
         booked: Appointment | None = await q.book_appointment(
             free_appointment_id=request.free_appointment_id,
