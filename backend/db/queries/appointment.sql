@@ -12,3 +12,14 @@ SET time=sqlc.arg('time')
 WHERE id=sqlc.arg('id')
 RETURNING *;
 
+-- name: BookAppointment :one
+WITH slot AS (
+    DELETE FROM free_appointments fa
+    WHERE fa.id = sqlc.arg('free_appointment_id')
+    RETURNING fa.time, fa.location_id
+)
+INSERT INTO appointment (user_id, time, location_id)
+SELECT sqlc.arg('user_id'), slot.time, slot.location_id
+FROM slot
+RETURNING id, user_id, time, location_id;
+

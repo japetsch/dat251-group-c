@@ -12,6 +12,19 @@ import sqlalchemy.ext.asyncio
 from app.db.sqlc import models
 
 
+BOOK_APPOINTMENT = """-- name: book_appointment \\:one
+WITH slot AS (
+    DELETE FROM free_appointments fa
+    WHERE fa.id = :p2
+    RETURNING fa.time, fa.location_id
+)
+INSERT INTO appointment (user_id, time, location_id)
+SELECT :p1, slot.time, slot.location_id
+FROM slot
+RETURNING id, user_id, time, location_id
+"""
+
+
 DELETE_APPOINTMENT_BY_ID = """-- name: delete_appointment_by_id \\:one
 DELETE FROM appointment a WHERE a.id=:p1 RETURNING id, user_id, time, location_id
 """
@@ -42,6 +55,17 @@ RETURNING id, user_id, time, location_id
 class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
         self._conn = conn
+
+    async def book_appointment(self, *, user_id: int, free_appointment_id: int) -> Optional[models.Appointment]:
+        row = (await self._conn.execute(sqlalchemy.text(BOOK_APPOINTMENT), {"p1": user_id, "p2": free_appointment_id})).first()
+        if row is None:
+            return None
+        return models.Appointment(
+            id=row[0],
+            user_id=row[1],
+            time=row[2],
+            location_id=row[3],
+        )
 
     async def delete_appointment_by_id(self, *, id: int) -> Optional[models.Appointment]:
         row = (await self._conn.execute(sqlalchemy.text(DELETE_APPOINTMENT_BY_ID), {"p1": id})).first()
