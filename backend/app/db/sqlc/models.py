@@ -17,6 +17,12 @@ class Bloodbank(pydantic.BaseModel):
     name: str
 
 
+class FreeAppointment(pydantic.BaseModel):
+    id: int
+    time: datetime.datetime
+    location_id: int
+
+
 class User(pydantic.BaseModel):
     id: int
     name: str
