@@ -117,3 +117,31 @@ class TestAppointment:
         with TestClient(app, root_path="") as client:
             response = client.delete("/api/appointment/10")
             assert response.status_code == 404
+
+    def test_get_available_appointments(self):
+        with TestClient(app, root_path="") as client:
+            r = client.get("/api/appointment/available")
+            assert r.status_code == 200
+            data = r.json()
+            assert isinstance(data, list)
+            assert len(data) >= 1
+            assert "id" in data[0]
+            assert "time" in data[0]
+            assert "location_id" in data[0]
+            assert "locationname" in data[0]
+
+    def test_book_appointment_removes_free_slot(self):
+        with TestClient(app, root_path="") as client:
+            r = client.get("/api/appointment/available")
+            assert r.status_code == 200
+            slot = r.json()[0]
+
+            book = client.post(
+                "/api/appointment/book",
+                json={"free_appointment_id": slot["id"], "user_id": 1},
+            )
+            assert book.status_code == 200
+
+            r2 = client.get("api/appointment/available")
+            ids = [x["id"] for x in r2.json()]
+            assert slot["id"] not in ids
