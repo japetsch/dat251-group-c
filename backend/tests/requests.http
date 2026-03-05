@@ -1,0 +1,27 @@
+### 
+
+# Get all appointment
+
+GET http://localhost:8080/api/appointment HTTP/1.1
+Accept: application/json
+
+
+### 
+
+# Delete one appointment
+
+DELETE http://localhost:8080/api/appointment/1 HTTP/1.1
+Accept: application/json
+
+
+### 
+
+# Update one appointment
+
+PATCH http://localhost:8080/api/appointment HTTP/1.1
+Accept: application/json
+
+{
+  "id": 4,
+  "time": "2029-05-11T11:30:00Z"
+}
