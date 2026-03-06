@@ -7,5 +7,10 @@ export default defineConfig({
 		environment: 'jsdom',
 		setupFiles: ['./src/lib/test/setup.ts'],
 		include: ['src/**/*.test.ts']
-	}
+	},
+	server: {
+		proxy: {
+			"/api": "http://localhost:8000",
+		}
+	},
 });
