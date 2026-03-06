@@ -1,7 +1,7 @@
 import type { PageLoad } from './$types';
 
 export const load: PageLoad = async ({ fetch }) => {
-	const response = await fetch('http://127.0.0.1:8000/api/appointment');
+	const response = await fetch('/api/appointment');
 
 	if (!response.ok) {
 		return {
@@ -17,3 +17,4 @@ export const load: PageLoad = async ({ fetch }) => {
 		error: null
 	};
 };
+
