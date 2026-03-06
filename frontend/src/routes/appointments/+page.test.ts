@@ -1,16 +1,6 @@
 import { render, screen } from '@testing-library/svelte';
+import { describe, expect, it } from 'vitest';
 import Page from './+page.svelte';
-import { describe, it, expect } from 'vitest';
-
-import type { PageLoad } from './$types';
-import { getAppointments } from '$lib/api/appointments';
-
-export const load: PageLoad = async () => {
-	return {
-		appointments: await getAppointments()
-	};
-};
-
 
 describe('appointments page', () => {
 	it('renders appointments', () => {
