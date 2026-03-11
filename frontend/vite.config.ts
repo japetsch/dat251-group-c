@@ -1,8 +1,9 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-	plugins: [sveltekit()],
+	plugins: [tailwindcss(), sveltekit()],
 	test: {
 		environment: 'jsdom',
 		setupFiles: ['./src/lib/test/setup.ts'],
@@ -10,7 +11,7 @@ export default defineConfig({
 	},
 	server: {
 		proxy: {
-			"/api": "http://localhost:8000",
+			"/api": "http://localhost:8080",
 		}
 	},
 });

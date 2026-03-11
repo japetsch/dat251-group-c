@@ -64,6 +64,66 @@
         }
       }
     },
+    "/appointment/available": {
+      "get": {
+        "summary": "Get Available",
+        "operationId": "get_available",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GetAvailableAppointmentsRow"
+                  },
+                  "type": "array",
+                  "title": "Response Get Available Appointment Available Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appointment/book": {
+      "post": {
+        "summary": "Book",
+        "operationId": "book",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookAppointmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Appointment"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/appointment/{id}": {
       "delete": {
         "summary": "Delete One",
@@ -154,6 +214,24 @@
         ],
         "title": "AppointmentUpdateRequest"
       },
+      "BookAppointmentRequest": {
+        "properties": {
+          "free_appointment_id": {
+            "type": "integer",
+            "title": "Free Appointment Id"
+          },
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "free_appointment_id",
+          "user_id"
+        ],
+        "title": "BookAppointmentRequest"
+      },
       "GetAllAppointmentsRow": {
         "properties": {
           "id": {
@@ -182,6 +260,35 @@
           "time"
         ],
         "title": "GetAllAppointmentsRow"
+      },
+      "GetAvailableAppointmentsRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "location_id": {
+            "type": "integer",
+            "title": "Location Id"
+          },
+          "locationname": {
+            "type": "string",
+            "title": "Locationname"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "time",
+          "location_id",
+          "locationname"
+        ],
+        "title": "GetAvailableAppointmentsRow"
       },
       "HTTPValidationError": {
         "properties": {
