@@ -36,4 +36,6 @@
   </div>
 </header>
 
-{@render children()}
+<div class="container mx-auto mt-4">
+    {@render children()}
+</div>
