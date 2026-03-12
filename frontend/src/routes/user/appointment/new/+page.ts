@@ -1,5 +1,6 @@
 import type { PageLoad } from "./$types";
 import type { components } from "$lib/api/schema";
+import { createLoadClient } from "$lib/api/client";
 
 type GetAvailableAppointmentsRow =
   components["schemas"]["GetAvailableAppointmentsRow"];
@@ -30,17 +31,16 @@ function createEvents(available: Array<GetAvailableAppointmentsRow>) {
   return events;
 }
 
-export const load: PageLoad = async ({ fetch }) => {
-  const response = await fetch("/api/appointment/available");
+export const load: PageLoad = async ({ fetch, url }) => {
+  const client = createLoadClient(fetch, url);
+  const r = await client.GET("/appointment/available");
 
-  if (!response.ok) {
+  if (!r.response.ok || !r.data) {
     return {
-      availabe: [],
+      events: [],
       error: "Failed to load available appointments",
     };
   }
 
-  const available: Array<GetAvailableAppointmentsRow> = await response.json();
-
-  return { events: createEvents(available) };
+  return { events: createEvents(r.data) };
 };
