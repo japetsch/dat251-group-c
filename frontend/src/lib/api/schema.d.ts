@@ -22,6 +22,40 @@ export interface paths {
         patch: operations["update"];
         trace?: never;
     };
+    "/appointment/available": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Available */
+        get: operations["get_available"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/appointment/book": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Book */
+        post: operations["book"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/appointment/{id}": {
         parameters: {
             query?: never;
@@ -67,6 +101,13 @@ export interface components {
              */
             time: string;
         };
+        /** BookAppointmentRequest */
+        BookAppointmentRequest: {
+            /** Free Appointment Id */
+            free_appointment_id: number;
+            /** User Id */
+            user_id: number;
+        };
         /** GetAllAppointmentsRow */
         GetAllAppointmentsRow: {
             /** Id */
@@ -80,6 +121,20 @@ export interface components {
              * Format: date-time
              */
             time: string;
+        };
+        /** GetAvailableAppointmentsRow */
+        GetAvailableAppointmentsRow: {
+            /** Id */
+            id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /** Location Id */
+            location_id: number;
+            /** Locationname */
+            locationname: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -138,6 +193,59 @@ export interface operations {
         requestBody: {
             content: {
                 "application/json": components["schemas"]["AppointmentUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Appointment"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_available: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetAvailableAppointmentsRow"][];
+                };
+            };
+        };
+    };
+    book: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookAppointmentRequest"];
             };
         };
         responses: {
