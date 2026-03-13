@@ -1,5 +1,5 @@
 -- uncomment following line and run: "cat ./tests/db_mocks.sql | docker exec -i postgres psql -h localhost -U postgres -f-" to add the mock data to your local DB
-\c bloodbank
+-- \c bloodbank
 
 INSERT INTO "user" (name) VALUES
   ('Olav'),
