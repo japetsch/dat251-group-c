@@ -65,7 +65,7 @@
                 <h2>Logg inn</h2>
                 <p class="modal-subtitle">Bruk BankID for sikker pålogging</p>
 
-                <a href="/availableAppointments" class="bankid-btn">Logg inn med BankID</a>
+                <a href="/dashboard" class="bankid-btn">Logg inn med BankID</a>
                 <div class="info-box">
                     Du vil bli bedt om å identifisere deg med BankID. Dette sikrer at dine helseopplysninger forblir trygge og konfidensielle.
                 </div>

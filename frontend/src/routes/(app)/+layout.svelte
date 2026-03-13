@@ -4,7 +4,7 @@
 	let { children } = $props();
 
   const navItems = [
-    { name: "Home", href: "/" },
+    { name: "Home", href: "/dashboard" },
     { name: "Appointments", href: "/Appointments" },
     { name: "New Appointments", href: "/user/appointment/new" }
   ];
@@ -18,7 +18,7 @@
 <header class="w-full border-b bg-white">
   <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
 
-    <a href="/" class="flex items-center">
+    <a href="/dashboard" class="flex items-center">
       <img src="/tmp_logo.svg" alt="Logo" class="h-8 w-auto" />
     </a>
 
