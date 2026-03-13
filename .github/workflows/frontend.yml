@@ -24,8 +24,8 @@ jobs:
           node-version: 24
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-          enable-cache: true
 
+      - run: npm install
       - run: npm run check-format
 
   check-test-build:
@@ -42,8 +42,8 @@ jobs:
           node-version: 24
           cache: npm
           cache-dependency-path: frontend/package-lock.json
-          enable-cache: true
 
+      - run: npm install
       - run: npm run check
       - run: npm run test
       - run: npm run build
