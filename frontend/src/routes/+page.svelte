@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { stopPropagation } from "svelte/legacy";
+    import favicon from '$lib/assets/favicon.svg';
 
     let showLogin = false;
 
@@ -28,6 +28,7 @@
 
 <svelte:head>
     <title>Blodbanken</title>
+    <link rel="icon" href={favicon} />
 </svelte:head>
 
 <section class="hero">

@@ -1,4 +1,5 @@
 <script lang="ts">
+    import "./app.css";
 	import favicon from '$lib/assets/favicon.svg';
 
 	let { children } = $props();
@@ -8,7 +9,6 @@
     { name: "My Appointments", href: "/appointment/list" },
     { name: "New Appointment", href: "/appointment/new" }
   ];
-  import "../layout.css";
 </script>
 
 <svelte:head>
@@ -36,6 +36,6 @@
   </div>
 </header>
 
-<div class="container mx-auto mt-4">
+<div class="container mx-auto p-16">
     {@render children()}
 </div>
