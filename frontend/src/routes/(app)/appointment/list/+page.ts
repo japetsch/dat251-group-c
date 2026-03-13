@@ -3,7 +3,8 @@ import type { components } from '$lib/api/schema';
 import type { PageLoad } from './$types';
 
 type ApptListPreloaded = {
-  appointments: components["schemas"]["GetAllAppointmentsRow"][];
+  upcoming: components["schemas"]["GetAllAppointmentsRow"][];
+  previous: components["schemas"]["GetAllAppointmentsRow"][];
   error: string | null;
 }
 
@@ -13,13 +14,15 @@ export const load: PageLoad<ApptListPreloaded> = async ({ fetch, url }) => {
 
 	if (!r.response.ok || !r.data) {
 		return {
-			appointments: [],
+			upcoming: [],
+			previous: [],
 			error: 'Failed to load appointments'
 		};
 	}
 
 	return {
-		appointments: r.data,
+		previous: r.data.filter((x) => new Date(x.time) < new Date()),
+		upcoming: r.data.filter((x) => new Date(x.time) >= new Date()),
 		error: null
 	};
 };

@@ -164,7 +164,7 @@ function toggleSidebar() {
 <div class="layout">
 	<div class="page content">
 		<div class="header">
-			<h1>Available appointments</h1>
+			<h1 class="text-3xl">Available appointments</h1>
 
 			<div class="filter">
 				<label for="bloodbank">Choose bloodbank</label>
@@ -211,11 +211,6 @@ function toggleSidebar() {
 		align-items: flex-start;
 		gap: 2rem;
 		margin-bottom: 1.5rem;
-	}
-
-	h1 {
-		margin: 0;
-		font-size: 2rem;
 	}
 
 	.filter {
