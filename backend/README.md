@@ -67,7 +67,7 @@ Creating new requests can be done using the following structure:
 ```http
 ###
 # Comment about the request
-<REQUEST_TYPE> http://localhost:8080/api/<path> HTTP/1.1
+<REQUEST_TYPE> http://localhost:8000/api/<path> HTTP/1.1
 Accept: application/json
 
 {

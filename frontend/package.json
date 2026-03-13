@@ -8,18 +8,21 @@
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
-		"generate-api": "npx openapi-typescript openapi/openapi.json -o src/lib/api/schema.d.ts",
+		"generate-api": "npx openapi-typescript -g typescript-axios openapi/openapi.json -o src/lib/api/schema.d.ts",
 		"test": "vitest run",
 		"test:watch": "vitest",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
 	},
 	"devDependencies": {
+		"@event-calendar/core": "^5.4.1",
 		"@sveltejs/adapter-node": "^5.5.4",
 		"@sveltejs/kit": "^2.50.2",
 		"@sveltejs/vite-plugin-svelte": "^6.2.4",
+		"@tailwindcss/vite": "^4.2.1",
 		"@testing-library/jest-dom": "^6.9.1",
 		"@testing-library/svelte": "^5.2.8",
+		"@types/event-calendar__core": "^5.0.0",
 		"@typescript-eslint/eslint-plugin": "^8.56.1",
 		"@typescript-eslint/parser": "^8.56.1",
 		"eslint": "^10.0.2",
@@ -28,14 +31,19 @@
 		"jsdom": "^27.0.1",
 		"openapi-typescript": "^7.13.0",
 		"prettier": "^3.8.1",
+		"prettier-plugin-svelte": "^3.5.1",
+		"prettier-plugin-tailwindcss": "^0.7.2",
 		"svelte": "^5.51.0",
 		"svelte-check": "^4.3.6",
 		"svelte-eslint-parser": "^1.5.1",
+		"tailwindcss": "^4.2.1",
 		"typescript": "^5.9.3",
 		"vite": "^7.3.1",
 		"vitest": "^3.2.4"
 	},
 	"dependencies": {
+		"@event-calendar/day-grid": "^3.12.0",
+		"@event-calendar/time-grid": "^3.12.0",
 		"openapi-fetch": "^0.17.0"
 	}
 }
