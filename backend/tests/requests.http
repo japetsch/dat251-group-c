@@ -2,7 +2,7 @@
 
 # Get all appointment
 
-GET http://localhost:8080/api/appointment HTTP/1.1
+GET http://localhost:8000/api/appointment HTTP/1.1
 Accept: application/json
 
 
@@ -10,7 +10,7 @@ Accept: application/json
 
 # Delete one appointment
 
-DELETE http://localhost:8080/api/appointment/1 HTTP/1.1
+DELETE http://localhost:8000/api/appointment/1 HTTP/1.1
 Accept: application/json
 
 
@@ -18,7 +18,7 @@ Accept: application/json
 
 # Update one appointment
 
-PATCH http://localhost:8080/api/appointment HTTP/1.1
+PATCH http://localhost:8000/api/appointment HTTP/1.1
 Accept: application/json
 
 {
