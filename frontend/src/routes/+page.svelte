@@ -93,6 +93,7 @@
     transition:
       background 0.2s ease,
       transform 0.2s ease;
+    text-decoration: none;
   }
 
   .scroll-btn:hover {
@@ -291,11 +292,6 @@
       closeLogin();
     }
   }
-
-  function scrollToInfo() {
-    const section = document.getElementById("info-section");
-    section?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
 </script>
 
 <svelte:head>
@@ -314,7 +310,7 @@
     <h1>{title}</h1>
     <p class="subtitle">{subtitle}</p>
 
-    <button class="scroll-btn" onclick={scrollToInfo}>Les mer</button>
+    <a href="#info-section" class="scroll-btn">Les mer</a>
   </div>
 
   {#if showLogin}

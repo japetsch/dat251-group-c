@@ -113,34 +113,34 @@
 </style>
 
 <script lang="ts">
-  type Appointment = {
-    id: number;
-    time: string;
-    location_id: number;
-    locationname: string;
-    formattedTime: string;
-  };
+  import type {
+    AppointmentWithFormattedTime,
+    PlannerColumn,
+  } from "$lib/types/appointment";
 
-  type Column = {
-    dayName: string;
-    dateLabel: string;
-    appointments: Appointment[];
-  };
+  interface Props {
+    columns: PlannerColumn[];
+    currentWeekNumber: number;
+    onPreviousWeek: () => void;
+    onNextWeek: () => void;
+    onSelectAppointment: (appointment: AppointmentWithFormattedTime) => void;
+  }
 
-  export let columns: Column[];
-  // export let columns: PlannerColumn[];
-  export let currentWeekNumber: number;
-  export let onPreviousWeek: () => void;
-  export let onNextWeek: () => void;
-  export let onSelectAppointment: (appointment: Appointment) => void;
+  let {
+    columns,
+    currentWeekNumber,
+    onPreviousWeek,
+    onNextWeek,
+    onSelectAppointment,
+  }: Props = $props();
 </script>
 
 <div class="toolbar">
   <div class="week-label">Week {currentWeekNumber}</div>
 
   <div class="week-buttons">
-    <button type="button" on:click={onPreviousWeek}>Previous</button>
-    <button type="button" on:click={onNextWeek}>Next</button>
+    <button type="button" onclick={onPreviousWeek}>Previous</button>
+    <button type="button" onclick={onNextWeek}>Next</button>
   </div>
 </div>
 
@@ -161,7 +161,7 @@
               <button
                 type="button"
                 class="appointment-card"
-                on:click={() => onSelectAppointment(appointment)}
+                onclick={() => onSelectAppointment(appointment)}
               >
                 <div class="appointment-time">{appointment.formattedTime}</div>
                 <div class="appointment-place">{appointment.locationname}</div>
