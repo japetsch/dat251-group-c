@@ -3,7 +3,7 @@ import type { Appointment } from "$lib/types/appointment";
 import type { PageLoad } from "./$types";
 
 type NewApptPreloaded = {
-  availableAppointments: Appointment;
+  availableAppointments: Appointment[];
   error: string | null;
 };
 

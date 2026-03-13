@@ -48,10 +48,6 @@
       flex-direction: column;
     }
 
-    .home-button {
-      margin-top: 0;
-    }
-
     .header {
       flex-direction: column;
     }

@@ -3,6 +3,9 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.35);
+    border: none;
+    padding: 0;
+    cursor: default;
   }
 
   .modal {
@@ -67,7 +70,12 @@
 </script>
 
 {#if selectedAppointment}
-  <div class="modal-backdrop" on:click={onClose}></div>
+  <button
+    type="button"
+    class="modal-backdrop"
+    aria-label="Close modal"
+    on:click={onClose}
+  ></button>
 
   <div class="modal">
     <h2>Book appointment</h2>
