@@ -8,7 +8,7 @@
     { name: "Appointments", href: "/Appointments" },
     { name: "New Appointments", href: "/user/appointment/new" }
   ];
-  import "./layout.css";
+  import "../layout.css";
 </script>
 
 <svelte:head>
