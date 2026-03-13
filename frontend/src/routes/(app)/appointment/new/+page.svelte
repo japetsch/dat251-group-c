@@ -4,11 +4,9 @@ import BookingModal from '$lib/components/BookingModal.svelte';
 import Sidebar from '$lib/components/Sidebar.svelte';
 import WeekPlanner from '$lib/components/WeekPlanner.svelte';
 import type { Appointment, AppointmentWithFormattedTime, PlannerColumn } from '$lib/types/appointment';
+import type { PageData } from "./$types";
 
-export let data: {
-    availableAppointments: Appointment[];
-    error: string | null;
-};
+export let data: PageData;
 
 // Filters and page state
 let selectedBloodbank = 'All';

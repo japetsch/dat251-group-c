@@ -5,8 +5,8 @@
 
   const navItems = [
     { name: "Home", href: "/dashboard" },
-    { name: "Appointments", href: "/Appointments" },
-    { name: "New Appointments", href: "/user/appointment/new" }
+    { name: "My Appointments", href: "/appointment/list" },
+    { name: "New Appointment", href: "/appointment/new" }
   ];
   import "../layout.css";
 </script>
