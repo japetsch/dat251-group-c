@@ -31,9 +31,30 @@ jobs:
       - run: npm run test
       - run: npm run build
 
+  verify-swagger-api:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - run: npm run generate-api
+      - run: |
+          if [[ ! -z $(git diff --name-only) ]]; then
+            echo "Error: swagger client codegen in frontend not up to date"
+            exit 1
+          fi
+
   docker:
     name: Build & publish OCI image
-    needs: [verify-swagger-json, verify-swagger-api, check-test-build]
+    needs: [verify-swagger-api, check-test-build]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
