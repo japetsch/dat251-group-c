@@ -1,14 +1,14 @@
 <script lang="ts">
+    import "./app.css";
 	import favicon from '$lib/assets/favicon.svg';
 
 	let { children } = $props();
 
   const navItems = [
-    { name: "Home", href: "/" },
-    { name: "Appointments", href: "/Appointments" },
-    { name: "New Appointments", href: "/user/appointment/new" }
+    { name: "Home", href: "/dashboard" },
+    { name: "My Appointments", href: "/appointment/list" },
+    { name: "New Appointment", href: "/appointment/new" }
   ];
-  import "./layout.css";
 </script>
 
 <svelte:head>
@@ -18,7 +18,7 @@
 <header class="w-full border-b bg-white">
   <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
 
-    <a href="/" class="flex items-center">
+    <a href="/dashboard" class="flex items-center">
       <img src="/tmp_logo.svg" alt="Logo" class="h-8 w-auto" />
     </a>
 
@@ -36,6 +36,6 @@
   </div>
 </header>
 
-<div class="container mx-auto mt-4">
+<div class="container mx-auto p-16">
     {@render children()}
 </div>

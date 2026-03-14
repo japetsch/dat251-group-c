@@ -1,14 +1,11 @@
 <script lang="ts">
 import { addDays, formatDateKey, getStartOfWeek, getWeekNumber } from '$lib/utils/date';
 import BookingModal from '$lib/components/BookingModal.svelte';
-import Sidebar from '$lib/components/Sidebar.svelte';
 import WeekPlanner from '$lib/components/WeekPlanner.svelte';
 import type { Appointment, AppointmentWithFormattedTime, PlannerColumn } from '$lib/types/appointment';
+import type { PageData } from "./$types";
 
-export let data: {
-    availableAppointments: Appointment[];
-    error: string | null;
-};
+export let data: PageData;
 
 // Filters and page state
 let selectedBloodbank = 'All';
@@ -165,10 +162,9 @@ function toggleSidebar() {
 />
 
 <div class="layout">
-    <Sidebar sidebarOpen={sidebarOpen} onToggle={toggleSidebar} />
 	<div class="page content">
 		<div class="header">
-			<h1>Available appointments</h1>
+			<h1 class="text-3xl">Available appointments</h1>
 
 			<div class="filter">
 				<label for="bloodbank">Choose bloodbank</label>
@@ -192,13 +188,6 @@ function toggleSidebar() {
 
 
 <style>
-	:global(body) {
-		margin: 0;
-		font-family: Arial, sans-serif;
-		background: #f5f5f5;
-		color: #222;
-	}
-
 	.layout {
 		display: flex;
 		align-items: stretch;
@@ -213,7 +202,6 @@ function toggleSidebar() {
 		width: 100%;
 		max-width: 1400px;
 		margin: 0 auto;
-		padding: 8rem 4rem 4rem 4rem;
         background: #f5f5f5;
 	}
 
@@ -223,11 +211,6 @@ function toggleSidebar() {
 		align-items: flex-start;
 		gap: 2rem;
 		margin-bottom: 1.5rem;
-	}
-
-	h1 {
-		margin: 0;
-		font-size: 2rem;
 	}
 
 	.filter {

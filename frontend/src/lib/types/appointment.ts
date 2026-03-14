@@ -1,17 +1,10 @@
-export type Appointment = {
-	id: number;
-	time: string;
-	location_id: number;
-	locationname: string;
-};
+import type { components } from '$lib/api/schema';
 
-export type AppointmentWithFormattedTime = {
-	id: number;
-	time: string;
-	location_id: number;
-	locationname: string;
-	formattedTime: string;
-};
+export type Appointment =
+  components["schemas"]["GetAvailableAppointmentsRow"][];
+
+export type AppointmentWithFormattedTime =
+  Appointment & { formattedTime: string };
 
 export type PlannerColumn = {
 	dayName: string;
