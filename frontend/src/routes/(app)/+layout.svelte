@@ -1,23 +1,22 @@
 <script lang="ts">
-    import "./app.css";
-	import favicon from '$lib/assets/favicon.svg';
+  import "./app.css";
+  import favicon from "$lib/assets/favicon.svg";
 
-	let { children } = $props();
+  let { children } = $props();
 
   const navItems = [
     { name: "Home", href: "/dashboard" },
     { name: "My Appointments", href: "/appointment/list" },
-    { name: "New Appointment", href: "/appointment/new" }
+    { name: "New Appointment", href: "/appointment/new" },
   ];
 </script>
 
 <svelte:head>
-	<link rel="icon" href={favicon} />
+  <link rel="icon" href={favicon} />
 </svelte:head>
 
 <header class="w-full border-b bg-white">
   <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-
     <a href="/dashboard" class="flex items-center">
       <img src="/tmp_logo.svg" alt="Logo" class="h-8 w-auto" />
     </a>
@@ -32,10 +31,9 @@
         </a>
       {/each}
     </nav>
-
   </div>
 </header>
 
 <div class="container mx-auto p-16">
-    {@render children()}
+  {@render children()}
 </div>
