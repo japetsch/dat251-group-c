@@ -1,0 +1,129 @@
+@startuml
+
+class User {
+  name: String
+  eMail: String
+  phoneNumber: String
+}
+
+User -->"1" Address: "home"
+User -->"0..*" Address: "alternatives"
+User -->"0..*" TestResult
+
+class Donor extends User {
+  comment: String // "about me/preferences"
+}
+enum Bloodtype {
+  O-
+  O+
+  A+
+  A-
+  B+
+  B-
+  AB+
+  AB-
+}
+
+Donor -->"1" DonationPreference
+
+class DonationPreference {
+  interval: DeltaTime
+  slotPreferences: String // Cron
+}
+DonationPreference --> "1" Bloodbank
+
+class TestResult {
+  time: Timestamp
+  validUntil: Timestamp
+  invalidated: Boolean
+}
+
+TestResult -->"1" Form
+
+class Form {
+  okToDonate: Boolean
+}
+
+class EntryForm extends Form {
+
+}
+
+class Interview extends Form {
+
+}
+Interview -->"1" Admin: "held by"
+
+class DonationTest extends Form {
+
+}
+
+Donor --> "1" Bloodbank: "home bloodbank"
+Donor --> "1" Bloodtype
+
+class Admin extends User {}
+
+Bloodbank -->"1..*" Admin
+
+class Note {
+  time: Timestamp
+  message: String
+}
+
+Appointment --> "0..*" Note
+Note --> "1" User: "created by"
+
+class Appointment{
+  cancelled: Boolean
+}
+
+class Donation {
+  amountInMl: Float
+  isBloodNotPlasma: Boolean
+}
+
+Donation -->"0..1" DonationTest
+
+Appointment --> "0..1" Donation
+Appointment --> "1" Bookingslot
+Appointment "0..*"--> "1" Donor
+
+class Bookingslot{
+  time: Timestamp
+  // Time has to fall into 
+  // the bloodbanks opening hours
+  capacity: Int
+}
+
+Bloodbank -->"0..*" Bookingslot
+
+class Bloodbank {
+  name: String
+  // A blood bus is represnted by 
+  // multiple bloodbanks with diffent names
+
+}
+
+Bloodbank --> "1" Location
+
+class Location {
+  longitude: Float
+  latitude: Float
+}
+
+Location --> "0..1" Address
+
+class Address {
+  streetname: String
+  streetnumber: String
+  postalcode: Int
+  city: String
+  country: String
+}
+
+Bloodbank --> "*" Timerange: "opening hours"
+
+class Timerange {
+  openingCron: String
+  closingCron: String
+}
+@enduml
