@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { PageData } from "./$types";
 
-  export let data: PageData;
+  let { data }: { data: PageData } = $props();
 </script>
 
 <h1 class="text-3xl mb-4">My appointments</h1>

@@ -93,6 +93,7 @@
     transition:
       background 0.2s ease,
       transform 0.2s ease;
+    text-decoration: none;
   }
 
   .scroll-btn:hover {
@@ -273,7 +274,7 @@
 <script lang="ts">
   import favicon from "$lib/assets/favicon.svg";
 
-  let showLogin = false;
+  let showLogin = $state(false);
 
   const title = "Blodbanken";
   const subtitle = "Doner blod. Redd liv.";
@@ -290,11 +291,6 @@
     if (e.target === e.currentTarget) {
       closeLogin();
     }
-  }
-
-  function scrollToInfo() {
-    const section = document.getElementById("info-section");
-    section?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 </script>
 
@@ -314,7 +310,7 @@
     <h1>{title}</h1>
     <p class="subtitle">{subtitle}</p>
 
-    <button class="scroll-btn" onclick={scrollToInfo}>Les mer</button>
+    <a href="#info-section" class="scroll-btn">Les mer</a>
   </div>
 
   {#if showLogin}
@@ -332,7 +328,11 @@
         <h2>Logg inn</h2>
         <p class="modal-subtitle">Bruk BankID for sikker pålogging</p>
 
-        <a href="/dashboard" class="bankid-btn">Logg inn med BankID</a>
+        <a
+          href="/dashboard"
+          class="bankid-btn"
+          data-sveltekit-preload-data="off">Logg inn med BankID</a
+        >
         <div class="info-box">
           Du vil bli bedt om å identifisere deg med BankID. Dette sikrer at dine
           helseopplysninger forblir trygge og konfidensielle.
