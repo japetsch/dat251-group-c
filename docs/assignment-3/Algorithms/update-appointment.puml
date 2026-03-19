@@ -1,0 +1,24 @@
+@startuml
+start
+
+:User updated booking-slot;
+
+if (Within opening hours? (See check in "Verify opening hours" diagram)) then (Yes)
+  if (Capacity on new slot available?) then (Yes)
+    partition (atomic) {
+	  :Decrement capacity on new slot;
+	  :Increment capacity on old slot;
+	  :Point to new booking-slot from appointment;
+    }
+  else (No)
+	:Show error message "Booking-slot not available";
+    stop
+  endif
+
+else (No)
+  :Show error message "Invalid booking-slot";
+  stop
+endif
+
+stop
+@enduml

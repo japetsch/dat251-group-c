@@ -1,0 +1,24 @@
+@startuml
+start
+
+:User selects booking-slot;
+
+if (Within opening hours? (See check in "Verify opening hours" diagram)) then (Yes)
+  if (Capacity available?) then (Yes)
+    partition (atomic) {
+      :Decrement capacity;
+      :Create appointment in database;
+    }
+  else (No)
+    :Show error message;
+    :Booking-slot not available;
+    stop
+  endif
+else (No)
+  :Show error message;
+  :Invalid booking-slot;
+  stop
+endif
+
+stop
+@endumlenduml
