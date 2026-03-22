@@ -1,25 +1,62 @@
--- name: GetAllAppointments :many
-SELECT a.id as id, u.name as username, b.name as locationname, a.time FROM appointment a
-	INNER JOIN "user" u on a.user_id = u.id
-	INNER JOIN bloodbank b on a.location_id = b.id;
+-- name: GetAppointmentsByUserId :many
+SELECT a.id as id, u.name as username, b.time as time, b.duration as duration, ba.name as bloodbank_name, a.cancelled FROM appointment a
+  INNER JOIN "user" u on a.donor_id = u.id
+  INNER JOIN bookingslot b on a.bookingslot_id = b.id
+  INNER JOIN bloodbank ba on b.bloodbank_id = ba.id
+  WHERE a.donor_id = sqlc.arg('donor_id');
 
 -- name: DeleteAppointmentById :one
-DELETE FROM appointment a WHERE a.id=sqlc.arg('id') RETURNING *;
+WITH deleted AS (
+    DELETE FROM appointment
+    WHERE appointment.id = sqlc.arg(id)
+    RETURNING *
+),
+updated AS (
+    UPDATE bookingslot
+    SET capacity = capacity + 1
+    WHERE bookingslot.id IN (SELECT bookingslot_id FROM deleted)
+)
+SELECT * FROM deleted;
 
 -- name: UpdateAppointment :one
-UPDATE appointment
-SET time=sqlc.arg('time')
-WHERE id=sqlc.arg('id')
-RETURNING *;
-
--- name: BookAppointment :one
-WITH slot AS (
-    DELETE FROM free_appointments fa
-    WHERE fa.id = sqlc.arg('free_appointment_id')
-    RETURNING fa.time, fa.location_id
+WITH current AS (
+    SELECT bookingslot_id AS old_slot
+    FROM appointment
+    WHERE appointment.id = sqlc.arg(id)
+),
+updated_appointment AS (
+    UPDATE appointment
+    SET 
+        cancelled = sqlc.arg(cancelled),
+        bookingslot_id = sqlc.arg(bookingslot_id)
+    WHERE appointment.id = sqlc.arg(id)
+      AND (
+          -- allow if same slot
+          (SELECT old_slot FROM current) = sqlc.arg(bookingslot_id)
+          OR
+          -- or new slot has capacity
+          EXISTS (
+              SELECT 1
+              FROM bookingslot
+              WHERE bookingslot.id = sqlc.arg(bookingslot_id)
+                AND bookingslot.capacity > 0
+          )
+      )
+    RETURNING *
+),
+decrease_new AS (
+    UPDATE bookingslot
+    SET capacity = capacity - 1
+    WHERE bookingslot.id = sqlc.arg(bookingslot_id)
+      AND bookingslot.id <> (SELECT old_slot FROM current)
+      AND EXISTS (SELECT 1 FROM updated_appointment)
+),
+increase_old AS (
+    UPDATE bookingslot
+    SET capacity = capacity + 1
+    WHERE bookingslot.id = (SELECT old_slot FROM current)
+      AND bookingslot.id <> sqlc.arg(bookingslot_id)
+      AND EXISTS (SELECT 1 FROM updated_appointment)
 )
-INSERT INTO appointment (user_id, time, location_id)
-SELECT sqlc.arg('user_id'), slot.time, slot.location_id
-FROM slot
-RETURNING id, user_id, time, location_id;
+SELECT * FROM updated_appointment;
 
