@@ -2,7 +2,7 @@
 
 # Get all appointment
 
-GET http://localhost:8000/api/appointment HTTP/1.1
+GET http://localhost:8000/api/appointment/1 HTTP/1.1
 Accept: application/json
 
 
@@ -10,7 +10,7 @@ Accept: application/json
 
 # Delete one appointment
 
-DELETE http://localhost:8000/api/appointment/1 HTTP/1.1
+DELETE http://localhost:8000/api/appointment/6 HTTP/1.1
 Accept: application/json
 
 
@@ -18,10 +18,31 @@ Accept: application/json
 
 # Update one appointment
 
-PATCH http://localhost:8000/api/appointment HTTP/1.1
+PATCH http://localhost:8000/api/appointment/1 HTTP/1.1
 Accept: application/json
 
 {
-  "id": 4,
-  "time": "2029-05-11T11:30:00Z"
+  "bookingslot_id": 2,
+  "cancelled": true
+}
+
+
+### 
+
+# Get available booking slots
+
+GET http://localhost:8000/api/bookingslot/available HTTP/1.1
+Accept: application/js
+
+
+### 
+
+# Book booking slots
+
+POST http://localhost:8000/api/bookingslot/book HTTP/1.1
+Accept: application/json
+
+{
+  "bookingslot_id": 1,
+  "donor_id": 2
 }

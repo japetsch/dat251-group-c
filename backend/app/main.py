@@ -8,6 +8,7 @@ from fastapi.routing import APIRoute
 from .config import Settings
 from .db.db import DBManager
 from .routes.appointment_router import AppointmentRouter
+from .routes.bookingslot_router import BookingslotRouter
 from .swagger import SwaggerJsonGenerator
 
 
@@ -27,6 +28,7 @@ class Main:
 
         # Include custom routers here
         self.app.include_router(AppointmentRouter(), prefix="/appointment")
+        self.app.include_router(BookingslotRouter(), prefix="/bookingslot")
 
         # Make the OpenAPI operation ids match the route function name
         # Ensures nicer names on the generated client
