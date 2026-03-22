@@ -12,89 +12,131 @@ import sqlalchemy.ext.asyncio
 from app.db.sqlc import models
 
 
-BOOK_APPOINTMENT = """-- name: book_appointment \\:one
-WITH slot AS (
-    DELETE FROM free_appointments fa
-    WHERE fa.id = :p2
-    RETURNING fa.time, fa.location_id
-)
-INSERT INTO appointment (user_id, time, location_id)
-SELECT :p1, slot.time, slot.location_id
-FROM slot
-RETURNING id, user_id, time, location_id
-"""
-
-
 DELETE_APPOINTMENT_BY_ID = """-- name: delete_appointment_by_id \\:one
-DELETE FROM appointment a WHERE a.id=:p1 RETURNING id, user_id, time, location_id
+WITH deleted AS (
+    DELETE FROM appointment
+    WHERE appointment.id = :p1
+    RETURNING id, bookingslot_id, cancelled, donor_id
+),
+updated AS (
+    UPDATE bookingslot
+    SET capacity = capacity + 1
+    WHERE bookingslot.id IN (SELECT bookingslot_id FROM deleted)
+)
+SELECT id, bookingslot_id, cancelled, donor_id FROM deleted
 """
 
 
-GET_ALL_APPOINTMENTS = """-- name: get_all_appointments \\:many
-SELECT a.id as id, u.name as username, b.name as locationname, a.time FROM appointment a
-	INNER JOIN "user" u on a.user_id = u.id
-	INNER JOIN bloodbank b on a.location_id = b.id
+class DeleteAppointmentByIdRow(pydantic.BaseModel):
+    id: int
+    bookingslot_id: int
+    cancelled: Optional[bool]
+    donor_id: int
+
+
+GET_APPOINTMENTS_BY_USER_ID = """-- name: get_appointments_by_user_id \\:many
+SELECT a.id as id, u.name as username, b.time as time, b.duration as duration, ba.name as bloodbank_name, a.cancelled FROM appointment a
+  INNER JOIN "user" u on a.donor_id = u.id
+  INNER JOIN bookingslot b on a.bookingslot_id = b.id
+  INNER JOIN bloodbank ba on b.bloodbank_id = ba.id
+  WHERE a.donor_id = :p1
 """
 
 
-class GetAllAppointmentsRow(pydantic.BaseModel):
+class GetAppointmentsByUserIdRow(pydantic.BaseModel):
     id: int
     username: str
-    locationname: str
     time: datetime.datetime
+    duration: datetime.timedelta
+    bloodbank_name: str
+    cancelled: Optional[bool]
 
 
 UPDATE_APPOINTMENT = """-- name: update_appointment \\:one
-UPDATE appointment
-SET time=:p1
-WHERE id=:p2
-RETURNING id, user_id, time, location_id
+WITH current AS (
+    SELECT bookingslot_id AS old_slot
+    FROM appointment
+    WHERE appointment.id = :p1
+),
+updated_appointment AS (
+    UPDATE appointment
+    SET 
+        cancelled = :p2,
+        bookingslot_id = :p3
+    WHERE appointment.id = :p1
+      AND (
+          -- allow if same slot
+          (SELECT old_slot FROM current) = :p3
+          OR
+          -- or new slot has capacity
+          EXISTS (
+              SELECT 1
+              FROM bookingslot
+              WHERE bookingslot.id = :p3
+                AND bookingslot.capacity > 0
+          )
+      )
+    RETURNING id, bookingslot_id, cancelled, donor_id
+),
+decrease_new AS (
+    UPDATE bookingslot
+    SET capacity = capacity - 1
+    WHERE bookingslot.id = :p3
+      AND bookingslot.id <> (SELECT old_slot FROM current)
+      AND EXISTS (SELECT 1 FROM updated_appointment)
+),
+increase_old AS (
+    UPDATE bookingslot
+    SET capacity = capacity + 1
+    WHERE bookingslot.id = (SELECT old_slot FROM current)
+      AND bookingslot.id <> :p3
+      AND EXISTS (SELECT 1 FROM updated_appointment)
+)
+SELECT id, bookingslot_id, cancelled, donor_id FROM updated_appointment
 """
+
+
+class UpdateAppointmentRow(pydantic.BaseModel):
+    id: int
+    bookingslot_id: int
+    cancelled: Optional[bool]
+    donor_id: int
 
 
 class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
         self._conn = conn
 
-    async def book_appointment(self, *, user_id: int, free_appointment_id: int) -> Optional[models.Appointment]:
-        row = (await self._conn.execute(sqlalchemy.text(BOOK_APPOINTMENT), {"p1": user_id, "p2": free_appointment_id})).first()
-        if row is None:
-            return None
-        return models.Appointment(
-            id=row[0],
-            user_id=row[1],
-            time=row[2],
-            location_id=row[3],
-        )
-
-    async def delete_appointment_by_id(self, *, id: int) -> Optional[models.Appointment]:
+    async def delete_appointment_by_id(self, *, id: int) -> Optional[DeleteAppointmentByIdRow]:
         row = (await self._conn.execute(sqlalchemy.text(DELETE_APPOINTMENT_BY_ID), {"p1": id})).first()
         if row is None:
             return None
-        return models.Appointment(
+        return DeleteAppointmentByIdRow(
             id=row[0],
-            user_id=row[1],
-            time=row[2],
-            location_id=row[3],
+            bookingslot_id=row[1],
+            cancelled=row[2],
+            donor_id=row[3],
         )
 
-    async def get_all_appointments(self) -> AsyncIterator[GetAllAppointmentsRow]:
-        result = await self._conn.stream(sqlalchemy.text(GET_ALL_APPOINTMENTS))
+    async def get_appointments_by_user_id(self, *, donor_id: int) -> AsyncIterator[GetAppointmentsByUserIdRow]:
+        result = await self._conn.stream(sqlalchemy.text(GET_APPOINTMENTS_BY_USER_ID), {"p1": donor_id})
         async for row in result:
-            yield GetAllAppointmentsRow(
+            yield GetAppointmentsByUserIdRow(
                 id=row[0],
                 username=row[1],
-                locationname=row[2],
-                time=row[3],
+                time=row[2],
+                duration=row[3],
+                bloodbank_name=row[4],
+                cancelled=row[5],
             )
 
-    async def update_appointment(self, *, time: datetime.datetime, id: int) -> Optional[models.Appointment]:
-        row = (await self._conn.execute(sqlalchemy.text(UPDATE_APPOINTMENT), {"p1": time, "p2": id})).first()
+    async def update_appointment(self, *, id: int, cancelled: Optional[bool], bookingslot_id: int) -> Optional[UpdateAppointmentRow]:
+        row = (await self._conn.execute(sqlalchemy.text(UPDATE_APPOINTMENT), {"p1": id, "p2": cancelled, "p3": bookingslot_id})).first()
         if row is None:
             return None
-        return models.Appointment(
+        return UpdateAppointmentRow(
             id=row[0],
-            user_id=row[1],
-            time=row[2],
-            location_id=row[3],
+            bookingslot_id=row[1],
+            cancelled=row[2],
+            donor_id=row[3],
         )
