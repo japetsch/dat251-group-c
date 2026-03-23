@@ -37,15 +37,9 @@
 </style>
 
 <script lang="ts">
-  type Appointment = {
-    id: number;
-    time: string;
-    location_id: number;
-    locationname: string;
-    formattedTime: string;
-  };
+  import type { AppointmentWithFormattedTime } from "$lib/types/appointment";
 
-  export let selectedAppointment: Appointment | null;
+  export let selectedAppointment: AppointmentWithFormattedTime | null;
   export let isBooking: boolean;
   export let bookingMessage: string;
   export let onClose: () => void;
@@ -63,7 +57,7 @@
 
     if (selectedAppointment) {
       appointmentDate = selectedAppointment.time.split("T")[0];
-      appointmentPlace = selectedAppointment.locationname;
+      appointmentPlace = selectedAppointment.bloodbank_name;
       appointmentTime = selectedAppointment.formattedTime;
     }
   }

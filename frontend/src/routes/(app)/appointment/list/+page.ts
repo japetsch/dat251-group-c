@@ -3,14 +3,18 @@ import type { components } from "$lib/api/schema";
 import type { PageLoad } from "./$types";
 
 type ApptListPreloaded = {
-  upcoming: components["schemas"]["GetAllAppointmentsRow"][];
-  previous: components["schemas"]["GetAllAppointmentsRow"][];
+  upcoming: components["schemas"]["GetAppointmentsByUserIdRow"][];
+  previous: components["schemas"]["GetAppointmentsByUserIdRow"][];
   error: string | null;
 };
 
 export const load: PageLoad<ApptListPreloaded> = async ({ fetch, url }) => {
   const client = createLoadClient(fetch, url);
-  const r = await client.GET("/appointment");
+  const r = await client.GET("/appointment/{id}", {
+    params: {
+      path: { id: 1 },
+    },
+  });
 
   if (!r.response.ok || !r.data) {
     return {
@@ -20,9 +24,10 @@ export const load: PageLoad<ApptListPreloaded> = async ({ fetch, url }) => {
     };
   }
 
+  const now = new Date();
   return {
-    previous: r.data.filter((x) => new Date(x.time) < new Date()),
-    upcoming: r.data.filter((x) => new Date(x.time) >= new Date()),
+    previous: r.data.filter((x) => new Date(x.time) < now),
+    upcoming: r.data.filter((x) => new Date(x.time) >= now),
     error: null,
   };
 };

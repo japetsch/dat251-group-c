@@ -6,21 +6,42 @@
     "version": "0.1.0"
   },
   "paths": {
-    "/appointment": {
+    "/appointment/{id}": {
       "get": {
         "summary": "Find All",
         "operationId": "find_all",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/GetAllAppointmentsRow"
-                  },
                   "type": "array",
-                  "title": "Response Find All Appointment Get"
+                  "items": {
+                    "$ref": "#/components/schemas/GetAppointmentsByUserIdRow"
+                  },
+                  "title": "Response Find All Appointment  Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -30,15 +51,26 @@
       "patch": {
         "summary": "Update",
         "operationId": "update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Id"
+            }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AppointmentUpdateRequest"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -46,7 +78,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Appointment"
+                  "$ref": "#/components/schemas/UpdateAppointmentRow"
                 }
               }
             }
@@ -62,69 +94,7 @@
             }
           }
         }
-      }
-    },
-    "/appointment/available": {
-      "get": {
-        "summary": "Get Available",
-        "operationId": "get_available",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/GetAvailableAppointmentsRow"
-                  },
-                  "type": "array",
-                  "title": "Response Get Available Appointment Available Get"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/appointment/book": {
-      "post": {
-        "summary": "Book",
-        "operationId": "book",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BookAppointmentRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Appointment"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/appointment/{id}": {
+      },
       "delete": {
         "summary": "Delete One",
         "operationId": "delete_one",
@@ -145,7 +115,67 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Appointment"
+                  "$ref": "#/components/schemas/DeleteAppointmentByIdRow"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bookingslot/available": {
+      "get": {
+        "summary": "Get Available",
+        "operationId": "get_available",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GetBookingSlotsRow"
+                  },
+                  "type": "array",
+                  "title": "Response Get Available Bookingslot Available Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bookingslot/book": {
+      "post": {
+        "summary": "Book",
+        "operationId": "book",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookAppointmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BookBookingslotRow"
                 }
               }
             }
@@ -166,73 +196,113 @@
   },
   "components": {
     "schemas": {
-      "Appointment": {
-        "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "user_id": {
-            "type": "integer",
-            "title": "User Id"
-          },
-          "time": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Time"
-          },
-          "location_id": {
-            "type": "integer",
-            "title": "Location Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "user_id",
-          "time",
-          "location_id"
-        ],
-        "title": "Appointment"
-      },
       "AppointmentUpdateRequest": {
         "properties": {
-          "id": {
+          "bookingslot_id": {
             "type": "integer",
-            "title": "Id"
+            "title": "Bookingslot Id"
           },
-          "time": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Time"
+          "cancelled": {
+            "type": "boolean",
+            "title": "Cancelled"
           }
         },
         "type": "object",
         "required": [
-          "id",
-          "time"
+          "bookingslot_id",
+          "cancelled"
         ],
         "title": "AppointmentUpdateRequest"
       },
       "BookAppointmentRequest": {
         "properties": {
-          "free_appointment_id": {
+          "bookingslot_id": {
             "type": "integer",
-            "title": "Free Appointment Id"
+            "title": "Bookingslot Id"
           },
-          "user_id": {
+          "donor_id": {
             "type": "integer",
-            "title": "User Id"
+            "title": "Donor Id"
           }
         },
         "type": "object",
         "required": [
-          "free_appointment_id",
-          "user_id"
+          "bookingslot_id",
+          "donor_id"
         ],
         "title": "BookAppointmentRequest"
       },
-      "GetAllAppointmentsRow": {
+      "BookBookingslotRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "bookingslot_id": {
+            "type": "integer",
+            "title": "Bookingslot Id"
+          },
+          "cancelled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "donor_id",
+          "bookingslot_id",
+          "cancelled"
+        ],
+        "title": "BookBookingslotRow"
+      },
+      "DeleteAppointmentByIdRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "bookingslot_id": {
+            "type": "integer",
+            "title": "Bookingslot Id"
+          },
+          "cancelled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelled"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "bookingslot_id",
+          "cancelled",
+          "donor_id"
+        ],
+        "title": "DeleteAppointmentByIdRow"
+      },
+      "GetAppointmentsByUserIdRow": {
         "properties": {
           "id": {
             "type": "integer",
@@ -242,26 +312,44 @@
             "type": "string",
             "title": "Username"
           },
-          "locationname": {
-            "type": "string",
-            "title": "Locationname"
-          },
           "time": {
             "type": "string",
             "format": "date-time",
             "title": "Time"
+          },
+          "duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Duration"
+          },
+          "bloodbank_name": {
+            "type": "string",
+            "title": "Bloodbank Name"
+          },
+          "cancelled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelled"
           }
         },
         "type": "object",
         "required": [
           "id",
           "username",
-          "locationname",
-          "time"
+          "time",
+          "duration",
+          "bloodbank_name",
+          "cancelled"
         ],
-        "title": "GetAllAppointmentsRow"
+        "title": "GetAppointmentsByUserIdRow"
       },
-      "GetAvailableAppointmentsRow": {
+      "GetBookingSlotsRow": {
         "properties": {
           "id": {
             "type": "integer",
@@ -272,23 +360,39 @@
             "format": "date-time",
             "title": "Time"
           },
+          "duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Duration"
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity"
+          },
+          "bloodbank_id": {
+            "type": "integer",
+            "title": "Bloodbank Id"
+          },
+          "bloodbank_name": {
+            "type": "string",
+            "title": "Bloodbank Name"
+          },
           "location_id": {
             "type": "integer",
             "title": "Location Id"
-          },
-          "locationname": {
-            "type": "string",
-            "title": "Locationname"
           }
         },
         "type": "object",
         "required": [
           "id",
           "time",
-          "location_id",
-          "locationname"
+          "duration",
+          "capacity",
+          "bloodbank_id",
+          "bloodbank_name",
+          "location_id"
         ],
-        "title": "GetAvailableAppointmentsRow"
+        "title": "GetBookingSlotsRow"
       },
       "HTTPValidationError": {
         "properties": {
@@ -302,6 +406,41 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "UpdateAppointmentRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "bookingslot_id": {
+            "type": "integer",
+            "title": "Bookingslot Id"
+          },
+          "cancelled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelled"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "bookingslot_id",
+          "cancelled",
+          "donor_id"
+        ],
+        "title": "UpdateAppointmentRow"
       },
       "ValidationError": {
         "properties": {

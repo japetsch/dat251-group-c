@@ -2,27 +2,168 @@
 # versions:
 #   sqlc v1.30.0
 import datetime
+import enum
 import pydantic
+from typing import Optional
+
+
+class BloodType(str, enum.Enum):
+    O = "O+"
+    O_ = "O-"
+    A = "A+"
+    A_ = "A-"
+    B = "B+"
+    B_ = "B-"
+    AB = "AB+"
+    AB_ = "AB-"
+
+
+class Address(pydantic.BaseModel):
+    id: int
+    street_name: str
+    street_number: str
+    apt_number: Optional[str]
+    postal_code: str
+    city: str
+    country: str
+
+
+class Admin(pydantic.BaseModel):
+    id: int
 
 
 class Appointment(pydantic.BaseModel):
     id: int
-    user_id: int
+    bookingslot_id: int
+    cancelled: Optional[bool]
+    donor_id: int
+
+
+class AppointmentNote(pydantic.BaseModel):
+    id: int
+    appointment_id: int
     time: datetime.datetime
-    location_id: int
+    message: str
 
 
 class Bloodbank(pydantic.BaseModel):
     id: int
     name: str
-
-
-class FreeAppointment(pydantic.BaseModel):
-    id: int
-    time: datetime.datetime
     location_id: int
+
+
+class BloodbankAdmin(pydantic.BaseModel):
+    id: int
+    bloodbank_id: int
+    admin_id: int
+
+
+class BloodbankHoliday(pydantic.BaseModel):
+    id: int
+    bloodbank_id: int
+    holiday_id: int
+
+
+class BloodbankRecurringHoliday(pydantic.BaseModel):
+    id: int
+    bloodbank_id: int
+    recurring_holiday_id: int
+
+
+class Bookingslot(pydantic.BaseModel):
+    id: int
+    bloodbank_id: int
+    time: datetime.datetime
+    duration: datetime.timedelta
+    capacity: int
+
+
+class Donation(pydantic.BaseModel):
+    id: int
+    appointment_id: int
+    amount_ml: float
+    is_blood_not_plasma: bool
+
+
+class DonationTest(pydantic.BaseModel):
+    id: int
+    donation_id: int
+
+
+class Donor(pydantic.BaseModel):
+    id: int
+    comment: Optional[str]
+    blood_type: Optional[BloodType]
+    preferred_bloodbank_id: int
+    min_interval: Optional[datetime.timedelta]
+    slot_preference: Optional[str]
+
+
+class EntryForm(pydantic.BaseModel):
+    id: int
+
+
+class Form(pydantic.BaseModel):
+    id: int
+    ok_to_donate: Optional[bool]
+    interview_id: Optional[int]
+    entry_form_id: Optional[int]
+    donation_test_id: Optional[int]
+
+
+class Holiday(pydantic.BaseModel):
+    id: int
+    description: str
+    starting: datetime.datetime
+    ending: datetime.datetime
+
+
+class Interview(pydantic.BaseModel):
+    id: int
+    interviewer_admin_id: int
+
+
+class Location(pydantic.BaseModel):
+    id: int
+    latitude: float
+    longitude: float
+    address_id: int
+
+
+class OpeningHour(pydantic.BaseModel):
+    id: int
+    bloodbank_id: int
+    opening_cron: str
+    open_duration: datetime.timedelta
+
+
+class RecurringHoliday(pydantic.BaseModel):
+    id: int
+    description: str
+    starting_cron: str
+    duration: datetime.timedelta
+
+
+class TestResult(pydantic.BaseModel):
+    id: int
+    donor_id: int
+    form_id: int
+    time: datetime.datetime
+    validity_duration: datetime.timedelta
+    invalidated: bool
 
 
 class User(pydantic.BaseModel):
     id: int
     name: str
+    email: str
+    phone_number: str
+    home_address_id: int
+    donor_id: Optional[int]
+    admin_id: Optional[int]
+
+
+class UserAlternativeAddress(pydantic.BaseModel):
+    id: int
+    user_id: int
+    address_id: int
