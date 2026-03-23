@@ -78,6 +78,25 @@
         }
       }
     },
+    "/admin": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Index",
+        "operationId": "index",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
     "/appointment": {
       "get": {
         "summary": "Find All",

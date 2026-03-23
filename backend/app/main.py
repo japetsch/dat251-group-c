@@ -9,6 +9,7 @@ from app.auth import AuthUtil
 
 from .config import Settings
 from .db.db import DBManager
+from .routes.admin_router import AdminRouter
 from .routes.appointment_router import AppointmentRouter
 from .routes.auth_router import AuthRouter
 from .routes.bookingslot_router import BookingslotRouter
@@ -31,6 +32,11 @@ class Main:
 
         # Include custom routers here
         self.app.include_router(AuthRouter(), prefix="/auth")
+        self.app.include_router(
+            AdminRouter(),
+            prefix="/admin",
+            dependencies=[Depends(AuthUtil.get_admin_user_requried)],
+        )
         self.app.include_router(
             AppointmentRouter(),
             prefix="/appointment",
