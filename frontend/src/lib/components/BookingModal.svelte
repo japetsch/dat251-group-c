@@ -37,27 +37,36 @@
 </style>
 
 <script lang="ts">
-  import type { AppointmentWithFormattedTime } from "$lib/types/appointment";
+  type Appointment = {
+    id: number;
+    time: string;
+    location_id: number;
+    locationname: string;
+    formattedTime: string;
+  };
 
-  interface Props {
-    selectedAppointment: AppointmentWithFormattedTime | null;
-    isBooking: boolean;
-    bookingMessage: string;
-    onClose: () => void;
-    onBook: () => void;
+  export let selectedAppointment: Appointment | null;
+  export let isBooking: boolean;
+  export let bookingMessage: string;
+  export let onClose: () => void;
+  export let onBook: () => void;
+  // export let selectedAppointment: AppointmentWithFormattedTime | null;
+
+  let appointmentDate = "";
+  let appointmentPlace = "";
+  let appointmentTime = "";
+
+  $: {
+    appointmentDate = "";
+    appointmentPlace = "";
+    appointmentTime = "";
+
+    if (selectedAppointment) {
+      appointmentDate = selectedAppointment.time.split("T")[0];
+      appointmentPlace = selectedAppointment.locationname;
+      appointmentTime = selectedAppointment.formattedTime;
+    }
   }
-
-  let {
-    selectedAppointment,
-    isBooking,
-    bookingMessage,
-    onClose,
-    onBook,
-  }: Props = $props();
-
-  let appointmentDate = $derived(selectedAppointment?.time.split("T")[0] ?? "");
-  let appointmentPlace = $derived(selectedAppointment?.locationname ?? "");
-  let appointmentTime = $derived(selectedAppointment?.formattedTime ?? "");
 </script>
 
 {#if selectedAppointment}
@@ -65,7 +74,7 @@
     type="button"
     class="modal-backdrop"
     aria-label="Close modal"
-    onclick={onClose}
+    on:click={onClose}
   ></button>
 
   <div class="modal">
@@ -76,9 +85,9 @@
     <p><strong>Time:</strong> {appointmentTime}</p>
 
     <div class="modal-buttons">
-      <button type="button" onclick={onClose}> Cancel </button>
+      <button type="button" on:click={onClose}> Cancel </button>
 
-      <button type="button" onclick={onBook} disabled={isBooking}>
+      <button type="button" on:click={onBook} disabled={isBooking}>
         {#if isBooking}
           Booking...
         {:else}

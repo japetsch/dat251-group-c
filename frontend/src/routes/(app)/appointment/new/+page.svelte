@@ -74,16 +74,18 @@
   } from "$lib/types/appointment";
   import type { PageData } from "./$types";
 
-  let { data }: { data: PageData } = $props();
+  export let data: PageData;
 
   // Filters and page state
-  let selectedBloodbank = $state("All");
-  let sidebarOpen = $state(true);
+  let selectedBloodbank = "All";
+  let currentWeekStart: Date;
+  let sidebarOpen = true;
+  let filteredAppointments: Appointment[] = [];
 
   // Booking modal state
-  let selectedAppointment = $state<AppointmentWithFormattedTime | null>(null);
-  let isBooking = $state(false);
-  let bookingMessage = $state("");
+  let selectedAppointment: AppointmentWithFormattedTime | null = null;
+  let isBooking = false;
+  let bookingMessage = "";
 
   // Date and time formatters
   const dayFormatter = new Intl.DateTimeFormat("en-GB", {
@@ -111,56 +113,57 @@
 
   // Start on the week of the first appointment
   const firstAppointment = sortedAppointments[0];
-  let currentWeekStart = $state(
-    firstAppointment
-      ? getStartOfWeek(firstAppointment.time)
-      : getStartOfWeek(new Date().toISOString()),
-  );
+
+  if (firstAppointment) {
+    currentWeekStart = getStartOfWeek(firstAppointment.time);
+  } else {
+    currentWeekStart = getStartOfWeek(new Date().toISOString());
+  }
 
   // Bloodbank options
-  let bloodbanks = $derived([
+  $: bloodbanks = [
     "All",
     ...new Set(sortedAppointments.map((item) => item.locationname)),
-  ]);
+  ];
 
   // Filter appointments by selected bloodbank
-  let filteredAppointments: Appointment[] = $derived(
-    selectedBloodbank === "All"
-      ? sortedAppointments
-      : sortedAppointments.filter(
-          (item) => item.locationname === selectedBloodbank,
-        ),
-  );
+  $: {
+    if (selectedBloodbank === "All") {
+      filteredAppointments = sortedAppointments;
+    } else {
+      filteredAppointments = sortedAppointments.filter((item) => {
+        return item.locationname === selectedBloodbank;
+      });
+    }
+  }
 
   // Build the current week
-  let daysInWeek = $derived(
-    Array.from({ length: 7 }, (_, index) => addDays(currentWeekStart, index)),
+  $: daysInWeek = Array.from({ length: 7 }, (_, index) =>
+    addDays(currentWeekStart, index),
   );
 
   // Build planner columns
-  let columns: PlannerColumn[] = $derived(
-    daysInWeek.map((date) => {
-      const dateKey = formatDateKey(date);
+  $: columns = daysInWeek.map((date): PlannerColumn => {
+    const dateKey = formatDateKey(date);
 
-      const appointmentsForDay = filteredAppointments
-        .filter((appointment) => appointment.time.startsWith(dateKey))
-        .map((appointment) => {
-          return {
-            ...appointment,
-            formattedTime: timeFormatter.format(new Date(appointment.time)),
-          };
-        });
+    const appointmentsForDay = filteredAppointments
+      .filter((appointment) => appointment.time.startsWith(dateKey))
+      .map((appointment) => {
+        return {
+          ...appointment,
+          formattedTime: timeFormatter.format(new Date(appointment.time)),
+        };
+      });
 
-      return {
-        dayName: dayFormatter.format(date),
-        dateLabel: dateFormatter.format(date),
-        appointments: appointmentsForDay,
-      };
-    }),
-  );
+    return {
+      dayName: dayFormatter.format(date),
+      dateLabel: dateFormatter.format(date),
+      appointments: appointmentsForDay,
+    };
+  });
 
   // Week number shown in the tab
-  let currentWeekNumber = $derived(getWeekNumber(currentWeekStart));
+  $: currentWeekNumber = getWeekNumber(currentWeekStart);
 
   function showPreviousWeek() {
     currentWeekStart = addDays(currentWeekStart, -7);
