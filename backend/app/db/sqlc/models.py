@@ -161,6 +161,7 @@ class User(pydantic.BaseModel):
     home_address_id: int
     donor_id: Optional[int]
     admin_id: Optional[int]
+    password_hash: Optional[str]
 
 
 class UserAlternativeAddress(pydantic.BaseModel):
