@@ -8,6 +8,9 @@
   "paths": {
     "/auth/login": {
       "post": {
+        "tags": [
+          "auth"
+        ],
         "summary": "Log In",
         "operationId": "log_in",
         "requestBody": {
@@ -42,6 +45,9 @@
     },
     "/auth/logout": {
       "get": {
+        "tags": [
+          "auth"
+        ],
         "summary": "Log Out",
         "operationId": "log_out",
         "responses": {
@@ -53,6 +59,9 @@
     },
     "/auth/me": {
       "get": {
+        "tags": [
+          "auth"
+        ],
         "summary": "Me",
         "operationId": "me",
         "responses": {
@@ -123,43 +132,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UpdateAppointmentRow"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete One",
-        "operationId": "delete_one",
-        "parameters": [
-          {
-            "name": "appointment_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Appointment Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeleteAppointmentByIdRow"
                 }
               }
             }
@@ -305,41 +277,6 @@
           "cancelled"
         ],
         "title": "BookBookingslotRow"
-      },
-      "DeleteAppointmentByIdRow": {
-        "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "bookingslot_id": {
-            "type": "integer",
-            "title": "Bookingslot Id"
-          },
-          "cancelled": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cancelled"
-          },
-          "donor_id": {
-            "type": "integer",
-            "title": "Donor Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "bookingslot_id",
-          "cancelled",
-          "donor_id"
-        ],
-        "title": "DeleteAppointmentByIdRow"
       },
       "GetAppointmentsByUserIdRow": {
         "properties": {

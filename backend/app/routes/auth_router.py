@@ -21,7 +21,9 @@ from ..db.sqlc.auth import AsyncQuerier as AuthQuerier
 @final
 class AuthRouter(APIRouter):
     def __init__(self) -> None:
-        super().__init__()
+        super().__init__(
+            tags=["auth"],
+        )
 
         self.ph = PasswordHasher()
 

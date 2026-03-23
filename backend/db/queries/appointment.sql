@@ -5,19 +5,6 @@ SELECT a.id as id, u.name as username, b.time as time, b.duration as duration, b
   INNER JOIN bloodbank ba on b.bloodbank_id = ba.id
   WHERE a.donor_id = sqlc.arg('donor_id');
 
--- name: DeleteAppointmentById :one
-WITH deleted AS (
-    DELETE FROM appointment
-    WHERE appointment.id = sqlc.arg(id)
-    RETURNING *
-),
-updated AS (
-    UPDATE bookingslot
-    SET capacity = capacity + 1
-    WHERE bookingslot.id IN (SELECT bookingslot_id FROM deleted)
-)
-SELECT * FROM deleted;
-
 -- name: UpdateAppointment :one
 WITH current AS (
     SELECT bookingslot_id AS old_slot
