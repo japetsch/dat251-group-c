@@ -273,7 +273,7 @@
 <script lang="ts">
   import favicon from "$lib/assets/favicon.svg";
 
-  let showLogin = false;
+  let showLogin = $state(false);
 
   const title = "Blodbanken";
   const subtitle = "Doner blod. Redd liv.";
@@ -332,7 +332,11 @@
         <h2>Logg inn</h2>
         <p class="modal-subtitle">Bruk BankID for sikker pålogging</p>
 
-        <a href="/dashboard" class="bankid-btn">Logg inn med BankID</a>
+        <a
+          href="/dashboard"
+          class="bankid-btn"
+          data-sveltekit-preload-data="off">Logg inn med BankID</a
+        >
         <div class="info-box">
           Du vil bli bedt om å identifisere deg med BankID. Dette sikrer at dine
           helseopplysninger forblir trygge og konfidensielle.
