@@ -6,6 +6,69 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Log In",
+        "operationId": "log_in",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequestData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Unauthorized. Incorrect email or password"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "summary": "Log Out",
+        "operationId": "log_out",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "summary": "Me",
+        "operationId": "me",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/appointment/{id}": {
       "get": {
         "summary": "Find All",
@@ -192,46 +255,23 @@
           }
         }
       }
-    },
-    "/auth/login": {
-      "post": {
-        "summary": "Log In",
-        "operationId": "log_in",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LoginRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
     "schemas": {
+      "AdminInfo": {
+        "properties": {
+          "admin_id": {
+            "type": "integer",
+            "title": "Admin Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "admin_id"
+        ],
+        "title": "AdminInfo"
+      },
       "AppointmentUpdateRequest": {
         "properties": {
           "bookingslot_id": {
@@ -338,6 +378,19 @@
         ],
         "title": "DeleteAppointmentByIdRow"
       },
+      "DonorInfo": {
+        "properties": {
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "donor_id"
+        ],
+        "title": "DonorInfo"
+      },
       "GetAppointmentsByUserIdRow": {
         "properties": {
           "id": {
@@ -443,7 +496,7 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
-      "LoginRequest": {
+      "LoginRequestData": {
         "properties": {
           "email": {
             "type": "string",
@@ -459,7 +512,7 @@
           "email",
           "password"
         ],
-        "title": "LoginRequest"
+        "title": "LoginRequestData"
       },
       "UpdateAppointmentRow": {
         "properties": {
@@ -495,6 +548,36 @@
           "donor_id"
         ],
         "title": "UpdateAppointmentRow"
+      },
+      "UserInfo": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "user_name": {
+            "type": "string",
+            "title": "User Name"
+          },
+          "extended": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DonorInfo"
+              },
+              {
+                "$ref": "#/components/schemas/AdminInfo"
+              }
+            ],
+            "title": "Extended"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "user_name",
+          "extended"
+        ],
+        "title": "UserInfo"
       },
       "ValidationError": {
         "properties": {
