@@ -3,7 +3,7 @@ from typing import Annotated, final
 import jwt
 from fastapi import Depends, HTTPException, Request, Response, status
 from jwt.exceptions import DecodeError
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from app.config import Settings
 
@@ -11,14 +11,13 @@ from app.config import Settings
 class UserInfo(BaseModel):
     user_id: int
     user_name: str
-    extended: DonorInfo | AdminInfo
 
 
-class DonorInfo(BaseModel):
+class DonorInfo(UserInfo):
     donor_id: int
 
 
-class AdminInfo(BaseModel):
+class AdminInfo(UserInfo):
     admin_id: int
 
 
@@ -27,7 +26,7 @@ class AuthUtil:
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
 
-    def set_auth_cookie(self, user_info: UserInfo, response: Response):
+    def set_auth_cookie(self, user_info: DonorInfo | AdminInfo, response: Response):
         token = jwt.encode(
             user_info.model_dump(), self._settings.JWT_SECRET, algorithm="HS256"
         )
@@ -58,7 +57,10 @@ class AuthUtil:
         except DecodeError:
             raise
 
-        user = UserInfo.model_validate(token)
+        try:
+            user = DonorInfo.model_validate(token)
+        except ValidationError:
+            user = AdminInfo.model_validate(token)
 
         # Renew the token
         self.set_auth_cookie(user, response)
@@ -84,9 +86,9 @@ class AuthUtil:
         return u
 
     @staticmethod
-    def get_admin_user_requried(request: Request, response: Response) -> UserInfo:
+    def get_admin_user_requried(request: Request, response: Response) -> AdminInfo:
         u = AuthUtil.get_current_user_required(request, response)
-        if not isinstance(u.extended, AdminInfo):
+        if not isinstance(u, AdminInfo):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="User is not of type admin",
@@ -94,9 +96,9 @@ class AuthUtil:
         return u
 
     @staticmethod
-    def get_donor_user_requried(request: Request, response: Response) -> UserInfo:
+    def get_donor_user_requried(request: Request, response: Response) -> DonorInfo:
         u = AuthUtil.get_current_user_required(request, response)
-        if not isinstance(u.extended, DonorInfo):
+        if not isinstance(u, DonorInfo):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="User is not of type donor",
@@ -113,5 +115,5 @@ CurrentUserOptional = Annotated[
     UserInfo | None, Depends(AuthUtil.get_current_user_optional)
 ]
 CurrentUserRequired = Annotated[UserInfo, Depends(AuthUtil.get_current_user_required)]
-AdminUserRequired = Annotated[UserInfo, Depends(AuthUtil.get_admin_user_requried)]
-DonorUserRequired = Annotated[UserInfo, Depends(AuthUtil.get_donor_user_requried)]
+AdminUserRequired = Annotated[AdminInfo, Depends(AuthUtil.get_admin_user_requried)]
+DonorUserRequired = Annotated[DonorInfo, Depends(AuthUtil.get_donor_user_requried)]

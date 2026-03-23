@@ -69,59 +69,40 @@
         }
       }
     },
-    "/appointment/{id}": {
+    "/appointment": {
       "get": {
         "summary": "Find All",
         "operationId": "find_all",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Id"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/GetAppointmentsByUserIdRow"
                   },
-                  "title": "Response Find All Appointment  Id  Get"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
+                  "type": "array",
+                  "title": "Response Find All Appointment Get"
                 }
               }
             }
           }
         }
-      },
+      }
+    },
+    "/appointment/{appointment_id}": {
       "patch": {
         "summary": "Update",
         "operationId": "update",
         "parameters": [
           {
-            "name": "id",
+            "name": "appointment_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
-              "title": "Id"
+              "title": "Appointment Id"
             }
           }
         ],
@@ -163,12 +144,12 @@
         "operationId": "delete_one",
         "parameters": [
           {
-            "name": "id",
+            "name": "appointment_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
-              "title": "Id"
+              "title": "Appointment Id"
             }
           }
         ],
@@ -259,19 +240,6 @@
   },
   "components": {
     "schemas": {
-      "AdminInfo": {
-        "properties": {
-          "admin_id": {
-            "type": "integer",
-            "title": "Admin Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "admin_id"
-        ],
-        "title": "AdminInfo"
-      },
       "AppointmentUpdateRequest": {
         "properties": {
           "bookingslot_id": {
@@ -295,16 +263,11 @@
           "bookingslot_id": {
             "type": "integer",
             "title": "Bookingslot Id"
-          },
-          "donor_id": {
-            "type": "integer",
-            "title": "Donor Id"
           }
         },
         "type": "object",
         "required": [
-          "bookingslot_id",
-          "donor_id"
+          "bookingslot_id"
         ],
         "title": "BookAppointmentRequest"
       },
@@ -377,19 +340,6 @@
           "donor_id"
         ],
         "title": "DeleteAppointmentByIdRow"
-      },
-      "DonorInfo": {
-        "properties": {
-          "donor_id": {
-            "type": "integer",
-            "title": "Donor Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "donor_id"
-        ],
-        "title": "DonorInfo"
       },
       "GetAppointmentsByUserIdRow": {
         "properties": {
@@ -558,24 +508,12 @@
           "user_name": {
             "type": "string",
             "title": "User Name"
-          },
-          "extended": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/DonorInfo"
-              },
-              {
-                "$ref": "#/components/schemas/AdminInfo"
-              }
-            ],
-            "title": "Extended"
           }
         },
         "type": "object",
         "required": [
           "user_id",
-          "user_name",
-          "extended"
+          "user_name"
         ],
         "title": "UserInfo"
       },

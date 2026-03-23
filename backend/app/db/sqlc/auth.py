@@ -11,6 +11,13 @@ import sqlalchemy.ext.asyncio
 from app.db.sqlc import models
 
 
+APPOINTMENT_BELONGS_TO = """-- name: appointment_belongs_to \\:one
+SELECT TRUE
+FROM appointment a
+WHERE a.id = :p1 AND a.donor_id = :p2
+"""
+
+
 GET_USER = """-- name: get_user \\:one
 SELECT u.id, u.name, u.email, u.password_hash, u.donor_id, u.admin_id
 FROM "user" u WHERE u.email = :p1
@@ -29,6 +36,12 @@ class GetUserRow(pydantic.BaseModel):
 class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
         self._conn = conn
+
+    async def appointment_belongs_to(self, *, appointment_id: int, donor_id: int) -> Optional[bool]:
+        row = (await self._conn.execute(sqlalchemy.text(APPOINTMENT_BELONGS_TO), {"p1": appointment_id, "p2": donor_id})).first()
+        if row is None:
+            return None
+        return row[0]
 
     async def get_user(self, *, email: str) -> Optional[GetUserRow]:
         row = (await self._conn.execute(sqlalchemy.text(GET_USER), {"p1": email})).first()

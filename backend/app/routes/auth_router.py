@@ -73,20 +73,23 @@ class AuthRouter(APIRouter):
             )
 
         if user.donor_id is not None:
-            ext = DonorInfo(donor_id=user.donor_id)
+            info = DonorInfo(
+                user_id=user.id,
+                user_name=user.name,
+                donor_id=user.donor_id,
+            )
         elif user.admin_id is not None:
-            ext = AdminInfo(admin_id=user.admin_id)
+            info = AdminInfo(
+                user_id=user.id,
+                user_name=user.name,
+                admin_id=user.admin_id,
+            )
         else:
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="User entity is inconsistent",
             )
 
-        info = UserInfo(
-            user_id=user.id,
-            user_name=user.name,
-            extended=ext,
-        )
         auth_utils.set_auth_cookie(info, response)
 
     async def log_out(
