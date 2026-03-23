@@ -123,7 +123,7 @@
   // Bloodbank options
   $: bloodbanks = [
     "All",
-    ...new Set(sortedAppointments.map((item) => item.locationname)),
+    ...new Set(sortedAppointments.map((item) => item.bloodbank_name)),
   ];
 
   // Filter appointments by selected bloodbank
@@ -132,7 +132,7 @@
       filteredAppointments = sortedAppointments;
     } else {
       filteredAppointments = sortedAppointments.filter((item) => {
-        return item.locationname === selectedBloodbank;
+        return item.bloodbank_name === selectedBloodbank;
       });
     }
   }

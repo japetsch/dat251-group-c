@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/appointment": {
+    "/appointment/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -15,14 +15,15 @@ export interface paths {
         get: operations["find_all"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** Delete One */
+        delete: operations["delete_one"];
         options?: never;
         head?: never;
         /** Update */
         patch: operations["update"];
         trace?: never;
     };
-    "/appointment/available": {
+    "/bookingslot/available": {
         parameters: {
             query?: never;
             header?: never;
@@ -39,7 +40,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/appointment/book": {
+    "/bookingslot/book": {
         parameters: {
             query?: never;
             header?: never;
@@ -56,74 +57,69 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/appointment/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /** Delete One */
-        delete: operations["delete_one"];
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** Appointment */
-        Appointment: {
-            /** Id */
-            id: number;
-            /** User Id */
-            user_id: number;
-            /**
-             * Time
-             * Format: date-time
-             */
-            time: string;
-            /** Location Id */
-            location_id: number;
-        };
         /** AppointmentUpdateRequest */
         AppointmentUpdateRequest: {
-            /** Id */
-            id: number;
-            /**
-             * Time
-             * Format: date-time
-             */
-            time: string;
+            /** Bookingslot Id */
+            bookingslot_id: number;
+            /** Cancelled */
+            cancelled: boolean;
         };
         /** BookAppointmentRequest */
         BookAppointmentRequest: {
-            /** Free Appointment Id */
-            free_appointment_id: number;
-            /** User Id */
-            user_id: number;
+            /** Bookingslot Id */
+            bookingslot_id: number;
+            /** Donor Id */
+            donor_id: number;
         };
-        /** GetAllAppointmentsRow */
-        GetAllAppointmentsRow: {
+        /** BookBookingslotRow */
+        BookBookingslotRow: {
+            /** Id */
+            id: number;
+            /** Donor Id */
+            donor_id: number;
+            /** Bookingslot Id */
+            bookingslot_id: number;
+            /** Cancelled */
+            cancelled: boolean | null;
+        };
+        /** DeleteAppointmentByIdRow */
+        DeleteAppointmentByIdRow: {
+            /** Id */
+            id: number;
+            /** Bookingslot Id */
+            bookingslot_id: number;
+            /** Cancelled */
+            cancelled: boolean | null;
+            /** Donor Id */
+            donor_id: number;
+        };
+        /** GetAppointmentsByUserIdRow */
+        GetAppointmentsByUserIdRow: {
             /** Id */
             id: number;
             /** Username */
             username: string;
-            /** Locationname */
-            locationname: string;
             /**
              * Time
              * Format: date-time
              */
             time: string;
+            /**
+             * Duration
+             * Format: duration
+             */
+            duration: string;
+            /** Bloodbank Name */
+            bloodbank_name: string;
+            /** Cancelled */
+            cancelled: boolean | null;
         };
-        /** GetAvailableAppointmentsRow */
-        GetAvailableAppointmentsRow: {
+        /** GetBookingSlotsRow */
+        GetBookingSlotsRow: {
             /** Id */
             id: number;
             /**
@@ -131,15 +127,35 @@ export interface components {
              * Format: date-time
              */
             time: string;
+            /**
+             * Duration
+             * Format: duration
+             */
+            duration: string;
+            /** Capacity */
+            capacity: number;
+            /** Bloodbank Id */
+            bloodbank_id: number;
+            /** Bloodbank Name */
+            bloodbank_name: string;
             /** Location Id */
             location_id: number;
-            /** Locationname */
-            locationname: string;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** UpdateAppointmentRow */
+        UpdateAppointmentRow: {
+            /** Id */
+            id: number;
+            /** Bookingslot Id */
+            bookingslot_id: number;
+            /** Cancelled */
+            cancelled: boolean | null;
+            /** Donor Id */
+            donor_id: number;
         };
         /** ValidationError */
         ValidationError: {
@@ -167,7 +183,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                id: number;
+            };
             cookie?: never;
         };
         requestBody?: never;
@@ -178,84 +196,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GetAllAppointmentsRow"][];
-                };
-            };
-        };
-    };
-    update: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["AppointmentUpdateRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Appointment"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    get_available: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["GetAvailableAppointmentsRow"][];
-                };
-            };
-        };
-    };
-    book: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["BookAppointmentRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["Appointment"];
+                    "application/json": components["schemas"]["GetAppointmentsByUserIdRow"][];
                 };
             };
             /** @description Validation Error */
@@ -286,7 +227,95 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Appointment"];
+                    "application/json": components["schemas"]["DeleteAppointmentByIdRow"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointmentUpdateRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UpdateAppointmentRow"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_available: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetBookingSlotsRow"][];
+                };
+            };
+        };
+    };
+    book: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BookAppointmentRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookBookingslotRow"];
                 };
             };
             /** @description Validation Error */
