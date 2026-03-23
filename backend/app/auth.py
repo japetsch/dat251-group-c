@@ -52,7 +52,9 @@ class AuthUtil:
 
         # TODO: Validate more properly (checking timestamps etc.)
         try:
-            token = jwt.decode(token_str, self._settings.JWT_SECRET, algorithms=["HS256"])
+            token = jwt.decode(
+                token_str, self._settings.JWT_SECRET, algorithms=["HS256"]
+            )
         except DecodeError:
             raise
 

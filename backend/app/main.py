@@ -2,7 +2,7 @@ import os
 import sys
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.routing import APIRoute
 
 from app.auth import AuthUtil
@@ -31,8 +31,16 @@ class Main:
 
         # Include custom routers here
         self.app.include_router(AuthRouter(), prefix="/auth")
-        self.app.include_router(AppointmentRouter(), prefix="/appointment")
-        self.app.include_router(BookingslotRouter(), prefix="/bookingslot")
+        self.app.include_router(
+            AppointmentRouter(),
+            prefix="/appointment",
+            dependencies=[Depends(AuthUtil.get_donor_user_requried)],
+        )
+        self.app.include_router(
+            BookingslotRouter(),
+            prefix="/bookingslot",
+            dependencies=[Depends(AuthUtil.get_donor_user_requried)],
+        )
 
         # Make the OpenAPI operation ids match the route function name
         # Ensures nicer names on the generated client
