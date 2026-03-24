@@ -1,10 +1,10 @@
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import final
 from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException, status
 from fastapi.routing import APIRouter
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from app.auth import AdminUserRequired
 
@@ -30,17 +30,39 @@ class AdminRouter(APIRouter):
         self.add_api_route("/bloodbank", self.list_bloodbanks, methods=["GET"])
         self.add_api_route("/bloodbank/create", self.create_bloodbank, methods=["POST"])
         self.add_api_route(
-            "/bloodbank/admins/add", self.add_admin_to_bloodbank, methods=["POST"]
+            "/bloodbank/{bloodbank_id}/admin/add",
+            self.add_admin_to_bloodbank,
+            methods=["POST"],
         )
         self.add_api_route(
-            "/bloodbank/admins/remove",
+            "/bloodbank/{bloodbank_id}/admin/remove",
             self.remove_admin_from_bloodbank,
             methods=["DELETE"],
         )
         self.add_api_route(
-            "/bloodbank/{bloodbank_id}/appointments",
+            "/bloodbank/{bloodbank_id}/appointment",
             self.bloodbank_appointments,
             methods=["GET"],
+        )
+        self.add_api_route(
+            "/appointment/{appointment_id}/note",
+            self.appointment_add_note,
+            methods=["POST"],
+        )
+        self.add_api_route(
+            "/appointment/{appointment_id}/donation",
+            self.appointment_register_donation,
+            methods=["POST"],
+        )
+        self.add_api_route(
+            "/donor/{donor_id}/form/interview",
+            self.register_interview,
+            methods=["POST"],
+        )
+        self.add_api_route(
+            "/donor/{donor_id}/form/donation-test",
+            self.register_donation_test,
+            methods=["POST"],
         )
 
     async def list_bloodbanks(
@@ -113,11 +135,11 @@ class AdminRouter(APIRouter):
             )
 
     class MutateBloodbankAdminsRequest(BaseModel):
-        bloodbank_id: int
         admin_id: int
 
     async def add_admin_to_bloodbank(
         self,
+        bloodbank_id: int,
         data: MutateBloodbankAdminsRequest,
         user: AdminUserRequired,
         engine: DBConnection,
@@ -125,15 +147,14 @@ class AdminRouter(APIRouter):
         """
         Add another admin to a blood bank the logged in user is administrator for
         """
-        await self._assert_access(user.admin_id, data.bloodbank_id, engine)
+        await self._assert_access(user.admin_id, bloodbank_id, engine)
         aq = AdminQuerier(engine)
-        await aq.add_blood_bank_admin(
-            bloodbank_id=data.bloodbank_id, admin_id=data.admin_id
-        )
+        await aq.add_blood_bank_admin(bloodbank_id=bloodbank_id, admin_id=data.admin_id)
         # TODO: success feedback?
 
     async def remove_admin_from_bloodbank(
         self,
+        bloodbank_id: int,
         data: MutateBloodbankAdminsRequest,
         user: AdminUserRequired,
         engine: DBConnection,
@@ -144,10 +165,10 @@ class AdminRouter(APIRouter):
         The user can remove themselves.
         The user can't remove the last admin of a blood bank.
         """
-        await self._assert_access(user.admin_id, data.bloodbank_id, engine)
+        await self._assert_access(user.admin_id, bloodbank_id, engine)
         aq = AdminQuerier(engine)
         await aq.remove_blood_bank_admin(
-            bloodbank_id=data.bloodbank_id, admin_id=data.admin_id
+            bloodbank_id=bloodbank_id, admin_id=data.admin_id
         )
         # TODO: success feedback?
 
@@ -192,8 +213,67 @@ class AdminRouter(APIRouter):
             before=before,
             show_cancelled=show_cancelled,
         )
-        
+
         slots: list[AdminRouter.BookingSlotType] = []
         async for a in appts:
             slots.append(AdminRouter.BookingSlotType.model_validate(a))
         return slots
+
+    class AppointmentNote(BaseModel):
+        message: str
+
+    async def appointment_add_note(
+        self,
+        user: AdminUserRequired,
+        appointment_id: int,
+        data: AppointmentNote,
+        engine: DBConnection,
+    ):
+        pass
+
+    class DonationInfo(BaseModel):
+        amount_ml: float
+        is_blood_not_plasma: bool = True
+
+    async def appointment_register_donation(
+        self,
+        user: AdminUserRequired,
+        appointment_id: int,
+        data: DonationInfo,
+        engine: DBConnection,
+    ):
+        pass
+
+    class TestResult(BaseModel):
+        submitted_at: datetime = Field(
+            default_factory=lambda: datetime.now(tz=timezone.utc)
+        )
+        ok_to_donate: bool
+        validity_duration: timedelta
+
+    class InterviewForm(TestResult):
+        pass
+
+    async def register_interview(
+        self,
+        user: AdminUserRequired,
+        donor_id: int,
+        data: InterviewForm,
+        engine: DBConnection,
+    ):
+        # NOTE: no access asserted, interview can be performed by any admin
+        pass
+
+    class DonationTestForm(TestResult):
+        donation_id: int
+
+    async def register_donation_test(
+        self,
+        user: AdminUserRequired,
+        donor_id: int,
+        data: DonationTestForm,
+        engine: DBConnection,
+    ):
+        # TODO: assert admin has access to the blood bank where the donation was given
+        # TODO: check that donation was given by donor
+        pass
