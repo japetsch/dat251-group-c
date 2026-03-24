@@ -33,8 +33,8 @@ class BookingslotRouter(APIRouter):
     ) -> list[AvailableBookingSlot]:
         q = BookingslotQuerier(engine)
         a = AppointmentQuerier(engine)
-        # Approximate 4 months since timedelta can't compare months
-        FOUR_MONTHS = timedelta(days=120)
+        # Approximate 3 months since timedelta can't compare months
+        MIN_WAITTIME = timedelta(days=90)
 
         appointments: list[GetAppointmentsByUserIdRow] = []
         async for x in a.get_appointments_by_user_id(donor_id=user.donor_id):
@@ -42,8 +42,8 @@ class BookingslotRouter(APIRouter):
 
         rows: list[BookingslotRouter.AvailableBookingSlot] = []
         async for x in q.get_booking_slots():
-            lower = x.time - FOUR_MONTHS
-            upper = x.time + FOUR_MONTHS
+            lower = x.time - MIN_WAITTIME
+            upper = x.time + MIN_WAITTIME
 
             is_valid = x.capacity != 0 and not any(
                 (lower < a.time < upper and a.cancelled != True) for a in appointments
