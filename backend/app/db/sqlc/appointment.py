@@ -27,7 +27,7 @@ class GetAppointmentsByUserIdRow(pydantic.BaseModel):
     time: datetime.datetime
     duration: datetime.timedelta
     bloodbank_name: str
-    cancelled: Optional[bool]
+    cancelled: bool
 
 
 UPDATE_APPOINTMENT = """-- name: update_appointment \\:one
@@ -77,7 +77,7 @@ SELECT id, bookingslot_id, cancelled, donor_id FROM updated_appointment
 class UpdateAppointmentRow(pydantic.BaseModel):
     id: int
     bookingslot_id: int
-    cancelled: Optional[bool]
+    cancelled: bool
     donor_id: int
 
 
@@ -97,7 +97,7 @@ class AsyncQuerier:
                 cancelled=row[5],
             )
 
-    async def update_appointment(self, *, id: int, cancelled: Optional[bool], bookingslot_id: int) -> Optional[UpdateAppointmentRow]:
+    async def update_appointment(self, *, id: int, cancelled: bool, bookingslot_id: int) -> Optional[UpdateAppointmentRow]:
         row = (await self._conn.execute(sqlalchemy.text(UPDATE_APPOINTMENT), {"p1": id, "p2": cancelled, "p3": bookingslot_id})).first()
         if row is None:
             return None

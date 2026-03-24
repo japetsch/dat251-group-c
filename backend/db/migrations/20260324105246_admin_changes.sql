@@ -1,0 +1,20 @@
+-- migrate:up
+ALTER TABLE bloodbank ADD CONSTRAINT bloodbank_unique_name UNIQUE (name);
+ALTER TABLE bloodbank_admin ADD CONSTRAINT bloodbank_admin_unique_pair
+    UNIQUE (bloodbank_id, admin_id);
+ALTER TABLE "user" ADD CONSTRAINT donor_id_unique UNIQUE (donor_id);
+ALTER TABLE "user" ADD CONSTRAINT admin_id_unique UNIQUE (admin_id);
+
+ALTER TABLE appointment
+ALTER COLUMN cancelled SET NOT NULL,
+ALTER COLUMN cancelled SET DEFAULT false;
+
+-- migrate:down
+ALTER TABLE bloodbank DROP CONSTRAINT bloodbank_unique_name;
+ALTER TABLE bloodbank_admin DROP CONSTRAINT bloodbank_admin_unique_pair;
+ALTER TABLE "user" DROP CONSTRAINT donor_id_unique;
+ALTER TABLE "user" DROP CONSTRAINT admin_id_unique;
+
+ALTER TABLE appointment
+ALTER COLUMN cancelled DROP NOT NULL,
+ALTER COLUMN cancelled DROP DEFAULT;

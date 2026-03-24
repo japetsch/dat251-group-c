@@ -35,7 +35,7 @@ class Admin(pydantic.BaseModel):
 class Appointment(pydantic.BaseModel):
     id: int
     bookingslot_id: int
-    cancelled: Optional[bool]
+    cancelled: bool
     donor_id: int
 
 

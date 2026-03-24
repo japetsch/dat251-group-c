@@ -6,3 +6,8 @@ FROM "user" u WHERE u.email = $1;
 SELECT TRUE
 FROM appointment a
 WHERE a.id = sqlc.arg(appointment_id) AND a.donor_id = sqlc.arg(donor_id);
+
+-- name: HasAdminAtBloodBank :one
+SELECT TRUE
+FROM bloodbank_admin bba
+WHERE bba.admin_id = $1 AND bba.bloodbank_id = $2;

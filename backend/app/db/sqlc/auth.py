@@ -33,6 +33,13 @@ class GetUserRow(pydantic.BaseModel):
     admin_id: Optional[int]
 
 
+HAS_ADMIN_AT_BLOOD_BANK = """-- name: has_admin_at_blood_bank \\:one
+SELECT TRUE
+FROM bloodbank_admin bba
+WHERE bba.admin_id = :p1 AND bba.bloodbank_id = :p2
+"""
+
+
 class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
         self._conn = conn
@@ -55,3 +62,9 @@ class AsyncQuerier:
             donor_id=row[4],
             admin_id=row[5],
         )
+
+    async def has_admin_at_blood_bank(self, *, admin_id: int, bloodbank_id: int) -> Optional[bool]:
+        row = (await self._conn.execute(sqlalchemy.text(HAS_ADMIN_AT_BLOOD_BANK), {"p1": admin_id, "p2": bloodbank_id})).first()
+        if row is None:
+            return None
+        return row[0]
