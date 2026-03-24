@@ -32,7 +32,8 @@ INSERT into bookingslot (bloodbank_id, time, duration, capacity) VALUES
   (1, '2026-02-20T16:00:00Z', '00:30:00', 10),
   (1, '2026-05-11T11:30:00Z', '00:30:00', 10),
   (1, '2026-12-05T06:00:00Z', '00:30:00', 10),
-  (1, '2026-12-05T06:00:00Z', '00:30:00', 0);
+  (1, '2026-12-05T06:00:00Z', '00:30:00', 0),
+  (1, '2026-6-21T06:00:00Z', '00:30:00', 10);
 
 INSERT into appointment (bookingslot_id, cancelled, donor_id) VALUES
   (1, false, 1),
