@@ -4,7 +4,58 @@
  */
 
 export interface paths {
-    "/appointment/{id}": {
+    "/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Log In */
+        post: operations["log_in"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Log Out */
+        get: operations["log_out"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Me */
+        get: operations["me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/appointment": {
         parameters: {
             query?: never;
             header?: never;
@@ -15,8 +66,23 @@ export interface paths {
         get: operations["find_all"];
         put?: never;
         post?: never;
-        /** Delete One */
-        delete: operations["delete_one"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/appointment/{appointment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         /** Update */
@@ -72,8 +138,6 @@ export interface components {
         BookAppointmentRequest: {
             /** Bookingslot Id */
             bookingslot_id: number;
-            /** Donor Id */
-            donor_id: number;
         };
         /** BookBookingslotRow */
         BookBookingslotRow: {
@@ -85,17 +149,6 @@ export interface components {
             bookingslot_id: number;
             /** Cancelled */
             cancelled: boolean | null;
-        };
-        /** DeleteAppointmentByIdRow */
-        DeleteAppointmentByIdRow: {
-            /** Id */
-            id: number;
-            /** Bookingslot Id */
-            bookingslot_id: number;
-            /** Cancelled */
-            cancelled: boolean | null;
-            /** Donor Id */
-            donor_id: number;
         };
         /** GetAppointmentsByUserIdRow */
         GetAppointmentsByUserIdRow: {
@@ -146,6 +199,13 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
+        /** LoginRequestData */
+        LoginRequestData: {
+            /** Email */
+            email: string;
+            /** Password */
+            password: string;
+        };
         /** UpdateAppointmentRow */
         UpdateAppointmentRow: {
             /** Id */
@@ -156,6 +216,13 @@ export interface components {
             cancelled: boolean | null;
             /** Donor Id */
             donor_id: number;
+        };
+        /** UserInfo */
+        UserInfo: {
+            /** User Id */
+            user_id: number;
+            /** User Name */
+            user_name: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -179,13 +246,87 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    log_in: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequestData"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. Incorrect email or password */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    log_out: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserInfo"];
+                };
+            };
+        };
+    };
     find_all: {
         parameters: {
             query?: never;
             header?: never;
-            path: {
-                id: number;
-            };
+            path?: never;
             cookie?: never;
         };
         requestBody?: never;
@@ -199,46 +340,6 @@ export interface operations {
                     "application/json": components["schemas"]["GetAppointmentsByUserIdRow"][];
                 };
             };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
-    };
-    delete_one: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: number;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DeleteAppointmentByIdRow"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
         };
     };
     update: {
@@ -246,7 +347,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                appointment_id: number;
             };
             cookie?: never;
         };

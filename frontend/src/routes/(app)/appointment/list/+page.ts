@@ -10,11 +10,7 @@ type ApptListPreloaded = {
 
 export const load: PageLoad<ApptListPreloaded> = async ({ fetch, url }) => {
   const client = createLoadClient(fetch, url);
-  const r = await client.GET("/appointment/{id}", {
-    params: {
-      path: { id: 1 },
-    },
-  });
+  const r = await client.GET("/appointment");
 
   if (!r.response.ok || !r.data) {
     return {

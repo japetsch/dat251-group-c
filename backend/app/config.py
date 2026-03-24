@@ -15,6 +15,8 @@ class Settings(BaseSettings):
 
     DB_URL: str
     TEST_DB_URL: str
+    COOKIE_NAME: str = "bloodapp_session_token"
+    JWT_SECRET: str
 
     @classmethod
     @lru_cache

@@ -192,14 +192,13 @@
     bookingMessage = "";
 
     try {
-      const response = await fetch("/api/appointment/book", {
+      const response = await fetch("/api/bookingslot/book", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          free_appointment_id: selectedAppointment.id,
-          user_id: 1,
+          bookingslot_id: selectedAppointment.id,
         }),
       });
 

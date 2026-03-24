@@ -28,7 +28,7 @@
       {#each data.upcoming as appointment}
         <tr class="transition-colors hover:bg-gray-50">
           <td class="py-3 pr-6 font-medium text-gray-900"
-            >TODO: logged in user</td
+            >{appointment.username}</td
           >
           <td class="py-3 pr-6 text-gray-600">{appointment.bloodbank_name}</td>
           <td class="py-3 text-gray-600"
@@ -56,7 +56,7 @@
       {#each data.previous as appointment}
         <tr class="transition-colors hover:bg-gray-50">
           <td class="py-3 pr-6 font-medium text-gray-900"
-            >TODO: logged in user</td
+            >{appointment.username}</td
           >
           <td class="py-3 pr-6 text-gray-600">{appointment.bloodbank_name}</td>
           <td class="py-3 text-gray-600"

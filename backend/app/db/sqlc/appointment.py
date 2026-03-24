@@ -12,28 +12,6 @@ import sqlalchemy.ext.asyncio
 from app.db.sqlc import models
 
 
-DELETE_APPOINTMENT_BY_ID = """-- name: delete_appointment_by_id \\:one
-WITH deleted AS (
-    DELETE FROM appointment
-    WHERE appointment.id = :p1
-    RETURNING id, bookingslot_id, cancelled, donor_id
-),
-updated AS (
-    UPDATE bookingslot
-    SET capacity = capacity + 1
-    WHERE bookingslot.id IN (SELECT bookingslot_id FROM deleted)
-)
-SELECT id, bookingslot_id, cancelled, donor_id FROM deleted
-"""
-
-
-class DeleteAppointmentByIdRow(pydantic.BaseModel):
-    id: int
-    bookingslot_id: int
-    cancelled: Optional[bool]
-    donor_id: int
-
-
 GET_APPOINTMENTS_BY_USER_ID = """-- name: get_appointments_by_user_id \\:many
 SELECT a.id as id, u.name as username, b.time as time, b.duration as duration, ba.name as bloodbank_name, a.cancelled FROM appointment a
   INNER JOIN "user" u on a.donor_id = u.id
@@ -106,17 +84,6 @@ class UpdateAppointmentRow(pydantic.BaseModel):
 class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
         self._conn = conn
-
-    async def delete_appointment_by_id(self, *, id: int) -> Optional[DeleteAppointmentByIdRow]:
-        row = (await self._conn.execute(sqlalchemy.text(DELETE_APPOINTMENT_BY_ID), {"p1": id})).first()
-        if row is None:
-            return None
-        return DeleteAppointmentByIdRow(
-            id=row[0],
-            bookingslot_id=row[1],
-            cancelled=row[2],
-            donor_id=row[3],
-        )
 
     async def get_appointments_by_user_id(self, *, donor_id: int) -> AsyncIterator[GetAppointmentsByUserIdRow]:
         result = await self._conn.stream(sqlalchemy.text(GET_APPOINTMENTS_BY_USER_ID), {"p1": donor_id})

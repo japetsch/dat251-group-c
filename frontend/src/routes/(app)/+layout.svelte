@@ -9,6 +9,14 @@
     { name: "My Appointments", href: "/appointment/list" },
     { name: "New Appointment", href: "/appointment/new" },
   ];
+
+  async function signout() {
+    const res = await fetch("/api/auth/logout");
+    if (res.ok) {
+      // TODO: change to sveltekit redirect when tailwind is globally loaded
+      window.location.href = "/";
+    }
+  }
 </script>
 
 <svelte:head>
@@ -30,6 +38,12 @@
           {item.name}
         </a>
       {/each}
+      <button
+        onclick={signout}
+        class="text-gray-700 transition hover:text-blue-600 hover:cursor-pointer"
+      >
+        Sign Out
+      </button>
     </nav>
   </div>
 </header>

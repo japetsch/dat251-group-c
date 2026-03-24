@@ -6,35 +6,29 @@
     "version": "0.1.0"
   },
   "paths": {
-    "/appointment/{id}": {
-      "get": {
-        "summary": "Find All",
-        "operationId": "find_all",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Id"
-            }
-          }
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
         ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GetAppointmentsByUserIdRow"
-                  },
-                  "title": "Response Find All Appointment  Id  Get"
-                }
+        "summary": "Log In",
+        "operationId": "log_in",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequestData"
               }
             }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Unauthorized. Incorrect email or password"
           },
           "422": {
             "description": "Validation Error",
@@ -47,18 +41,77 @@
             }
           }
         }
-      },
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Log Out",
+        "operationId": "log_out",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Me",
+        "operationId": "me",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appointment": {
+      "get": {
+        "summary": "Find All",
+        "operationId": "find_all",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GetAppointmentsByUserIdRow"
+                  },
+                  "type": "array",
+                  "title": "Response Find All Appointment Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appointment/{appointment_id}": {
       "patch": {
         "summary": "Update",
         "operationId": "update",
         "parameters": [
           {
-            "name": "id",
+            "name": "appointment_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
-              "title": "Id"
+              "title": "Appointment Id"
             }
           }
         ],
@@ -79,43 +132,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/UpdateAppointmentRow"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "summary": "Delete One",
-        "operationId": "delete_one",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "title": "Id"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/DeleteAppointmentByIdRow"
                 }
               }
             }
@@ -219,16 +235,11 @@
           "bookingslot_id": {
             "type": "integer",
             "title": "Bookingslot Id"
-          },
-          "donor_id": {
-            "type": "integer",
-            "title": "Donor Id"
           }
         },
         "type": "object",
         "required": [
-          "bookingslot_id",
-          "donor_id"
+          "bookingslot_id"
         ],
         "title": "BookAppointmentRequest"
       },
@@ -266,41 +277,6 @@
           "cancelled"
         ],
         "title": "BookBookingslotRow"
-      },
-      "DeleteAppointmentByIdRow": {
-        "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "bookingslot_id": {
-            "type": "integer",
-            "title": "Bookingslot Id"
-          },
-          "cancelled": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cancelled"
-          },
-          "donor_id": {
-            "type": "integer",
-            "title": "Donor Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "bookingslot_id",
-          "cancelled",
-          "donor_id"
-        ],
-        "title": "DeleteAppointmentByIdRow"
       },
       "GetAppointmentsByUserIdRow": {
         "properties": {
@@ -407,6 +383,24 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
+      "LoginRequestData": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequestData"
+      },
       "UpdateAppointmentRow": {
         "properties": {
           "id": {
@@ -441,6 +435,24 @@
           "donor_id"
         ],
         "title": "UpdateAppointmentRow"
+      },
+      "UserInfo": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "user_name": {
+            "type": "string",
+            "title": "User Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "user_name"
+        ],
+        "title": "UserInfo"
       },
       "ValidationError": {
         "properties": {

@@ -1,8 +1,8 @@
-import datetime
-
 from fastapi import HTTPException
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
+
+from app.auth import DonorUserRequired
 
 from ..db.db import DBConnection
 from ..db.sqlc.bookingslot import (
@@ -10,7 +10,6 @@ from ..db.sqlc.bookingslot import (
     BookBookingslotRow,
     GetBookingSlotsRow,
 )
-from ..db.sqlc.models import Appointment
 
 
 class BookingslotRouter(APIRouter):
@@ -29,15 +28,17 @@ class BookingslotRouter(APIRouter):
 
     class BookAppointmentRequest(BaseModel):
         bookingslot_id: int
-        donor_id: int
 
     async def book(
-        self, request: BookAppointmentRequest, engine: DBConnection
+        self,
+        request: BookAppointmentRequest,
+        user: DonorUserRequired,
+        engine: DBConnection,
     ) -> BookBookingslotRow:
         q = BookingslotQuerier(engine)
         booked: BookBookingslotRow | None = await q.book_bookingslot(
             bookingslot_id=request.bookingslot_id,
-            donor_id=request.donor_id,
+            donor_id=user.donor_id,
         )
         if booked is None:
             raise HTTPException(status_code=404, detail="Bookingslot not available")

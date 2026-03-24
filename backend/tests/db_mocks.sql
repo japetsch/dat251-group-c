@@ -20,10 +20,13 @@ INSERT INTO donor (blood_type, preferred_bloodbank_id) VALUES
   ('AB+', 2),
   ('B-', 1);
 
-INSERT INTO "user" (name, email, phone_number, home_address_id, donor_id) VALUES
-  ('Olav', 'olav@uib.no', '1558', 1, 1),
-  ('Peter', 'peter@hvl.no', '5087', 1, 2),
-  ('Sigrid', 'sigrid@gmain.com', '5571', 1, 3);  
+INSERT INTO "user" (name, email, phone_number, home_address_id, donor_id, password_hash) VALUES
+  ('Olav', 'olav@uib.no', '1558', 1, 1,
+  '$argon2id$v=19$m=65536,t=3,p=4$lkskS9KtvekaU2KS/hu/gQ$aisdna1C+MKgGbrWkSX7KiXsPpmxw7qhyTQpSautURk'), -- correct horse battery staple
+  ('Peter', 'peter@hvl.no', '5087', 1, 2,
+  '$argon2id$v=19$m=65536,t=3,p=4$9bAwJofIZtg7Fg9IH8uaRA$JfLTCeW8e/pNiXpRKj4A18Niz02XzuMbu1bnPcbUJ4M'), -- password123
+  ('Sigrid', 'sigrid@gmain.com', '5571', 1, 3,
+  '$argon2id$v=19$m=65536,t=3,p=4$llmunGw2K2kWx9Vhv/7OZQ$e4nkzeV3j1dRshEHsuNIsYp+FF6UwMyb6lDu04ecISQ'); -- hunter2
 
 INSERT into bookingslot (bloodbank_id, time, duration, capacity) VALUES
   (1, '2026-02-20T16:00:00Z', '00:30:00', 10),

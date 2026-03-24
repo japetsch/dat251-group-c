@@ -51,6 +51,7 @@ Create a configuration file name `.env` in the `backend` directory. If you use t
 ```.env
 DB_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/bloodbank
 TEST_DB_URL=postgresql+asyncpg://postgres:postgres@localhost:5432/bloodbank_test
+JWT_SECRET=<CHANGE THIS WITH SOME RANDOM STRING OF YOUR CHOOSING>
 ```
 
 ### Running the app

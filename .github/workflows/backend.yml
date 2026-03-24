@@ -88,6 +88,8 @@ jobs:
         env:
           DB_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/bloodbank
           TEST_DB_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/bloodbank_test
+          # NOTE: this is a throwaway, should not be used any other place
+          JWT_SECRET: 96ba0e16d58e20abc81579970e6c679f1be61f789ff5f47e0e5a65a45c7144562f107f73649f07db
 
       - uses: dorny/test-reporter@v2
         if: ${{ !cancelled() }}
