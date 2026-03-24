@@ -160,7 +160,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/GetBookingSlotsRow"
+                    "$ref": "#/components/schemas/AvailableBookingSlot"
                   },
                   "type": "array",
                   "title": "Response Get Available Bookingslot Available Get"
@@ -229,6 +229,56 @@
           "cancelled"
         ],
         "title": "AppointmentUpdateRequest"
+      },
+      "AvailableBookingSlot": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Duration"
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity"
+          },
+          "bloodbank_id": {
+            "type": "integer",
+            "title": "Bloodbank Id"
+          },
+          "bloodbank_name": {
+            "type": "string",
+            "title": "Bloodbank Name"
+          },
+          "location_id": {
+            "type": "integer",
+            "title": "Location Id"
+          },
+          "valid": {
+            "type": "boolean",
+            "title": "Valid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "time",
+          "duration",
+          "capacity",
+          "bloodbank_id",
+          "bloodbank_name",
+          "location_id",
+          "valid"
+        ],
+        "title": "AvailableBookingSlot"
       },
       "BookAppointmentRequest": {
         "properties": {
@@ -324,51 +374,6 @@
           "cancelled"
         ],
         "title": "GetAppointmentsByUserIdRow"
-      },
-      "GetBookingSlotsRow": {
-        "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "time": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Time"
-          },
-          "duration": {
-            "type": "string",
-            "format": "duration",
-            "title": "Duration"
-          },
-          "capacity": {
-            "type": "integer",
-            "title": "Capacity"
-          },
-          "bloodbank_id": {
-            "type": "integer",
-            "title": "Bloodbank Id"
-          },
-          "bloodbank_name": {
-            "type": "string",
-            "title": "Bloodbank Name"
-          },
-          "location_id": {
-            "type": "integer",
-            "title": "Location Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "time",
-          "duration",
-          "capacity",
-          "bloodbank_id",
-          "bloodbank_name",
-          "location_id"
-        ],
-        "title": "GetBookingSlotsRow"
       },
       "HTTPValidationError": {
         "properties": {
