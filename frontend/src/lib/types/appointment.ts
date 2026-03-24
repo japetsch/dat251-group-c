@@ -1,6 +1,6 @@
 import type { components } from "$lib/api/schema";
 
-export type Appointment = components["schemas"]["GetBookingSlotsRow"];
+export type Appointment = components["schemas"]["AvailableBookingSlot"];
 
 export type AppointmentWithFormattedTime = Appointment & {
   formattedTime: string;

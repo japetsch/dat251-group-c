@@ -40,7 +40,7 @@ class BookingslotRouter(APIRouter):
         async for x in a.get_appointments_by_user_id(donor_id=user.donor_id):
             appointments.append(x)
 
-        rows: list[AvailableBookingSlot] = []
+        rows: list[BookingslotRouter.AvailableBookingSlot] = []
         async for x in q.get_booking_slots():
             lower = x.time - FOUR_MONTHS
             upper = x.time + FOUR_MONTHS
