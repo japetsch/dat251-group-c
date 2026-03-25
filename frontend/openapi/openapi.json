@@ -84,7 +84,7 @@
           "admin"
         ],
         "summary": "List Bloodbanks",
-        "description": "Lists all blood banks in the system, even the ones the logged in user is not adminstrator for\n\nTODO:\n- make accessible to everyone, even non-admins?\n- enhance with opening hours information\n- allow admins to list which people are admins",
+        "description": "Lists all blood banks in the system, even the ones the logged in user is not adminstrator for\n\nTODO:\n- enhance with opening hours information\n- allow admins to list which people are admins",
         "operationId": "list_bloodbanks",
         "responses": {
           "200": {
@@ -360,7 +360,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AppointmentNote"
+                "$ref": "#/components/schemas/AppointmentNoteData"
               }
             }
           }
@@ -666,7 +666,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/GetBookingSlotsRow"
+                    "$ref": "#/components/schemas/AvailableBookingSlot"
                   },
                   "type": "array",
                   "title": "Response Get Available Bookingslot Available Get"
@@ -731,6 +731,38 @@
         ],
         "title": "AppointmentNote"
       },
+      "AppointmentNoteData": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "AppointmentNoteData"
+      },
+      "AppointmentNoteType": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "timestamp"
+        ],
+        "title": "AppointmentNoteType"
+      },
       "AppointmentType": {
         "properties": {
           "appointment_id": {
@@ -766,6 +798,13 @@
           "donor_phone": {
             "type": "string",
             "title": "Donor Phone"
+          },
+          "notes": {
+            "items": {
+              "$ref": "#/components/schemas/AppointmentNoteType"
+            },
+            "type": "array",
+            "title": "Notes"
           }
         },
         "type": "object",
@@ -776,7 +815,8 @@
           "donor_blood_type",
           "donor_name",
           "donor_email",
-          "donor_phone"
+          "donor_phone",
+          "notes"
         ],
         "title": "AppointmentType"
       },
@@ -797,6 +837,56 @@
           "cancelled"
         ],
         "title": "AppointmentUpdateRequest"
+      },
+      "AvailableBookingSlot": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Duration"
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity"
+          },
+          "bloodbank_id": {
+            "type": "integer",
+            "title": "Bloodbank Id"
+          },
+          "bloodbank_name": {
+            "type": "string",
+            "title": "Bloodbank Name"
+          },
+          "location_id": {
+            "type": "integer",
+            "title": "Location Id"
+          },
+          "valid": {
+            "type": "boolean",
+            "title": "Valid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "time",
+          "duration",
+          "capacity",
+          "bloodbank_id",
+          "bloodbank_name",
+          "location_id",
+          "valid"
+        ],
+        "title": "AvailableBookingSlot"
       },
       "BloodType": {
         "type": "string",
@@ -1012,9 +1102,9 @@
             "type": "string",
             "title": "Country"
           },
-          "has_admin": {
+          "user_has_admin_access": {
             "type": "boolean",
-            "title": "Has Admin"
+            "title": "User Has Admin Access"
           }
         },
         "type": "object",
@@ -1025,7 +1115,7 @@
           "postal_code",
           "city",
           "country",
-          "has_admin"
+          "user_has_admin_access"
         ],
         "title": "GetAllBloodBanksRow"
       },
@@ -1068,51 +1158,6 @@
           "cancelled"
         ],
         "title": "GetAppointmentsByUserIdRow"
-      },
-      "GetBookingSlotsRow": {
-        "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "time": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Time"
-          },
-          "duration": {
-            "type": "string",
-            "format": "duration",
-            "title": "Duration"
-          },
-          "capacity": {
-            "type": "integer",
-            "title": "Capacity"
-          },
-          "bloodbank_id": {
-            "type": "integer",
-            "title": "Bloodbank Id"
-          },
-          "bloodbank_name": {
-            "type": "string",
-            "title": "Bloodbank Name"
-          },
-          "location_id": {
-            "type": "integer",
-            "title": "Location Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "time",
-          "duration",
-          "capacity",
-          "bloodbank_id",
-          "bloodbank_name",
-          "location_id"
-        ],
-        "title": "GetBookingSlotsRow"
       },
       "HTTPValidationError": {
         "properties": {

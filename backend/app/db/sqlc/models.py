@@ -89,6 +89,7 @@ class Donation(pydantic.BaseModel):
 class DonationTest(pydantic.BaseModel):
     id: int
     donation_id: int
+    tester_admin_id: int
 
 
 class Donor(pydantic.BaseModel):

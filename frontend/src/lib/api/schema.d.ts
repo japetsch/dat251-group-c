@@ -134,6 +134,31 @@ export interface components {
             /** Cancelled */
             cancelled: boolean;
         };
+        /** AvailableBookingSlot */
+        AvailableBookingSlot: {
+            /** Id */
+            id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Duration
+             * Format: duration
+             */
+            duration: string;
+            /** Capacity */
+            capacity: number;
+            /** Bloodbank Id */
+            bloodbank_id: number;
+            /** Bloodbank Name */
+            bloodbank_name: string;
+            /** Location Id */
+            location_id: number;
+            /** Valid */
+            valid: boolean;
+        };
         /** BookAppointmentRequest */
         BookAppointmentRequest: {
             /** Bookingslot Id */
@@ -170,29 +195,6 @@ export interface components {
             bloodbank_name: string;
             /** Cancelled */
             cancelled: boolean | null;
-        };
-        /** GetBookingSlotsRow */
-        GetBookingSlotsRow: {
-            /** Id */
-            id: number;
-            /**
-             * Time
-             * Format: date-time
-             */
-            time: string;
-            /**
-             * Duration
-             * Format: duration
-             */
-            duration: string;
-            /** Capacity */
-            capacity: number;
-            /** Bloodbank Id */
-            bloodbank_id: number;
-            /** Bloodbank Name */
-            bloodbank_name: string;
-            /** Location Id */
-            location_id: number;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -392,7 +394,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GetBookingSlotsRow"][];
+                    "application/json": components["schemas"]["AvailableBookingSlot"][];
                 };
             };
         };

@@ -1,9 +1,32 @@
+### LOGIN_REQUEST
+
+# Login
+
+POST http://localhost:8000/api/auth/login HTTP/1.1
+Accept: application/json
+
+{
+  "email": "olav@uib.no",
+  "password": "correct horse battery staple"
+}
+
+
+### 
+
+# Login me
+
+GET http://localhost:8000/api/auth/me HTTP/1.1
+Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
+
+
 ### 
 
 # Get all appointment
 
-GET http://localhost:8000/api/appointment/1 HTTP/1.1
+GET http://localhost:8000/api/appointment HTTP/1.1
 Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
 
 
 ### 
@@ -12,6 +35,7 @@ Accept: application/json
 
 DELETE http://localhost:8000/api/appointment/6 HTTP/1.1
 Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
 
 
 ### 
@@ -20,6 +44,7 @@ Accept: application/json
 
 PATCH http://localhost:8000/api/appointment/1 HTTP/1.1
 Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
 
 {
   "bookingslot_id": 2,
@@ -33,6 +58,7 @@ Accept: application/json
 
 GET http://localhost:8000/api/bookingslot/available HTTP/1.1
 Accept: application/js
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
 
 
 ### 
@@ -41,6 +67,7 @@ Accept: application/js
 
 POST http://localhost:8000/api/bookingslot/book HTTP/1.1
 Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
 
 {
   "bookingslot_id": 1,
