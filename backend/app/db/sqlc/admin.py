@@ -13,8 +13,8 @@ from app.db.sqlc import models
 
 
 ADD_APPOINTMENT_NOTE = """-- name: add_appointment_note \\:exec
-INSERT INTO appointment_note (appointment_id, message, time)
-VALUES (:p1, :p2, NOW())
+INSERT INTO appointment_note (appointment_id, author_id, message, time)
+VALUES (:p1, :p2, :p3, NOW())
 """
 
 
@@ -93,10 +93,12 @@ SELECT bs.id as bookingslot_id, bs.time as bookingslot_time,
         'donor_phone', u.phone_number,
         'notes', (
             SELECT COALESCE(json_agg(json_build_object(
+                'author_name', u.name,
                 'message', an.message,
                 'time', an.time
             )), '[]'\\:\\:json)
             FROM appointment_note an
+            INNER JOIN "user" u ON an.author_id = u.id
             WHERE an.appointment_id = a.id
             ORDER BY an.time DESC
         )
@@ -202,8 +204,8 @@ class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
         self._conn = conn
 
-    async def add_appointment_note(self, *, appointment_id: int, message: str) -> None:
-        await self._conn.execute(sqlalchemy.text(ADD_APPOINTMENT_NOTE), {"p1": appointment_id, "p2": message})
+    async def add_appointment_note(self, *, appointment_id: int, author_id: int, message: str) -> None:
+        await self._conn.execute(sqlalchemy.text(ADD_APPOINTMENT_NOTE), {"p1": appointment_id, "p2": author_id, "p3": message})
 
     async def add_blood_bank_admin(self, *, bloodbank_id: int, admin_id: int) -> None:
         await self._conn.execute(sqlalchemy.text(ADD_BLOOD_BANK_ADMIN), {"p1": bloodbank_id, "p2": admin_id})

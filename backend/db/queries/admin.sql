@@ -54,10 +54,12 @@ SELECT bs.id as bookingslot_id, bs.time as bookingslot_time,
         'donor_phone', u.phone_number,
         'notes', (
             SELECT COALESCE(json_agg(json_build_object(
+                'author_name', u.name,
                 'message', an.message,
                 'time', an.time
             )), '[]'::json)
             FROM appointment_note an
+            INNER JOIN "user" u ON an.author_id = u.id
             WHERE an.appointment_id = a.id
             ORDER BY an.time DESC
         )
@@ -73,8 +75,8 @@ WHERE bs.bloodbank_id = $1 AND bs.time >= sqlc.arg(after)
 GROUP BY bs.id;
 
 -- name: AddAppointmentNote :exec
-INSERT INTO appointment_note (appointment_id, message, time)
-VALUES ($1, $2, NOW());
+INSERT INTO appointment_note (appointment_id, author_id, message, time)
+VALUES ($1, $2, $3, NOW());
 
 -- name: RegisterDonation :exec
 INSERT INTO donation (appointment_id, amount_ml, is_blood_not_plasma)

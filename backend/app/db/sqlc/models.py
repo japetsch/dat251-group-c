@@ -44,6 +44,7 @@ class AppointmentNote(pydantic.BaseModel):
     appointment_id: int
     time: datetime.datetime
     message: str
+    author_id: int
 
 
 class Bloodbank(pydantic.BaseModel):

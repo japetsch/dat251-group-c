@@ -253,6 +253,7 @@ class AdminRouter(APIRouter):
         aq = AdminQuerier(engine)
         await aq.add_appointment_note(
             appointment_id=appointment_id,
+            author_id=user.user_id,  # NOTE: this is the user_id, not admin_id
             message=data.message,
         )
 
