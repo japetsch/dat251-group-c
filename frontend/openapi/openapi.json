@@ -174,13 +174,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
+          "204": {
+            "description": "Successful Response"
           },
           "422": {
             "description": "Validation Error",
@@ -225,13 +220,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
+          "204": {
+            "description": "Successful Response"
           },
           "422": {
             "description": "Validation Error",
@@ -360,19 +350,14 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AppointmentNoteData"
+                "$ref": "#/components/schemas/AddNoteRequest"
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
+          "204": {
+            "description": "Successful Response"
           },
           "422": {
             "description": "Validation Error",
@@ -410,7 +395,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DonationInfo"
+                "$ref": "#/components/schemas/RegisterDonationRequest"
               }
             }
           }
@@ -460,19 +445,14 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/InterviewForm"
+                "$ref": "#/components/schemas/RegisterInterviewRequest"
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
+          "204": {
+            "description": "Successful Response"
           },
           "422": {
             "description": "Validation Error",
@@ -510,19 +490,14 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/DonationTestForm"
+                "$ref": "#/components/schemas/RegisterDonationTestRequest"
               }
             }
           }
         },
         "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
+          "204": {
+            "description": "Successful Response"
           },
           "422": {
             "description": "Validation Error",
@@ -718,6 +693,19 @@
   },
   "components": {
     "schemas": {
+      "AddNoteRequest": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "AddNoteRequest"
+      },
       "AppointmentNote": {
         "properties": {
           "message": {
@@ -731,21 +719,16 @@
         ],
         "title": "AppointmentNote"
       },
-      "AppointmentNoteData": {
-        "properties": {
-          "message": {
-            "type": "string",
-            "title": "Message"
-          }
-        },
-        "type": "object",
-        "required": [
-          "message"
-        ],
-        "title": "AppointmentNoteData"
-      },
       "AppointmentNoteType": {
         "properties": {
+          "author_user_id": {
+            "type": "integer",
+            "title": "Author User Id"
+          },
+          "author_name": {
+            "type": "string",
+            "title": "Author Name"
+          },
           "message": {
             "type": "string",
             "title": "Message"
@@ -758,6 +741,8 @@
         },
         "type": "object",
         "required": [
+          "author_user_id",
+          "author_name",
           "message",
           "timestamp"
         ],
@@ -805,6 +790,13 @@
             },
             "type": "array",
             "title": "Notes"
+          },
+          "donations": {
+            "items": {
+              "$ref": "#/components/schemas/DonationType"
+            },
+            "type": "array",
+            "title": "Donations"
           }
         },
         "type": "object",
@@ -816,7 +808,8 @@
           "donor_name",
           "donor_email",
           "donor_phone",
-          "notes"
+          "notes",
+          "donations"
         ],
         "title": "AppointmentType"
       },
@@ -1029,52 +1022,28 @@
         ],
         "title": "CreateBloodBankRequest"
       },
-      "DonationInfo": {
+      "DonationType": {
         "properties": {
+          "donation_id": {
+            "type": "integer",
+            "title": "Donation Id"
+          },
           "amount_ml": {
             "type": "number",
             "title": "Amount Ml"
           },
           "is_blood_not_plasma": {
             "type": "boolean",
-            "title": "Is Blood Not Plasma",
-            "default": true
+            "title": "Is Blood Not Plasma"
           }
         },
         "type": "object",
         "required": [
-          "amount_ml"
+          "donation_id",
+          "amount_ml",
+          "is_blood_not_plasma"
         ],
-        "title": "DonationInfo"
-      },
-      "DonationTestForm": {
-        "properties": {
-          "submitted_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Submitted At"
-          },
-          "ok_to_donate": {
-            "type": "boolean",
-            "title": "Ok To Donate"
-          },
-          "validity_duration": {
-            "type": "string",
-            "format": "duration",
-            "title": "Validity Duration"
-          },
-          "donation_id": {
-            "type": "integer",
-            "title": "Donation Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "ok_to_donate",
-          "validity_duration",
-          "donation_id"
-        ],
-        "title": "DonationTestForm"
+        "title": "DonationType"
       },
       "GetAllBloodBanksRow": {
         "properties": {
@@ -1172,30 +1141,6 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
-      "InterviewForm": {
-        "properties": {
-          "submitted_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Submitted At"
-          },
-          "ok_to_donate": {
-            "type": "boolean",
-            "title": "Ok To Donate"
-          },
-          "validity_duration": {
-            "type": "string",
-            "format": "duration",
-            "title": "Validity Duration"
-          }
-        },
-        "type": "object",
-        "required": [
-          "ok_to_donate",
-          "validity_duration"
-        ],
-        "title": "InterviewForm"
-      },
       "LoginRequestData": {
         "properties": {
           "email": {
@@ -1226,6 +1171,77 @@
           "admin_id"
         ],
         "title": "MutateBloodbankAdminsRequest"
+      },
+      "RegisterDonationRequest": {
+        "properties": {
+          "amount_ml": {
+            "type": "number",
+            "title": "Amount Ml"
+          },
+          "is_blood_not_plasma": {
+            "type": "boolean",
+            "title": "Is Blood Not Plasma",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "amount_ml"
+        ],
+        "title": "RegisterDonationRequest"
+      },
+      "RegisterDonationTestRequest": {
+        "properties": {
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Submitted At"
+          },
+          "ok_to_donate": {
+            "type": "boolean",
+            "title": "Ok To Donate"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "donation_id": {
+            "type": "integer",
+            "title": "Donation Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok_to_donate",
+          "validity_duration",
+          "donation_id"
+        ],
+        "title": "RegisterDonationTestRequest"
+      },
+      "RegisterInterviewRequest": {
+        "properties": {
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Submitted At"
+          },
+          "ok_to_donate": {
+            "type": "boolean",
+            "title": "Ok To Donate"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok_to_donate",
+          "validity_duration"
+        ],
+        "title": "RegisterInterviewRequest"
       },
       "UpdateAppointmentRow": {
         "properties": {

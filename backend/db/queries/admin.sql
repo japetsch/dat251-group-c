@@ -54,6 +54,7 @@ SELECT bs.id as bookingslot_id, bs.time as bookingslot_time,
         'donor_phone', u.phone_number,
         'notes', (
             SELECT COALESCE(json_agg(json_build_object(
+                'author_user_id', u.id,
                 'author_name', u.name,
                 'message', an.message,
                 'time', an.time
@@ -62,6 +63,17 @@ SELECT bs.id as bookingslot_id, bs.time as bookingslot_time,
             INNER JOIN "user" u ON an.author_id = u.id
             WHERE an.appointment_id = a.id
             ORDER BY an.time DESC
+        ),
+        'donations', (
+            SELECT COALESCE(json_agg(json_build_object(
+                'donation_id', d.id,
+                'amount_ml', d.amount_ml,
+                'is_blood_not_plasma', d.is_blood_not_plasma
+                -- TODO: testing status
+            )), '[]'::json)
+            FROM donation d
+            WHERE d.appointment_id = a.id
+            ORDER BY d.id
         )
     )) as appointments
 FROM bookingslot bs
@@ -80,7 +92,8 @@ VALUES ($1, $2, $3, NOW());
 
 -- name: RegisterDonation :exec
 INSERT INTO donation (appointment_id, amount_ml, is_blood_not_plasma)
-VALUES ($1, $2, $3);
+VALUES ($1, $2, $3)
+RETURNING id;
 
 -- name: RegisterInterview :exec
 WITH iv AS (

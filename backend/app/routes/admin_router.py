@@ -28,8 +28,6 @@ class AdminRouter(APIRouter):
             tags=["admin"],
         )
 
-        # TODO: success feedback on the routes that mutate data without returning any?
-
         # Register the routes here. Dependencies are request-scoped
         self.add_api_route("/bloodbank", self.list_bloodbanks, methods=["GET"])
         self.add_api_route("/bloodbank/create", self.create_bloodbank, methods=["POST"])
@@ -37,11 +35,13 @@ class AdminRouter(APIRouter):
             "/bloodbank/{bloodbank_id}/admin/add",
             self.add_admin_to_bloodbank,
             methods=["POST"],
+            status_code=status.HTTP_204_NO_CONTENT,
         )
         self.add_api_route(
             "/bloodbank/{bloodbank_id}/admin/remove",
             self.remove_admin_from_bloodbank,
             methods=["DELETE"],
+            status_code=status.HTTP_204_NO_CONTENT,
         )
         self.add_api_route(
             "/bloodbank/{bloodbank_id}/appointment",
@@ -52,6 +52,7 @@ class AdminRouter(APIRouter):
             "/appointment/{appointment_id}/note",
             self.appointment_add_note,
             methods=["POST"],
+            status_code=status.HTTP_204_NO_CONTENT,
         )
         self.add_api_route(
             "/appointment/{appointment_id}/donation",
@@ -62,11 +63,13 @@ class AdminRouter(APIRouter):
             "/donor/{donor_id}/form/interview",
             self.register_interview,
             methods=["POST"],
+            status_code=status.HTTP_204_NO_CONTENT,
         )
         self.add_api_route(
             "/donor/{donor_id}/form/donation-test",
             self.register_donation_test,
             methods=["POST"],
+            status_code=status.HTTP_204_NO_CONTENT,
         )
 
     async def list_bloodbanks(
@@ -96,6 +99,9 @@ class AdminRouter(APIRouter):
         loc_lat: float
         loc_lon: float
 
+    class CreateBloodBankResponse(BaseModel):
+        bloodbank_id: int
+
     async def create_bloodbank(
         self,
         user: AdminUserRequired,
@@ -120,9 +126,8 @@ class AdminRouter(APIRouter):
             )
         )
 
-        return {  # TODO: improve OpenAPI model
-            "bloodbank_id": res,
-        }
+        assert res is not None, "blood bank creation success but no id returned???"
+        return self.CreateBloodBankResponse(bloodbank_id=res)
 
     async def _assert_bb_access(
         self, admin_id: int, bloodbank_id: int, engine: DBConnection
@@ -198,10 +203,18 @@ class AdminRouter(APIRouter):
         donor_email: str
         donor_phone: str
         notes: list[AdminRouter.AppointmentNoteType]
+        donations: list[AdminRouter.DonationType]
 
     class AppointmentNoteType(BaseModel):
+        author_user_id: int
+        author_name: str
         message: str
         timestamp: datetime
+
+    class DonationType(BaseModel):
+        donation_id: int
+        amount_ml: float
+        is_blood_not_plasma: bool
 
     async def bloodbank_appointments(
         self,
@@ -238,14 +251,14 @@ class AdminRouter(APIRouter):
             slots.append(AdminRouter.BookingSlotType.model_validate(a))
         return slots
 
-    class AppointmentNoteData(BaseModel):
+    class AddNoteRequest(BaseModel):
         message: str
 
     async def appointment_add_note(
         self,
         user: AdminUserRequired,
         appointment_id: int,
-        data: AppointmentNoteData,
+        data: AddNoteRequest,
         engine: DBConnection,
     ):
         await self._assert_appt_access(user.admin_id, appointment_id, engine)
@@ -256,40 +269,46 @@ class AdminRouter(APIRouter):
             message=data.message,
         )
 
-    class DonationInfo(BaseModel):
+    class RegisterDonationRequest(BaseModel):
         amount_ml: float
         is_blood_not_plasma: bool = True
+
+    class RegisterDonationResponse(BaseModel):
+        donation_id: int
 
     async def appointment_register_donation(
         self,
         user: AdminUserRequired,
         appointment_id: int,
-        data: DonationInfo,
+        data: RegisterDonationRequest,
         engine: DBConnection,
     ):
         await self._assert_appt_access(user.admin_id, appointment_id, engine)
         aq = AdminQuerier(engine)
-        await aq.register_donation(
+        res = await aq.register_donation(
             appointment_id=appointment_id,
             amount_ml=data.amount_ml,
             is_blood_not_plasma=data.is_blood_not_plasma,
         )
 
-    class TestResult(BaseModel):
+        assert res is not None, "donation registration success but no id returned???"
+        return self.RegisterDonationResponse(donation_id=res)
+
+    class AbstractTestResultRequest(BaseModel):
         submitted_at: datetime = Field(
             default_factory=lambda: datetime.now(tz=timezone.utc)
         )
         ok_to_donate: bool
         validity_duration: timedelta
 
-    class InterviewForm(TestResult):
+    class RegisterInterviewRequest(AbstractTestResultRequest):
         pass
 
     async def register_interview(
         self,
         user: AdminUserRequired,
         donor_id: int,
-        data: InterviewForm,
+        data: RegisterInterviewRequest,
         engine: DBConnection,
     ):
         # NOTE: no access asserted, interview can be performed by any admin
@@ -304,14 +323,14 @@ class AdminRouter(APIRouter):
             )
         )
 
-    class DonationTestForm(TestResult):
+    class RegisterDonationTestRequest(AbstractTestResultRequest):
         donation_id: int
 
     async def register_donation_test(
         self,
         user: AdminUserRequired,
         donor_id: int,
-        data: DonationTestForm,
+        data: RegisterDonationTestRequest,
         engine: DBConnection,
     ):
         aq = AdminQuerier(engine)
