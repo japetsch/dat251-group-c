@@ -12,6 +12,12 @@ import sqlalchemy.ext.asyncio
 from app.db.sqlc import models
 
 
+ADD_APPOINTMENT_NOTE = """-- name: add_appointment_note \\:exec
+INSERT INTO appointment_note (appointment_id, message, time)
+VALUES (:p1, :p2, NOW())
+"""
+
+
 ADD_BLOOD_BANK_ADMIN = """-- name: add_blood_bank_admin \\:exec
 INSERT INTO bloodbank_admin (bloodbank_id, admin_id)
 VALUES (:p1, :p2)
@@ -84,9 +90,18 @@ SELECT bs.id as bookingslot_id, bs.time as bookingslot_time,
         'donor_blood_type', d.blood_type,
         'donor_name', u.name,
         'donor_email', u.email,
-        'donor_phone', u.phone_number
+        'donor_phone', u.phone_number,
+        'notes', (
+            SELECT COALESCE(json_agg(json_build_object(
+                'message', an.message,
+                'time', an.time
+            )), '[]'\\:\\:json)
+            FROM appointment_note an
+            WHERE an.appointment_id = a.id
+            ORDER BY an.time DESC
+        )
     )) as appointments
-    FROM bookingslot bs
+FROM bookingslot bs
 INNER JOIN appointment a ON a.bookingslot_id = bs.id
 INNER JOIN donor d ON a.donor_id = d.id
 INNER JOIN "user" u ON u.donor_id = d.id
@@ -106,6 +121,72 @@ class GetAppointmentsAtBloodBankRow(pydantic.BaseModel):
     appointments: Any
 
 
+GET_DONATION_INFO = """-- name: get_donation_info \\:one
+SELECT a.donor_id, b.id as bloodbank_id
+FROM donation d
+INNER JOIN appointment a ON d.appointment_id = a.id
+INNER JOIN bookingslot bs ON a.bookingslot_id = bs.id
+INNER JOIN bloodbank b ON bs.bloodbank_id = b.id
+WHERE d.id = :p1
+"""
+
+
+class GetDonationInfoRow(pydantic.BaseModel):
+    donor_id: int
+    bloodbank_id: int
+
+
+REGISTER_DONATION = """-- name: register_donation \\:exec
+INSERT INTO donation (appointment_id, amount_ml, is_blood_not_plasma)
+VALUES (:p1, :p2, :p3)
+"""
+
+
+REGISTER_DONATION_TEST = """-- name: register_donation_test \\:exec
+WITH dt AS (
+    INSERT INTO donation_test (donation_id)
+    VALUES (:p1)
+    RETURNING id
+), f AS (
+    INSERT INTO form (ok_to_donate, donation_test_id)
+    VALUES (:p3, dt)
+    RETURNING id
+)
+INSERT INTO test_result (donor_id, form_id, time, validity_duration)
+VALUES (:p2, f, :p4, :p5)
+"""
+
+
+class RegisterDonationTestParams(pydantic.BaseModel):
+    donation_id: int
+    donor_id: int
+    ok_to_donate: bool
+    time: datetime.datetime
+    validity_duration: datetime.timedelta
+
+
+REGISTER_INTERVIEW = """-- name: register_interview \\:exec
+WITH iv AS (
+    INSERT INTO interview (interviewer_admin_id)
+    VALUES (:p1) RETURNING id
+), f AS (
+    INSERT INTO form (ok_to_donate, interview_id)
+    VALUES (:p3, iv)
+    RETURNING id
+)
+INSERT INTO test_result (donor_id, form_id, time, validity_duration)
+VALUES (:p2, f, :p4, :p5)
+"""
+
+
+class RegisterInterviewParams(pydantic.BaseModel):
+    interviewer_admin_id: int
+    donor_id: int
+    ok_to_donate: bool
+    time: datetime.datetime
+    validity_duration: datetime.timedelta
+
+
 REMOVE_BLOOD_BANK_ADMIN = """-- name: remove_blood_bank_admin \\:exec
 WITH admin_ct AS (
     SELECT count(id) FROM bloodbank_admin
@@ -120,6 +201,9 @@ WHERE bba.bloodbank_id = :p1 AND
 class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
         self._conn = conn
+
+    async def add_appointment_note(self, *, appointment_id: int, message: str) -> None:
+        await self._conn.execute(sqlalchemy.text(ADD_APPOINTMENT_NOTE), {"p1": appointment_id, "p2": message})
 
     async def add_blood_bank_admin(self, *, bloodbank_id: int, admin_id: int) -> None:
         await self._conn.execute(sqlalchemy.text(ADD_BLOOD_BANK_ADMIN), {"p1": bloodbank_id, "p2": admin_id})
@@ -168,6 +252,36 @@ class AsyncQuerier:
                 bookingslot_remaining_capacity=row[3],
                 appointments=row[4],
             )
+
+    async def get_donation_info(self, *, donation_id: int) -> Optional[GetDonationInfoRow]:
+        row = (await self._conn.execute(sqlalchemy.text(GET_DONATION_INFO), {"p1": donation_id})).first()
+        if row is None:
+            return None
+        return GetDonationInfoRow(
+            donor_id=row[0],
+            bloodbank_id=row[1],
+        )
+
+    async def register_donation(self, *, appointment_id: int, amount_ml: float, is_blood_not_plasma: bool) -> None:
+        await self._conn.execute(sqlalchemy.text(REGISTER_DONATION), {"p1": appointment_id, "p2": amount_ml, "p3": is_blood_not_plasma})
+
+    async def register_donation_test(self, arg: RegisterDonationTestParams) -> None:
+        await self._conn.execute(sqlalchemy.text(REGISTER_DONATION_TEST), {
+            "p1": arg.donation_id,
+            "p2": arg.donor_id,
+            "p3": arg.ok_to_donate,
+            "p4": arg.time,
+            "p5": arg.validity_duration,
+        })
+
+    async def register_interview(self, arg: RegisterInterviewParams) -> None:
+        await self._conn.execute(sqlalchemy.text(REGISTER_INTERVIEW), {
+            "p1": arg.interviewer_admin_id,
+            "p2": arg.donor_id,
+            "p3": arg.ok_to_donate,
+            "p4": arg.time,
+            "p5": arg.validity_duration,
+        })
 
     async def remove_blood_bank_admin(self, *, bloodbank_id: int, admin_id: int) -> None:
         await self._conn.execute(sqlalchemy.text(REMOVE_BLOOD_BANK_ADMIN), {"p1": bloodbank_id, "p2": admin_id})

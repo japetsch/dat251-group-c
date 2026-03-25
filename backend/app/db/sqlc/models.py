@@ -105,7 +105,7 @@ class EntryForm(pydantic.BaseModel):
 
 class Form(pydantic.BaseModel):
     id: int
-    ok_to_donate: Optional[bool]
+    ok_to_donate: bool
     interview_id: Optional[int]
     entry_form_id: Optional[int]
     donation_test_id: Optional[int]

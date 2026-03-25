@@ -51,9 +51,18 @@ SELECT bs.id as bookingslot_id, bs.time as bookingslot_time,
         'donor_blood_type', d.blood_type,
         'donor_name', u.name,
         'donor_email', u.email,
-        'donor_phone', u.phone_number
+        'donor_phone', u.phone_number,
+        'notes', (
+            SELECT COALESCE(json_agg(json_build_object(
+                'message', an.message,
+                'time', an.time
+            )), '[]'::json)
+            FROM appointment_note an
+            WHERE an.appointment_id = a.id
+            ORDER BY an.time DESC
+        )
     )) as appointments
-    FROM bookingslot bs
+FROM bookingslot bs
 INNER JOIN appointment a ON a.bookingslot_id = bs.id
 INNER JOIN donor d ON a.donor_id = d.id
 INNER JOIN "user" u ON u.donor_id = d.id
@@ -62,3 +71,44 @@ WHERE bs.bloodbank_id = $1 AND bs.time >= sqlc.arg(after)
         OR sqlc.narg(before) >= bs.time)
     AND (sqlc.arg(show_cancelled)::BOOLEAN OR NOT a.cancelled)
 GROUP BY bs.id;
+
+-- name: AddAppointmentNote :exec
+INSERT INTO appointment_note (appointment_id, message, time)
+VALUES ($1, $2, NOW());
+
+-- name: RegisterDonation :exec
+INSERT INTO donation (appointment_id, amount_ml, is_blood_not_plasma)
+VALUES ($1, $2, $3);
+
+-- name: RegisterInterview :exec
+WITH iv AS (
+    INSERT INTO interview (interviewer_admin_id)
+    VALUES ($1) RETURNING id
+), f AS (
+    INSERT INTO form (ok_to_donate, interview_id)
+    VALUES ($3, iv)
+    RETURNING id
+)
+INSERT INTO test_result (donor_id, form_id, time, validity_duration)
+VALUES ($2, f, $4, $5);
+
+-- name: GetDonationInfo :one
+SELECT a.donor_id, b.id as bloodbank_id
+FROM donation d
+INNER JOIN appointment a ON d.appointment_id = a.id
+INNER JOIN bookingslot bs ON a.bookingslot_id = bs.id
+INNER JOIN bloodbank b ON bs.bloodbank_id = b.id
+WHERE d.id = sqlc.arg(donation_id);
+
+-- name: RegisterDonationTest :exec
+WITH dt AS (
+    INSERT INTO donation_test (donation_id)
+    VALUES ($1)
+    RETURNING id
+), f AS (
+    INSERT INTO form (ok_to_donate, donation_test_id)
+    VALUES ($3, dt)
+    RETURNING id
+)
+INSERT INTO test_result (donor_id, form_id, time, validity_duration)
+VALUES ($2, f, $4, $5);

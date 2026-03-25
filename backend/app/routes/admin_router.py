@@ -14,6 +14,8 @@ from ..db.sqlc.admin import (
     CreateBloodBankParams,
     GetAllBloodBanksRow,
     GetAppointmentsAtBloodBankRow,
+    RegisterDonationTestParams,
+    RegisterInterviewParams,
 )
 from ..db.sqlc.auth import AsyncQuerier as AuthQuerier
 from ..db.sqlc.models import BloodType
@@ -25,6 +27,8 @@ class AdminRouter(APIRouter):
         super().__init__(
             tags=["admin"],
         )
+
+        # TODO: success feedback on the routes that mutate data without returning any?
 
         # Register the routes here. Dependencies are request-scoped
         self.add_api_route("/bloodbank", self.list_bloodbanks, methods=["GET"])
@@ -121,7 +125,7 @@ class AdminRouter(APIRouter):
             "bloodbank_id": res,
         }
 
-    async def _assert_access(
+    async def _assert_bb_access(
         self, admin_id: int, bloodbank_id: int, engine: DBConnection
     ):
         a = AuthQuerier(engine)
@@ -132,6 +136,19 @@ class AdminRouter(APIRouter):
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="User is not admin for this blood bank",
+            )
+
+    async def _assert_appt_access(
+        self, admin_id: int, appointment_id: int, engine: DBConnection
+    ):
+        a = AuthQuerier(engine)
+        access = await a.has_admin_where_appointment_is(
+            admin_id=admin_id, appointment_id=appointment_id
+        )
+        if not access:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="User is not admin for this appointment",
             )
 
     class MutateBloodbankAdminsRequest(BaseModel):
@@ -147,10 +164,9 @@ class AdminRouter(APIRouter):
         """
         Add another admin to a blood bank the logged in user is administrator for
         """
-        await self._assert_access(user.admin_id, bloodbank_id, engine)
+        await self._assert_bb_access(user.admin_id, bloodbank_id, engine)
         aq = AdminQuerier(engine)
         await aq.add_blood_bank_admin(bloodbank_id=bloodbank_id, admin_id=data.admin_id)
-        # TODO: success feedback?
 
     async def remove_admin_from_bloodbank(
         self,
@@ -165,12 +181,11 @@ class AdminRouter(APIRouter):
         The user can remove themselves.
         The user can't remove the last admin of a blood bank.
         """
-        await self._assert_access(user.admin_id, bloodbank_id, engine)
+        await self._assert_bb_access(user.admin_id, bloodbank_id, engine)
         aq = AdminQuerier(engine)
         await aq.remove_blood_bank_admin(
             bloodbank_id=bloodbank_id, admin_id=data.admin_id
         )
-        # TODO: success feedback?
 
     class BookingSlotType(GetAppointmentsAtBloodBankRow):
         appointments: list[AdminRouter.AppointmentType]
@@ -183,6 +198,11 @@ class AdminRouter(APIRouter):
         donor_name: str
         donor_email: str
         donor_phone: str
+        notes: list[AdminRouter.AppointmentNoteType]
+
+    class AppointmentNoteType(BaseModel):
+        message: str
+        timestamp: datetime
 
     async def bloodbank_appointments(
         self,
@@ -198,7 +218,7 @@ class AdminRouter(APIRouter):
 
         By default only the ones scheduled after 00:00 in Oslo on the same day
         """
-        await self._assert_access(user.admin_id, bloodbank_id, engine)
+        await self._assert_bb_access(user.admin_id, bloodbank_id, engine)
 
         if after is None:
             tz_oslo = ZoneInfo("Europe/Oslo")
@@ -219,17 +239,22 @@ class AdminRouter(APIRouter):
             slots.append(AdminRouter.BookingSlotType.model_validate(a))
         return slots
 
-    class AppointmentNote(BaseModel):
+    class AppointmentNoteData(BaseModel):
         message: str
 
     async def appointment_add_note(
         self,
         user: AdminUserRequired,
         appointment_id: int,
-        data: AppointmentNote,
+        data: AppointmentNoteData,
         engine: DBConnection,
     ):
-        pass
+        await self._assert_appt_access(user.admin_id, appointment_id, engine)
+        aq = AdminQuerier(engine)
+        await aq.add_appointment_note(
+            appointment_id=appointment_id,
+            message=data.message,
+        )
 
     class DonationInfo(BaseModel):
         amount_ml: float
@@ -242,7 +267,13 @@ class AdminRouter(APIRouter):
         data: DonationInfo,
         engine: DBConnection,
     ):
-        pass
+        await self._assert_appt_access(user.admin_id, appointment_id, engine)
+        aq = AdminQuerier(engine)
+        await aq.register_donation(
+            appointment_id=appointment_id,
+            amount_ml=data.amount_ml,
+            is_blood_not_plasma=data.is_blood_not_plasma,
+        )
 
     class TestResult(BaseModel):
         submitted_at: datetime = Field(
@@ -262,7 +293,16 @@ class AdminRouter(APIRouter):
         engine: DBConnection,
     ):
         # NOTE: no access asserted, interview can be performed by any admin
-        pass
+        aq = AdminQuerier(engine)
+        await aq.register_interview(
+            RegisterInterviewParams(
+                interviewer_admin_id=user.admin_id,
+                donor_id=donor_id,
+                ok_to_donate=data.ok_to_donate,
+                time=data.submitted_at,
+                validity_duration=data.validity_duration,
+            )
+        )
 
     class DonationTestForm(TestResult):
         donation_id: int
@@ -274,6 +314,24 @@ class AdminRouter(APIRouter):
         data: DonationTestForm,
         engine: DBConnection,
     ):
-        # TODO: assert admin has access to the blood bank where the donation was given
-        # TODO: check that donation was given by donor
-        pass
+        aq = AdminQuerier(engine)
+
+        # check that donation was given by donor
+        info = await aq.get_donation_info(donation_id=data.donation_id)
+        if info is None or info.donor_id != donor_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Provided donation was not given by provided donor",
+            )
+
+        # admin has access to the blood bank where the donation was given
+        await self._assert_bb_access(user.admin_id, info.bloodbank_id, engine)
+        await aq.register_donation_test(
+            RegisterDonationTestParams(
+                donation_id=data.donation_id,
+                donor_id=donor_id,
+                ok_to_donate=data.ok_to_donate,
+                time=data.submitted_at,
+                validity_duration=data.validity_duration,
+            )
+        )
