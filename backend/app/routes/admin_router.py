@@ -76,7 +76,6 @@ class AdminRouter(APIRouter):
         Lists all blood banks in the system, even the ones the logged in user is not adminstrator for
 
         TODO:
-        - make accessible to everyone, even non-admins?
         - enhance with opening hours information
         - allow admins to list which people are admins
         """

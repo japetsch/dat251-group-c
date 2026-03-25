@@ -60,7 +60,7 @@ class CreateBloodBankParams(pydantic.BaseModel):
 
 GET_ALL_BLOOD_BANKS = """-- name: get_all_blood_banks \\:many
 SELECT b.name, a.street_name, a.street_number, a.postal_code, a.city, a.country,
-    COUNT(bba.admin_id) > 0 AS has_admin
+    COUNT(bba.admin_id) > 0 AS user_has_admin_access
 FROM bloodbank b
 INNER JOIN location l ON b.location_id = l.id
 INNER JOIN address a ON l.address_id = a.id
@@ -76,7 +76,7 @@ class GetAllBloodBanksRow(pydantic.BaseModel):
     postal_code: str
     city: str
     country: str
-    has_admin: bool
+    user_has_admin_access: bool
 
 
 GET_APPOINTMENTS_AT_BLOOD_BANK = """-- name: get_appointments_at_blood_bank \\:many
@@ -236,7 +236,7 @@ class AsyncQuerier:
                 postal_code=row[3],
                 city=row[4],
                 country=row[5],
-                has_admin=row[6],
+                user_has_admin_access=row[6],
             )
 
     async def get_appointments_at_blood_bank(self, *, bloodbank_id: int, after: datetime.datetime, before: Optional[datetime.datetime], show_cancelled: bool) -> AsyncIterator[GetAppointmentsAtBloodBankRow]:
