@@ -104,13 +104,13 @@ WHERE d.id = sqlc.arg(donation_id);
 
 -- name: RegisterDonationTest :exec
 WITH dt AS (
-    INSERT INTO donation_test (donation_id)
-    VALUES ($1)
+    INSERT INTO donation_test (donation_id, tester_admin_id)
+    VALUES ($1, $2)
     RETURNING id
 ), f AS (
     INSERT INTO form (ok_to_donate, donation_test_id)
-    VALUES ($3, dt)
+    VALUES ($4, dt)
     RETURNING id
 )
 INSERT INTO test_result (donor_id, form_id, time, validity_duration)
-VALUES ($2, f, $4, $5);
+VALUES ($3, f, $5, $6);

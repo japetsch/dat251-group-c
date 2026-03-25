@@ -146,21 +146,22 @@ VALUES (:p1, :p2, :p3)
 
 REGISTER_DONATION_TEST = """-- name: register_donation_test \\:exec
 WITH dt AS (
-    INSERT INTO donation_test (donation_id)
-    VALUES (:p1)
+    INSERT INTO donation_test (donation_id, tester_admin_id)
+    VALUES (:p1, :p2)
     RETURNING id
 ), f AS (
     INSERT INTO form (ok_to_donate, donation_test_id)
-    VALUES (:p3, dt)
+    VALUES (:p4, dt)
     RETURNING id
 )
 INSERT INTO test_result (donor_id, form_id, time, validity_duration)
-VALUES (:p2, f, :p4, :p5)
+VALUES (:p3, f, :p5, :p6)
 """
 
 
 class RegisterDonationTestParams(pydantic.BaseModel):
     donation_id: int
+    tester_admin_id: int
     donor_id: int
     ok_to_donate: bool
     time: datetime.datetime
@@ -270,10 +271,11 @@ class AsyncQuerier:
     async def register_donation_test(self, arg: RegisterDonationTestParams) -> None:
         await self._conn.execute(sqlalchemy.text(REGISTER_DONATION_TEST), {
             "p1": arg.donation_id,
-            "p2": arg.donor_id,
-            "p3": arg.ok_to_donate,
-            "p4": arg.time,
-            "p5": arg.validity_duration,
+            "p2": arg.tester_admin_id,
+            "p3": arg.donor_id,
+            "p4": arg.ok_to_donate,
+            "p5": arg.time,
+            "p6": arg.validity_duration,
         })
 
     async def register_interview(self, arg: RegisterInterviewParams) -> None:

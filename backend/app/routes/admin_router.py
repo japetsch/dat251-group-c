@@ -329,6 +329,7 @@ class AdminRouter(APIRouter):
         await aq.register_donation_test(
             RegisterDonationTestParams(
                 donation_id=data.donation_id,
+                tester_admin_id=user.admin_id,
                 donor_id=donor_id,
                 ok_to_donate=data.ok_to_donate,
                 time=data.submitted_at,
