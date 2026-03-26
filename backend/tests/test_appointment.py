@@ -15,6 +15,20 @@ class TestAppointment:
                 "duration": "PT30M",
                 "bloodbank_name": "Haukeland universitetssjukehus",
                 "cancelled": False,
+                "notes": [
+                    {
+                        "author_user_id": 4,
+                        "author_name": "AdminHaukeland",
+                        "message": "Hi, I am AdminHaukeland!",
+                        "time": "2026-02-18T15:30:00+01:00",
+                    },
+                    {
+                        "author_user_id": 1,
+                        "author_name": "Olav",
+                        "message": "Hi my name is Olav!",
+                        "time": "2026-02-18T11:00:00+01:00",
+                    },
+                ],
             }
         ]
         for elem in expected:
@@ -34,18 +48,22 @@ class TestAppointment:
         # verify whole data
         response = olav_client.get("/api/appointment")
         response_json = response.json()
-        expected_list = [
-            {
-                "id": 1,
-                "username": "Olav",
-                "time": "2026-12-05T06:00:00Z",
-                "duration": "PT30M",
-                "bloodbank_name": "Haukeland universitetssjukehus",
-                "cancelled": True,
-            }
-        ]
-        for elem in expected_list:
-            assert elem in response_json
+        assert len(response_json) == 1, "More than one appointment for Olav returned"
+        response_data = response_json[0]
+
+        # Appointment notes are ignored here
+        expected_data = {
+            "id": 1,
+            "username": "Olav",
+            "time": "2026-12-05T06:00:00Z",
+            "duration": "PT30M",
+            "bloodbank_name": "Haukeland universitetssjukehus",
+            "cancelled": True,
+        }
+        for k, v in expected_data.items():
+            assert k in response_data
+            assert response_data[k] == v
+
         self.assert_bookingslot_capacity(olav_client, 1, 11)
         self.assert_bookingslot_capacity(olav_client, 3, 9)
 

@@ -29,7 +29,7 @@ WITH notes AS (
         ) ORDER BY an.time DESC) as nl
     FROM appointment_note an
     INNER JOIN "user" u ON an.author_id = u.id
-    GROUP BY an.id
+    GROUP BY an.appointment_id
 )
 SELECT a.id as id,
     u.name as username,

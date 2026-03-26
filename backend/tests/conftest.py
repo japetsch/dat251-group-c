@@ -85,3 +85,23 @@ def sigrid_client(client: TestClient):
     )
     assert resp.status_code == 204
     return client
+
+
+@pytest.fixture
+def admin_haukeland_client(client: TestClient):
+    resp = client.post(
+        "/api/auth/login",
+        json={"email": "admin@haukeland.no", "password": "hunter2"},
+    )
+    assert resp.status_code == 204
+    return client
+
+
+@pytest.fixture
+def admin_blodbuss_client(client: TestClient):
+    resp = client.post(
+        "/api/auth/login",
+        json={"email": "admin@blodbuss.no", "password": "hunter2"},
+    )
+    assert resp.status_code == 204
+    return client
