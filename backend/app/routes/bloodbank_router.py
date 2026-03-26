@@ -22,7 +22,9 @@ class BloodbankRouter(APIRouter):
         country: str
         user_has_admin_access: bool
 
-    async def get_all_bloodbanks(self, user: CurrentUserOptional, engine: DBConnection) -> list[BloodbankResponse]:
+    async def get_all_bloodbanks(
+        self, user: CurrentUserOptional, engine: DBConnection
+    ) -> list[BloodbankResponse]:
         # If the current user is an admin, pass their admin id to the query, otherwise pass -1
         admin_id = -1
         if user is not None and getattr(user, "admin_id", None) is not None:

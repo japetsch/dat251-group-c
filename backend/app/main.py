@@ -11,9 +11,9 @@ from .config import Settings
 from .db.db import DBManager
 from .routes.appointment_router import AppointmentRouter
 from .routes.auth_router import AuthRouter
+from .routes.bloodbank_router import BloodbankRouter
 from .routes.bookingslot_router import BookingslotRouter
 from .routes.testresult_router import TestresultRouter
-from .routes.bloodbank_router import BloodbankRouter
 from .swagger import SwaggerJsonGenerator
 
 
@@ -49,7 +49,6 @@ class Main:
             dependencies=[Depends(AuthUtil.get_donor_user_requried)],
         )
 
-        
         self.app.include_router(
             BloodbankRouter(),
             prefix="/bloodbank",
