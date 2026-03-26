@@ -29,3 +29,7 @@ class TestAuth:
         req_body = {"email": "olav@uib.no", "password": "wrong cat fuel paperclip"}
         response = await client.post("/api/auth/login", json=req_body)
         assert response.status_code == 401
+
+    async def test_reject_unauthenticated_user_info(self, client: httpx.AsyncClient):
+        response = await client.get("/api/auth/me")
+        assert response.status_code == 401

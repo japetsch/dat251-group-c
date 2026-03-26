@@ -15,17 +15,16 @@ class TestBookingslot:
         assert r.status_code == 200
         response_json = r.json()
 
-        # Only has cancelled appointments at this point so all but capacity 0 valid
         expected = [
             {
                 "id": 1,
                 "time": "2026-02-20T16:00:00Z",
                 "duration": "PT30M",
-                "capacity": 11,
+                "capacity": 10,
                 "bloodbank_id": 1,
                 "bloodbank_name": "Haukeland universitetssjukehus",
                 "location_id": 2,
-                "valid": True,
+                "valid": False,
             },
             {
                 "id": 2,
@@ -35,13 +34,13 @@ class TestBookingslot:
                 "bloodbank_id": 1,
                 "bloodbank_name": "Haukeland universitetssjukehus",
                 "location_id": 2,
-                "valid": True,
+                "valid": False,
             },
             {
                 "id": 3,
                 "time": "2026-12-05T06:00:00Z",
                 "duration": "PT30M",
-                "capacity": 9,
+                "capacity": 10,
                 "bloodbank_id": 1,
                 "bloodbank_name": "Haukeland universitetssjukehus",
                 "location_id": 2,
@@ -101,16 +100,16 @@ class TestBookingslot:
     async def test_book_slot_removes_free_slot(self, olav_client: httpx.AsyncClient):
         response = await olav_client.post(
             "/api/bookingslot/book",
-            json={"bookingslot_id": 1, "donor_id": 1},
+            json={"bookingslot_id": 1},
         )
         assert response.status_code == 200
 
-        await self.assert_bookingslot_capacity(olav_client, 1, 10)
+        await self.assert_bookingslot_capacity(olav_client, 1, 9)
 
     async def test_book_slot_with_no_capacity(self, olav_client: httpx.AsyncClient):
         response = await olav_client.post(
             "/api/bookingslot/book",
-            json={"bookingslot_id": 4, "donor_id": 1},
+            json={"bookingslot_id": 4},
         )
         assert response.status_code == 404
         assert response.json() == {"detail": "Bookingslot not available"}
