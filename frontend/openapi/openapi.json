@@ -208,6 +208,74 @@
           }
         }
       }
+    },
+    "/testresult": {
+      "get": {
+        "summary": "Get All Testresults",
+        "operationId": "get_all_testresults",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterviewResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/testresult/{testresult_id}": {
+      "get": {
+        "summary": "Get Testresult",
+        "operationId": "get_testresult",
+        "parameters": [
+          {
+            "name": "testresult_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Testresult Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/InterviewDetailsRow"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DonationTestDetailsRow"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EntryFormDetailsRow"
+                    }
+                  ],
+                  "title": "Response Get Testresult Testresult  Testresult Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -328,6 +396,273 @@
         ],
         "title": "BookBookingslotRow"
       },
+      "DonationTestDetailsRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "form_id": {
+            "type": "integer",
+            "title": "Form Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "invalidated": {
+            "type": "boolean",
+            "title": "Invalidated"
+          },
+          "ok_to_donate": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok To Donate"
+          },
+          "donation_test_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Donation Test Id"
+          },
+          "donation_id": {
+            "type": "integer",
+            "title": "Donation Id"
+          },
+          "tester_admin_id": {
+            "type": "integer",
+            "title": "Tester Admin Id"
+          },
+          "appointment_id": {
+            "type": "integer",
+            "title": "Appointment Id"
+          },
+          "amount_ml": {
+            "type": "number",
+            "title": "Amount Ml"
+          },
+          "is_blood_not_plasma": {
+            "type": "boolean",
+            "title": "Is Blood Not Plasma"
+          },
+          "tester_admin_name": {
+            "type": "string",
+            "title": "Tester Admin Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "donor_id",
+          "form_id",
+          "time",
+          "validity_duration",
+          "invalidated",
+          "ok_to_donate",
+          "donation_test_id",
+          "donation_id",
+          "tester_admin_id",
+          "appointment_id",
+          "amount_ml",
+          "is_blood_not_plasma",
+          "tester_admin_name"
+        ],
+        "title": "DonationTestDetailsRow"
+      },
+      "DonationTestResultRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "form_id": {
+            "type": "integer",
+            "title": "Form Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "invalidated": {
+            "type": "boolean",
+            "title": "Invalidated"
+          },
+          "donation_test_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Donation Test Id"
+          },
+          "admin_name": {
+            "type": "string",
+            "title": "Admin Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "donor_id",
+          "form_id",
+          "time",
+          "validity_duration",
+          "invalidated",
+          "donation_test_id",
+          "admin_name"
+        ],
+        "title": "DonationTestResultRow"
+      },
+      "EntryFormDetailsRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "form_id": {
+            "type": "integer",
+            "title": "Form Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "invalidated": {
+            "type": "boolean",
+            "title": "Invalidated"
+          },
+          "ok_to_donate": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok To Donate"
+          },
+          "entry_form_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry Form Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "donor_id",
+          "form_id",
+          "time",
+          "validity_duration",
+          "invalidated",
+          "ok_to_donate",
+          "entry_form_id"
+        ],
+        "title": "EntryFormDetailsRow"
+      },
+      "EntryFormResultRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "form_id": {
+            "type": "integer",
+            "title": "Form Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "invalidated": {
+            "type": "boolean",
+            "title": "Invalidated"
+          },
+          "entry_form_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry Form Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "donor_id",
+          "form_id",
+          "time",
+          "validity_duration",
+          "invalidated",
+          "entry_form_id"
+        ],
+        "title": "EntryFormResultRow"
+      },
       "GetAppointmentsByUserIdRow": {
         "properties": {
           "id": {
@@ -387,6 +722,169 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "InterviewDetailsRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "form_id": {
+            "type": "integer",
+            "title": "Form Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "invalidated": {
+            "type": "boolean",
+            "title": "Invalidated"
+          },
+          "ok_to_donate": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok To Donate"
+          },
+          "interview_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interview Id"
+          },
+          "interviewer_admin_id": {
+            "type": "integer",
+            "title": "Interviewer Admin Id"
+          },
+          "interviewer_admin_name": {
+            "type": "string",
+            "title": "Interviewer Admin Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "donor_id",
+          "form_id",
+          "time",
+          "validity_duration",
+          "invalidated",
+          "ok_to_donate",
+          "interview_id",
+          "interviewer_admin_id",
+          "interviewer_admin_name"
+        ],
+        "title": "InterviewDetailsRow"
+      },
+      "InterviewResponse": {
+        "properties": {
+          "interviews": {
+            "items": {
+              "$ref": "#/components/schemas/InterviewResultRow"
+            },
+            "type": "array",
+            "title": "Interviews"
+          },
+          "entry_forms": {
+            "items": {
+              "$ref": "#/components/schemas/EntryFormResultRow"
+            },
+            "type": "array",
+            "title": "Entry Forms"
+          },
+          "donation_tests": {
+            "items": {
+              "$ref": "#/components/schemas/DonationTestResultRow"
+            },
+            "type": "array",
+            "title": "Donation Tests"
+          }
+        },
+        "type": "object",
+        "required": [
+          "interviews",
+          "entry_forms",
+          "donation_tests"
+        ],
+        "title": "InterviewResponse"
+      },
+      "InterviewResultRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "form_id": {
+            "type": "integer",
+            "title": "Form Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "invalidated": {
+            "type": "boolean",
+            "title": "Invalidated"
+          },
+          "interview_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interview Id"
+          },
+          "admin_name": {
+            "type": "string",
+            "title": "Admin Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "donor_id",
+          "form_id",
+          "time",
+          "validity_duration",
+          "invalidated",
+          "interview_id",
+          "admin_name"
+        ],
+        "title": "InterviewResultRow"
       },
       "LoginRequestData": {
         "properties": {

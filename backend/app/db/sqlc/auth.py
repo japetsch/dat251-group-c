@@ -33,6 +33,17 @@ class GetUserRow(pydantic.BaseModel):
     admin_id: Optional[int]
 
 
+TEST_RESULT_BELONGS_TO = """-- name: test_result_belongs_to \\:one
+SELECT TRUE
+FROM test_result t
+	INNER JOIN form f ON t.form_id = f.id
+	LEFT JOIN donation_test d ON f.donation_test_id = d.id
+	LEFT JOIN donation don ON d.donation_id = don.id
+	LEFT JOIN appointment a ON don.appointment_id = a.id
+WHERE t.id = :p1 AND t.donor_id = :p2 AND (a.donor_id = :p2 OR a.donor_id IS NULL)
+"""
+
+
 class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
         self._conn = conn
@@ -55,3 +66,9 @@ class AsyncQuerier:
             donor_id=row[4],
             admin_id=row[5],
         )
+
+    async def test_result_belongs_to(self, *, testresult_id: int, donor_id: int) -> Optional[bool]:
+        row = (await self._conn.execute(sqlalchemy.text(TEST_RESULT_BELONGS_TO), {"p1": testresult_id, "p2": donor_id})).first()
+        if row is None:
+            return None
+        return row[0]
