@@ -383,10 +383,10 @@ export interface components {
             /** Message */
             message: string;
             /**
-             * Timestamp
+             * Time
              * Format: date-time
              */
-            timestamp: string;
+            time: string;
         };
         /** AppointmentType */
         AppointmentType: {
@@ -623,6 +623,8 @@ export interface components {
         };
         /** GetAllBloodBanksRow */
         GetAllBloodBanksRow: {
+            /** Bloodbank Id */
+            bloodbank_id: number;
             /** Name */
             name: string;
             /** Street Name */

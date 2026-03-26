@@ -3,8 +3,8 @@ import type { components } from "$lib/api/schema";
 import type { PageLoad } from "./$types";
 
 type ApptListPreloaded = {
-  upcoming: components["schemas"]["GetAppointmentsByUserIdRow"][];
-  previous: components["schemas"]["GetAppointmentsByUserIdRow"][];
+  upcoming: components["schemas"]["GetAppointmentsByDonorIdRow"][];
+  previous: components["schemas"]["GetAppointmentsByDonorIdRow"][];
   error: string | null;
 };
 
