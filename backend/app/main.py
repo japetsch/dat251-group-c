@@ -13,6 +13,7 @@ from .routes.admin_router import AdminRouter
 from .routes.appointment_router import AppointmentRouter
 from .routes.auth_router import AuthRouter
 from .routes.bookingslot_router import BookingslotRouter
+from .routes.testresult_router import TestresultRouter
 from .swagger import SwaggerJsonGenerator
 
 
@@ -45,6 +46,11 @@ class Main:
         self.app.include_router(
             BookingslotRouter(),
             prefix="/bookingslot",
+            dependencies=[Depends(AuthUtil.get_donor_user_requried)],
+        )
+        self.app.include_router(
+            TestresultRouter(),
+            prefix="/testresult",
             dependencies=[Depends(AuthUtil.get_donor_user_requried)],
         )
 

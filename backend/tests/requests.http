@@ -57,7 +57,7 @@ Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session
 # Get available booking slots
 
 GET http://localhost:8000/api/bookingslot/available HTTP/1.1
-Accept: application/js
+Accept: application/json
 Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
 
 
@@ -73,3 +73,21 @@ Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session
   "bookingslot_id": 1,
   "donor_id": 2
 }
+
+
+### 
+
+# Get all testresults for user
+
+GET http://localhost:8000/api/testresult HTTP/1.1
+Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
+
+
+### 
+
+# Get all testresults for user
+
+GET http://localhost:8000/api/testresult/5 HTTP/1.1
+Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
