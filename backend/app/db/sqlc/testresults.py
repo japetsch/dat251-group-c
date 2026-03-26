@@ -12,7 +12,131 @@ import sqlalchemy.ext.asyncio
 from app.db.sqlc import models
 
 
-TEST_RESULT = """-- name: test_result \\:one
+DONATION_TEST_DETAILS = """-- name: donation_test_details \\:one
+SELECT 
+	t.id as id,
+	t.donor_id as donor_id,
+	t.form_id as form_id,
+	t.time as time,
+	t.validity_duration as validity_duration,
+	t.invalidated as invalidated,
+	f.ok_to_donate as ok_to_donate,
+	f.donation_test_id as donation_test_id,
+	d.donation_id as donation_id,
+	d.tester_admin_id as tester_admin_id,
+	don.appointment_id as appointment_id,
+	don.amount_ml as amount_ml,
+	don.is_blood_not_plasma as is_blood_not_plasma,
+	a.name as tester_admin_name
+ FROM test_result t
+	INNER JOIN form f ON t.form_id = f.id
+	INNER JOIN donation_test d ON f.donation_test_id = d.id
+	INNER JOIN donation don ON d.donation_id = don.id
+	INNER JOIN "user" a ON d.tester_admin_id = a.admin_id 
+	WHERE t.id = :p1 AND f.donation_test_id IS NOT NULL
+"""
+
+
+class DonationTestDetailsRow(pydantic.BaseModel):
+    id: int
+    donor_id: int
+    form_id: int
+    time: datetime.datetime
+    validity_duration: datetime.timedelta
+    invalidated: bool
+    ok_to_donate: Optional[bool]
+    donation_test_id: Optional[int]
+    donation_id: int
+    tester_admin_id: int
+    appointment_id: int
+    amount_ml: float
+    is_blood_not_plasma: bool
+    tester_admin_name: str
+
+
+DONATION_TEST_RESULT = """-- name: donation_test_result \\:many
+SELECT 
+	t.id as id,
+	t.donor_id as donor_id,
+	t.form_id as form_id,
+	t.time as time,
+	t.validity_duration as validity_duration,
+	t.invalidated as invalidated,
+	f.donation_test_id as donation_test_id,
+	a.name as admin_name
+FROM test_result t
+INNER JOIN form f ON t.form_id = f.id
+INNER JOIN donation_test d ON f.donation_test_id = d.id
+INNER JOIN "user" a ON d.tester_admin_id = a.admin_id 
+WHERE t.donor_id = :p1 AND f.donation_test_id IS NOT NULL
+"""
+
+
+class DonationTestResultRow(pydantic.BaseModel):
+    id: int
+    donor_id: int
+    form_id: int
+    time: datetime.datetime
+    validity_duration: datetime.timedelta
+    invalidated: bool
+    donation_test_id: Optional[int]
+    admin_name: str
+
+
+ENTRY_FORM_DETAILS = """-- name: entry_form_details \\:one
+SELECT 
+	t.id as id,
+	t.donor_id as donor_id,
+	t.form_id as form_id,
+	t.time as time,
+	t.validity_duration as validity_duration,
+	t.invalidated as invalidated,
+	f.ok_to_donate as ok_to_donate,
+	f.entry_form_id as entry_form_id
+ FROM test_result t
+	INNER JOIN form f ON t.form_id = f.id
+	INNER JOIN entry_form e ON f.entry_form_id = e.id
+	WHERE t.id = :p1 AND f.entry_form_id IS NOT NULL
+"""
+
+
+class EntryFormDetailsRow(pydantic.BaseModel):
+    id: int
+    donor_id: int
+    form_id: int
+    time: datetime.datetime
+    validity_duration: datetime.timedelta
+    invalidated: bool
+    ok_to_donate: Optional[bool]
+    entry_form_id: Optional[int]
+
+
+ENTRY_FORM_RESULT = """-- name: entry_form_result \\:many
+SELECT 
+	t.id as id,
+	t.donor_id as donor_id,
+	t.form_id as form_id,
+	t.time as time,
+	t.validity_duration as validity_duration,
+	t.invalidated as invalidated,
+	f.entry_form_id as entry_form_id
+FROM test_result t
+INNER JOIN form f ON t.form_id = f.id
+WHERE t.donor_id = :p1 AND f.entry_form_id IS NOT NULL
+"""
+
+
+class EntryFormResultRow(pydantic.BaseModel):
+    id: int
+    donor_id: int
+    form_id: int
+    time: datetime.datetime
+    validity_duration: datetime.timedelta
+    invalidated: bool
+    entry_form_id: Optional[int]
+
+
+INTERVIEW_DETAILS = """-- name: interview_details \\:one
 SELECT 
 	t.id as id,
 	t.donor_id as donor_id,
@@ -22,24 +146,17 @@ SELECT
 	t.invalidated as invalidated,
 	f.ok_to_donate as ok_to_donate,
 	f.interview_id as interview_id,
-	f.entry_form_id as entry_form_id,
-	f.donation_test_id as donation_test_id,
 	i.interviewer_admin_id as interviewer_admin_id,
-	d.donation_id as donation_id,
-	don.appointment_id as appointment_id,
-	don.amount_ml as amount_ml,
-	don.is_blood_not_plasma as is_blood_not_plasma
+	a.name as interviewer_admin_name
  FROM test_result t
 	INNER JOIN form f ON t.form_id = f.id
-	LEFT JOIN interview i ON f.interview_id = i.id
-	LEFT JOIN entry_form e ON f.entry_form_id = e.id
-	LEFT JOIN donation_test d ON f.donation_test_id = d.id
-	LEFT JOIN donation don ON d.donation_id = don.id
-	WHERE t.id = :p1
+	INNER JOIN interview i ON f.interview_id = i.id
+	INNER JOIN "user" a ON i.interviewer_admin_id = a.admin_id 
+	WHERE t.id = :p1 AND f.interview_id IS NOT NULL
 """
 
 
-class TestResultRow(pydantic.BaseModel):
+class InterviewDetailsRow(pydantic.BaseModel):
     id: int
     donor_id: int
     form_id: int
@@ -48,29 +165,111 @@ class TestResultRow(pydantic.BaseModel):
     invalidated: bool
     ok_to_donate: Optional[bool]
     interview_id: Optional[int]
-    entry_form_id: Optional[int]
-    donation_test_id: Optional[int]
-    interviewer_admin_id: Optional[int]
-    donation_id: Optional[int]
-    appointment_id: Optional[int]
-    amount_ml: Optional[float]
-    is_blood_not_plasma: Optional[bool]
+    interviewer_admin_id: int
+    interviewer_admin_name: str
 
 
-TEST_RESULTS = """-- name: test_results \\:many
-SELECT id, donor_id, form_id, time, validity_duration, invalidated FROM test_result t WHERE t.donor_id = :p1
+INTERVIEW_RESULT = """-- name: interview_result \\:many
+SELECT 
+	t.id as id,
+	t.donor_id as donor_id,
+	t.form_id as form_id,
+	t.time as time,
+	t.validity_duration as validity_duration,
+	t.invalidated as invalidated,
+	f.interview_id as interview_id,
+	a.name as admin_name
+FROM test_result t
+INNER JOIN form f ON t.form_id = f.id
+INNER JOIN interview i ON f.interview_id = i.id
+INNER JOIN "user" a ON i.interviewer_admin_id = a.admin_id 
+WHERE t.donor_id = :p1 AND f.interview_id IS NOT NULL
 """
+
+
+class InterviewResultRow(pydantic.BaseModel):
+    id: int
+    donor_id: int
+    form_id: int
+    time: datetime.datetime
+    validity_duration: datetime.timedelta
+    invalidated: bool
+    interview_id: Optional[int]
+    admin_name: str
 
 
 class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
         self._conn = conn
 
-    async def test_result(self, *, testresult_id: int) -> Optional[TestResultRow]:
-        row = (await self._conn.execute(sqlalchemy.text(TEST_RESULT), {"p1": testresult_id})).first()
+    async def donation_test_details(self, *, testresult_id: int) -> Optional[DonationTestDetailsRow]:
+        row = (await self._conn.execute(sqlalchemy.text(DONATION_TEST_DETAILS), {"p1": testresult_id})).first()
         if row is None:
             return None
-        return TestResultRow(
+        return DonationTestDetailsRow(
+            id=row[0],
+            donor_id=row[1],
+            form_id=row[2],
+            time=row[3],
+            validity_duration=row[4],
+            invalidated=row[5],
+            ok_to_donate=row[6],
+            donation_test_id=row[7],
+            donation_id=row[8],
+            tester_admin_id=row[9],
+            appointment_id=row[10],
+            amount_ml=row[11],
+            is_blood_not_plasma=row[12],
+            tester_admin_name=row[13],
+        )
+
+    async def donation_test_result(self, *, donor_id: int) -> AsyncIterator[DonationTestResultRow]:
+        result = await self._conn.stream(sqlalchemy.text(DONATION_TEST_RESULT), {"p1": donor_id})
+        async for row in result:
+            yield DonationTestResultRow(
+                id=row[0],
+                donor_id=row[1],
+                form_id=row[2],
+                time=row[3],
+                validity_duration=row[4],
+                invalidated=row[5],
+                donation_test_id=row[6],
+                admin_name=row[7],
+            )
+
+    async def entry_form_details(self, *, testresult_id: int) -> Optional[EntryFormDetailsRow]:
+        row = (await self._conn.execute(sqlalchemy.text(ENTRY_FORM_DETAILS), {"p1": testresult_id})).first()
+        if row is None:
+            return None
+        return EntryFormDetailsRow(
+            id=row[0],
+            donor_id=row[1],
+            form_id=row[2],
+            time=row[3],
+            validity_duration=row[4],
+            invalidated=row[5],
+            ok_to_donate=row[6],
+            entry_form_id=row[7],
+        )
+
+    async def entry_form_result(self, *, donor_id: int) -> AsyncIterator[EntryFormResultRow]:
+        result = await self._conn.stream(sqlalchemy.text(ENTRY_FORM_RESULT), {"p1": donor_id})
+        async for row in result:
+            yield EntryFormResultRow(
+                id=row[0],
+                donor_id=row[1],
+                form_id=row[2],
+                time=row[3],
+                validity_duration=row[4],
+                invalidated=row[5],
+                entry_form_id=row[6],
+            )
+
+    async def interview_details(self, *, testresult_id: int) -> Optional[InterviewDetailsRow]:
+        row = (await self._conn.execute(sqlalchemy.text(INTERVIEW_DETAILS), {"p1": testresult_id})).first()
+        if row is None:
+            return None
+        return InterviewDetailsRow(
             id=row[0],
             donor_id=row[1],
             form_id=row[2],
@@ -79,23 +278,20 @@ class AsyncQuerier:
             invalidated=row[5],
             ok_to_donate=row[6],
             interview_id=row[7],
-            entry_form_id=row[8],
-            donation_test_id=row[9],
-            interviewer_admin_id=row[10],
-            donation_id=row[11],
-            appointment_id=row[12],
-            amount_ml=row[13],
-            is_blood_not_plasma=row[14],
+            interviewer_admin_id=row[8],
+            interviewer_admin_name=row[9],
         )
 
-    async def test_results(self, *, donor_id: int) -> AsyncIterator[models.TestResult]:
-        result = await self._conn.stream(sqlalchemy.text(TEST_RESULTS), {"p1": donor_id})
+    async def interview_result(self, *, donor_id: int) -> AsyncIterator[InterviewResultRow]:
+        result = await self._conn.stream(sqlalchemy.text(INTERVIEW_RESULT), {"p1": donor_id})
         async for row in result:
-            yield models.TestResult(
+            yield InterviewResultRow(
                 id=row[0],
                 donor_id=row[1],
                 form_id=row[2],
                 time=row[3],
                 validity_duration=row[4],
                 invalidated=row[5],
+                interview_id=row[6],
+                admin_name=row[7],
             )

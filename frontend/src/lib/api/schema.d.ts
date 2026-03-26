@@ -209,6 +209,116 @@ export interface components {
             /** Cancelled */
             cancelled: boolean | null;
         };
+        /** DonationTestDetailsRow */
+        DonationTestDetailsRow: {
+            /** Id */
+            id: number;
+            /** Donor Id */
+            donor_id: number;
+            /** Form Id */
+            form_id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Validity Duration
+             * Format: duration
+             */
+            validity_duration: string;
+            /** Invalidated */
+            invalidated: boolean;
+            /** Ok To Donate */
+            ok_to_donate: boolean | null;
+            /** Donation Test Id */
+            donation_test_id: number | null;
+            /** Donation Id */
+            donation_id: number;
+            /** Tester Admin Id */
+            tester_admin_id: number;
+            /** Appointment Id */
+            appointment_id: number;
+            /** Amount Ml */
+            amount_ml: number;
+            /** Is Blood Not Plasma */
+            is_blood_not_plasma: boolean;
+            /** Tester Admin Name */
+            tester_admin_name: string;
+        };
+        /** DonationTestResultRow */
+        DonationTestResultRow: {
+            /** Id */
+            id: number;
+            /** Donor Id */
+            donor_id: number;
+            /** Form Id */
+            form_id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Validity Duration
+             * Format: duration
+             */
+            validity_duration: string;
+            /** Invalidated */
+            invalidated: boolean;
+            /** Donation Test Id */
+            donation_test_id: number | null;
+            /** Admin Name */
+            admin_name: string;
+        };
+        /** EntryFormDetailsRow */
+        EntryFormDetailsRow: {
+            /** Id */
+            id: number;
+            /** Donor Id */
+            donor_id: number;
+            /** Form Id */
+            form_id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Validity Duration
+             * Format: duration
+             */
+            validity_duration: string;
+            /** Invalidated */
+            invalidated: boolean;
+            /** Ok To Donate */
+            ok_to_donate: boolean | null;
+            /** Entry Form Id */
+            entry_form_id: number | null;
+        };
+        /** EntryFormResultRow */
+        EntryFormResultRow: {
+            /** Id */
+            id: number;
+            /** Donor Id */
+            donor_id: number;
+            /** Form Id */
+            form_id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Validity Duration
+             * Format: duration
+             */
+            validity_duration: string;
+            /** Invalidated */
+            invalidated: boolean;
+            /** Entry Form Id */
+            entry_form_id: number | null;
+        };
         /** GetAppointmentsByUserIdRow */
         GetAppointmentsByUserIdRow: {
             /** Id */
@@ -235,36 +345,8 @@ export interface components {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
         };
-        /** LoginRequestData */
-        LoginRequestData: {
-            /** Email */
-            email: string;
-            /** Password */
-            password: string;
-        };
-        /** TestResult */
-        TestResult: {
-            /** Id */
-            id: number;
-            /** Donor Id */
-            donor_id: number;
-            /** Form Id */
-            form_id: number;
-            /**
-             * Time
-             * Format: date-time
-             */
-            time: string;
-            /**
-             * Validity Duration
-             * Format: duration
-             */
-            validity_duration: string;
-            /** Invalidated */
-            invalidated: boolean;
-        };
-        /** TestResultRow */
-        TestResultRow: {
+        /** InterviewDetailsRow */
+        InterviewDetailsRow: {
             /** Id */
             id: number;
             /** Donor Id */
@@ -287,20 +369,51 @@ export interface components {
             ok_to_donate: boolean | null;
             /** Interview Id */
             interview_id: number | null;
-            /** Entry Form Id */
-            entry_form_id: number | null;
-            /** Donation Test Id */
-            donation_test_id: number | null;
             /** Interviewer Admin Id */
-            interviewer_admin_id: number | null;
-            /** Donation Id */
-            donation_id: number | null;
-            /** Appointment Id */
-            appointment_id: number | null;
-            /** Amount Ml */
-            amount_ml: number | null;
-            /** Is Blood Not Plasma */
-            is_blood_not_plasma: boolean | null;
+            interviewer_admin_id: number;
+            /** Interviewer Admin Name */
+            interviewer_admin_name: string;
+        };
+        /** InterviewResponse */
+        InterviewResponse: {
+            /** Interviews */
+            interviews: components["schemas"]["InterviewResultRow"][];
+            /** Entry Forms */
+            entry_forms: components["schemas"]["EntryFormResultRow"][];
+            /** Donation Tests */
+            donation_tests: components["schemas"]["DonationTestResultRow"][];
+        };
+        /** InterviewResultRow */
+        InterviewResultRow: {
+            /** Id */
+            id: number;
+            /** Donor Id */
+            donor_id: number;
+            /** Form Id */
+            form_id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Validity Duration
+             * Format: duration
+             */
+            validity_duration: string;
+            /** Invalidated */
+            invalidated: boolean;
+            /** Interview Id */
+            interview_id: number | null;
+            /** Admin Name */
+            admin_name: string;
+        };
+        /** LoginRequestData */
+        LoginRequestData: {
+            /** Email */
+            email: string;
+            /** Password */
+            password: string;
         };
         /** UpdateAppointmentRow */
         UpdateAppointmentRow: {
@@ -541,7 +654,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TestResult"][];
+                    "application/json": components["schemas"]["InterviewResponse"];
                 };
             };
         };
@@ -563,7 +676,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["TestResultRow"];
+                    "application/json": components["schemas"]["InterviewDetailsRow"] | components["schemas"]["DonationTestDetailsRow"] | components["schemas"]["EntryFormDetailsRow"];
                 };
             };
             /** @description Validation Error */

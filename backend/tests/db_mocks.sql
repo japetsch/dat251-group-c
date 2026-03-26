@@ -32,7 +32,8 @@ INSERT INTO "user" (name, email, phone_number, home_address_id, donor_id, passwo
   '$argon2id$v=19$m=65536,t=3,p=4$llmunGw2K2kWx9Vhv/7OZQ$e4nkzeV3j1dRshEHsuNIsYp+FF6UwMyb6lDu04ecISQ'); -- hunter2
 
 INSERT INTO "user" (name, email, phone_number, home_address_id, admin_id, password_hash) VALUES
-  ('Admin', 'admin@haukeland.not', '911', 2, 1, '$argon2id$v=19$m=65536,t=3,p=4$llmunGw2K2kWx9Vhv/7OZQ$e4nkzeV3j1dRshEHsuNIsYp+FF6UwMyb6lDu04ecISQ'); -- hunter2
+  ('AdminHaukeland', 'admin@haukeland.no', '911', 2, 1, '$argon2id$v=19$m=65536,t=3,p=4$llmunGw2K2kWx9Vhv/7OZQ$e4nkzeV3j1dRshEHsuNIsYp+FF6UwMyb6lDu04ecISQ'), -- hunter2
+  ('AdminBlodbuss', 'admin@blodbuss.no', '112', 3, 2, '$argon2id$v=19$m=65536,t=3,p=4$llmunGw2K2kWx9Vhv/7OZQ$e4nkzeV3j1dRshEHsuNIsYp+FF6UwMyb6lDu04ecISQ'); -- hunter2
 
 INSERT into bookingslot (bloodbank_id, time, duration, capacity) VALUES
   (1, '2026-02-20T16:00:00Z', '00:30:00', 10),
@@ -58,9 +59,9 @@ INSERT INTO donation (appointment_id, amount_ml, is_blood_not_plasma) VALUES
 	(1, 20, true),
 	(2, 10, false);
 
-INSERT INTO donation_test (donation_id) VALUES
-	(1),
-	(2);
+INSERT INTO donation_test (donation_id, tester_admin_id) VALUES
+	(1, 1),
+	(2, 2);
 
 INSERT INTO form (ok_to_donate, interview_id) VALUES
 	(false, 1),

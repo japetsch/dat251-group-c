@@ -1,3 +1,5 @@
+from typing import List, TypedDict
+
 from fastapi import HTTPException
 from fastapi.routing import APIRouter
 
@@ -8,7 +10,12 @@ from ..db.db import DBConnection
 from ..db.sqlc.auth import AsyncQuerier as AuthQuerier
 from ..db.sqlc.testresults import (
     AsyncQuerier as TestresultQuerier,
-    TestResultRow,
+    DonationTestDetailsRow,
+    DonationTestResultRow,
+    EntryFormDetailsRow,
+    EntryFormResultRow,
+    InterviewDetailsRow,
+    InterviewResultRow,
 )
 
 
@@ -19,19 +26,37 @@ class TestresultRouter(APIRouter):
         self.add_api_route("", self.get_all_testresults, methods=["GET"])
         self.add_api_route("/{testresult_id}", self.get_testresult, methods=["GET"])
 
+    class InterviewResponse(TypedDict):
+        interviews: List[InterviewResultRow]
+        entry_forms: List[EntryFormResultRow]
+        donation_tests: List[DonationTestResultRow]
+
     async def get_all_testresults(
         self, user: DonorUserRequired, engine: DBConnection
-    ) -> list[models.TestResult]:
+    ) -> TestresultRouter.InterviewResponse:
         q = TestresultQuerier(engine)
-        rows: list[models.TestResult] = []
-        async for x in q.test_results(donor_id=user.donor_id):
-            rows.append(x)
 
-        return rows
+        interviews: list[InterviewResultRow] = []
+        async for x in q.interview_result(donor_id=user.donor_id):
+            interviews.append(x)
+
+        entry_forms: list[EntryFormResultRow] = []
+        async for x in q.entry_form_result(donor_id=user.donor_id):
+            entry_forms.append(x)
+
+        donation_tests: list[DonationTestResultRow] = []
+        async for x in q.donation_test_result(donor_id=user.donor_id):
+            donation_tests.append(x)
+
+        return {
+            "interviews": interviews,
+            "entry_forms": entry_forms,
+            "donation_tests": donation_tests,
+        }
 
     async def get_testresult(
         self, testresult_id: int, user: DonorUserRequired, engine: DBConnection
-    ) -> TestResultRow:
+    ) -> InterviewDetailsRow | DonationTestDetailsRow | EntryFormDetailsRow:
         q = TestresultQuerier(engine)
         aq = AuthQuerier(engine)
 
@@ -45,14 +70,26 @@ class TestresultRouter(APIRouter):
                 detail="Test result for diffenrent user",
             )
 
-        test_result: TestResultRow | None = await q.test_result(
-            testresult_id=testresult_id
-        )
+        if (
+            interview_details := await q.interview_details(testresult_id=testresult_id)
+        ) is not None:
+            return interview_details
 
-        if not test_result:
-            raise HTTPException(
-                status_code=404,
-                detail="Test result not found",
+        if (
+            entry_form_details := await q.entry_form_details(
+                testresult_id=testresult_id
             )
+        ) is not None:
+            return entry_form_details
 
-        return test_result
+        if (
+            donation_test_details := await q.donation_test_details(
+                testresult_id=testresult_id
+            )
+        ) is not None:
+            return donation_test_details
+
+        raise HTTPException(
+            status_code=404,
+            detail="Test result not found",
+        )

@@ -15,34 +15,51 @@ class TestTestresult:
         assert response.status_code == 200
 
         response_json = response.json()
-        expected = [
-            {
-                "id": 1,
-                "donor_id": 1,
-                "form_id": 1,
-                "time": "2025-04-30T10:00:00Z",
-                "validity_duration": "P180D",
-                "invalidated": True,
-            },
-            {
-                "id": 5,
-                "donor_id": 1,
-                "form_id": 5,
-                "time": "2026-02-20T16:00:00Z",
-                "validity_duration": "P180D",
-                "invalidated": False,
-            },
-        ]
-        for elem in expected:
-            assert elem in response_json
+        expected = {
+            "interviews": [
+                {
+                    "id": 1,
+                    "donor_id": 1,
+                    "form_id": 1,
+                    "time": "2025-04-30T10:00:00Z",
+                    "validity_duration": "P180D",
+                    "invalidated": True,
+                    "interview_id": 1,
+                    "admin_name": "AdminHaukeland",
+                }
+            ],
+            "entry_forms": [],
+            "donation_tests": [
+                {
+                    "id": 5,
+                    "donor_id": 1,
+                    "form_id": 5,
+                    "time": "2026-02-20T16:00:00Z",
+                    "validity_duration": "P180D",
+                    "invalidated": False,
+                    "donation_test_id": 1,
+                    "admin_name": "AdminHaukeland",
+                }
+            ],
+        }
+        for elem in expected["interviews"]:
+            assert elem in response_json["interviews"]
+        for elem in expected["entry_forms"]:
+            assert elem in response_json["entry_forms"]
+        for elem in expected["donation_tests"]:
+            assert elem in response_json["donation_tests"]
 
     def test_can_get_testresults_empty_list(self, sigrid_client: TestClient):
         response = sigrid_client.get("/api/testresult")
         assert response.status_code == 200
 
         response_json = response.json()
-        assert isinstance(response_json, list)
-        assert len(response_json) == 0
+        assert isinstance(response_json["interviews"], list)
+        assert len(response_json["interviews"]) == 0
+        assert isinstance(response_json["entry_forms"], list)
+        assert len(response_json["entry_forms"]) == 0
+        assert isinstance(response_json["donation_tests"], list)
+        assert len(response_json["donation_tests"]) == 0
 
     def test_can_get_testresult_interview(self, olav_client: TestClient):
         response = olav_client.get("/api/testresult/1")
@@ -56,13 +73,8 @@ class TestTestresult:
             "invalidated": True,
             "ok_to_donate": False,
             "interview_id": 1,
-            "entry_form_id": None,
-            "donation_test_id": None,
             "interviewer_admin_id": 1,
-            "donation_id": None,
-            "appointment_id": None,
-            "amount_ml": None,
-            "is_blood_not_plasma": None,
+            "interviewer_admin_name": "AdminHaukeland",
         }
 
         response_json = response.json()
@@ -80,14 +92,13 @@ class TestTestresult:
             "validity_duration": "P180D",
             "invalidated": False,
             "ok_to_donate": True,
-            "interview_id": None,
-            "entry_form_id": None,
             "donation_test_id": 1,
-            "interviewer_admin_id": None,
+            "tester_admin_id": 1,
             "donation_id": 1,
             "appointment_id": 1,
             "amount_ml": 20.0,
             "is_blood_not_plasma": True,
+            "tester_admin_name": "AdminHaukeland",
         }
 
         response_json = response.json()
