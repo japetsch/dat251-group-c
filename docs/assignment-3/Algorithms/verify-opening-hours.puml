@@ -1,0 +1,20 @@
+@startuml
+title Verify opening hours
+
+start
+:Query opening hours;
+
+if (Given time within opening hours) then (Yes)
+  :Query holidays;
+  
+  if (Given time not within holidays) then (Yes)
+    :Return true;
+  else (No)
+    :Return false;
+  endif
+else (No)
+  :Return false;
+endif
+
+stop
+@enduml

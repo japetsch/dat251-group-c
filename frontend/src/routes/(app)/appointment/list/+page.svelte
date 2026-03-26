@@ -8,7 +8,7 @@
 
 {#if data.error}
   <p>{data.error}</p>
-{:else if data.upcoming.length === 0 || data.previous.length === 0}
+{:else if data.upcoming.length === 0 && data.previous.length === 0}
   <p>No appointments found.</p>
 {:else}
   <h2 class="text-xl mb-4">Upcoming</h2>
@@ -30,7 +30,7 @@
           <td class="py-3 pr-6 font-medium text-gray-900"
             >{appointment.username}</td
           >
-          <td class="py-3 pr-6 text-gray-600">{appointment.locationname}</td>
+          <td class="py-3 pr-6 text-gray-600">{appointment.bloodbank_name}</td>
           <td class="py-3 text-gray-600"
             >{new Date(appointment.time).toLocaleString()}</td
           >
@@ -58,7 +58,7 @@
           <td class="py-3 pr-6 font-medium text-gray-900"
             >{appointment.username}</td
           >
-          <td class="py-3 pr-6 text-gray-600">{appointment.locationname}</td>
+          <td class="py-3 pr-6 text-gray-600">{appointment.bloodbank_name}</td>
           <td class="py-3 text-gray-600"
             >{new Date(appointment.time).toLocaleString()}</td
           >

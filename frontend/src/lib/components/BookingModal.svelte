@@ -3,6 +3,9 @@
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.35);
+    border: none;
+    padding: 0;
+    cursor: default;
   }
 
   .modal {
@@ -34,15 +37,9 @@
 </style>
 
 <script lang="ts">
-  type Appointment = {
-    id: number;
-    time: string;
-    location_id: number;
-    locationname: string;
-    formattedTime: string;
-  };
+  import type { AppointmentWithFormattedTime } from "$lib/types/appointment";
 
-  export let selectedAppointment: Appointment | null;
+  export let selectedAppointment: AppointmentWithFormattedTime | null;
   export let isBooking: boolean;
   export let bookingMessage: string;
   export let onClose: () => void;
@@ -60,14 +57,19 @@
 
     if (selectedAppointment) {
       appointmentDate = selectedAppointment.time.split("T")[0];
-      appointmentPlace = selectedAppointment.locationname;
+      appointmentPlace = selectedAppointment.bloodbank_name;
       appointmentTime = selectedAppointment.formattedTime;
     }
   }
 </script>
 
 {#if selectedAppointment}
-  <div class="modal-backdrop" on:click={onClose}></div>
+  <button
+    type="button"
+    class="modal-backdrop"
+    aria-label="Close modal"
+    on:click={onClose}
+  ></button>
 
   <div class="modal">
     <h2>Book appointment</h2>

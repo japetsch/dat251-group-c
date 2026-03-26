@@ -8,10 +8,11 @@ class User {
 
 User -->"1" Address: "home"
 User -->"0..*" Address: "alternatives"
-User -->"0..*" TestResult
 
 class Donor extends User {
   comment: String // "about me/preferences"
+  interval: DeltaTime
+  slotPreferences: String // Cron
 }
 enum Bloodtype {
   O-
@@ -24,17 +25,12 @@ enum Bloodtype {
   AB-
 }
 
-Donor -->"1" DonationPreference
-
-class DonationPreference {
-  interval: DeltaTime
-  slotPreferences: String // Cron
-}
-DonationPreference --> "1" Bloodbank
+Donor -->"0..*" TestResult
+Donor --> "1" Bloodbank: "prefers a"
 
 class TestResult {
   time: Timestamp
-  validUntil: Timestamp
+  validityDuration: Interval 
   invalidated: Boolean
 }
 
@@ -57,19 +53,18 @@ class DonationTest extends Form {
 
 }
 
-Donor --> "1" Bloodbank: "home bloodbank"
 Donor --> "1" Bloodtype
 
 class Admin extends User {}
 
-Bloodbank -->"1..*" Admin
+Bloodbank "0..*"-->"1..*" Admin
 
 class Note {
   time: Timestamp
   message: String
 }
 
-Appointment --> "0..*" Note
+Appointment "1"<-- Note
 Note --> "1" User: "created by"
 
 class Appointment{
@@ -89,12 +84,13 @@ Appointment "0..*"--> "1" Donor
 
 class Bookingslot{
   time: Timestamp
+  duration: Interval
   // Time has to fall into 
   // the bloodbanks opening hours
   capacity: Int
 }
 
-Bloodbank -->"0..*" Bookingslot
+Bloodbank "1"<--"0..*" Bookingslot
 
 class Bloodbank {
   name: String
@@ -103,7 +99,9 @@ class Bloodbank {
 
 }
 
-Bloodbank --> "1" Location
+Bloodbank -->"1" Location
+Bloodbank -->"0..*" Holiday
+Bloodbank -->"0..*" RecurringHoliday
 
 class Location {
   longitude: Float
@@ -124,6 +122,18 @@ Bloodbank --> "*" Timerange: "opening hours"
 
 class Timerange {
   openingCron: String
-  closingCron: String
+  openDuration: Interval
+}
+
+class Holiday {
+  description: String
+  start: Timestamp
+  end: Timestamp
+}
+
+class RecurringHoliday {
+  description: String
+  startingCron: String
+  duration: Interval
 }
 @enduml

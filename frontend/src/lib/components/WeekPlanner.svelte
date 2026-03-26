@@ -113,18 +113,12 @@
 </style>
 
 <script lang="ts">
-  type Appointment = {
-    id: number;
-    time: string;
-    location_id: number;
-    locationname: string;
-    formattedTime: string;
-  };
+  import type { AppointmentWithFormattedTime } from "$lib/types/appointment";
 
   type Column = {
     dayName: string;
     dateLabel: string;
-    appointments: Appointment[];
+    appointments: AppointmentWithFormattedTime[];
   };
 
   export let columns: Column[];
@@ -132,7 +126,9 @@
   export let currentWeekNumber: number;
   export let onPreviousWeek: () => void;
   export let onNextWeek: () => void;
-  export let onSelectAppointment: (appointment: Appointment) => void;
+  export let onSelectAppointment: (
+    appointment: AppointmentWithFormattedTime,
+  ) => void;
 </script>
 
 <div class="toolbar">
@@ -163,8 +159,12 @@
                 class="appointment-card"
                 on:click={() => onSelectAppointment(appointment)}
               >
-                <div class="appointment-time">{appointment.formattedTime}</div>
-                <div class="appointment-place">{appointment.locationname}</div>
+                <div class="appointment-time">
+                  {appointment.formattedTime}
+                </div>
+                <div class="appointment-place">
+                  {appointment.bloodbank_name}
+                </div>
               </button>
             {/each}
           {/if}

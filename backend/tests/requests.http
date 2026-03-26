@@ -1,27 +1,93 @@
+### LOGIN_REQUEST
+
+# Login
+
+POST http://localhost:8000/api/auth/login HTTP/1.1
+Accept: application/json
+
+{
+  "email": "olav@uib.no",
+  "password": "correct horse battery staple"
+}
+
+
+### 
+
+# Login me
+
+GET http://localhost:8000/api/auth/me HTTP/1.1
+Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
+
+
 ### 
 
 # Get all appointment
 
 GET http://localhost:8000/api/appointment HTTP/1.1
 Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
 
 
 ### 
 
 # Delete one appointment
 
-DELETE http://localhost:8000/api/appointment/1 HTTP/1.1
+DELETE http://localhost:8000/api/appointment/6 HTTP/1.1
 Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
 
 
 ### 
 
 # Update one appointment
 
-PATCH http://localhost:8000/api/appointment HTTP/1.1
+PATCH http://localhost:8000/api/appointment/1 HTTP/1.1
 Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
 
 {
-  "id": 4,
-  "time": "2029-05-11T11:30:00Z"
+  "bookingslot_id": 2,
+  "cancelled": true
 }
+
+
+### 
+
+# Get available booking slots
+
+GET http://localhost:8000/api/bookingslot/available HTTP/1.1
+Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
+
+
+### 
+
+# Book booking slots
+
+POST http://localhost:8000/api/bookingslot/book HTTP/1.1
+Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
+
+{
+  "bookingslot_id": 1,
+  "donor_id": 2
+}
+
+
+### 
+
+# Get all testresults for user
+
+GET http://localhost:8000/api/testresult HTTP/1.1
+Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}
+
+
+### 
+
+# Get all testresults for user
+
+GET http://localhost:8000/api/testresult/5 HTTP/1.1
+Accept: application/json
+Cookie: bloodapp_session_token={{LOGIN_REQUEST.response.cookies.bloodapp_session_token.value}}

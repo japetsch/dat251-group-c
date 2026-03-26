@@ -4,6 +4,57 @@
  */
 
 export interface paths {
+    "/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Log In */
+        post: operations["log_in"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/logout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Log Out */
+        get: operations["log_out"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Me */
+        get: operations["me"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/appointment": {
         parameters: {
             query?: never;
@@ -18,11 +69,27 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/appointment/{appointment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
         /** Update */
         patch: operations["update"];
         trace?: never;
     };
-    "/appointment/available": {
+    "/bookingslot/available": {
         parameters: {
             query?: never;
             header?: never;
@@ -39,7 +106,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/appointment/book": {
+    "/bookingslot/book": {
         parameters: {
             query?: never;
             header?: never;
@@ -56,18 +123,35 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/appointment/{id}": {
+    "/testresult": {
         parameters: {
             query?: never;
             header?: never;
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Get All Testresults */
+        get: operations["get_all_testresults"];
         put?: never;
         post?: never;
-        /** Delete One */
-        delete: operations["delete_one"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/testresult/{testresult_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Testresult */
+        get: operations["get_testresult"];
+        put?: never;
+        post?: never;
+        delete?: never;
         options?: never;
         head?: never;
         patch?: never;
@@ -77,22 +161,15 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        /** Appointment */
-        Appointment: {
-            /** Id */
-            id: number;
-            /** User Id */
-            user_id: number;
-            /**
-             * Time
-             * Format: date-time
-             */
-            time: string;
-            /** Location Id */
-            location_id: number;
-        };
         /** AppointmentUpdateRequest */
         AppointmentUpdateRequest: {
+            /** Bookingslot Id */
+            bookingslot_id: number;
+            /** Cancelled */
+            cancelled: boolean;
+        };
+        /** AvailableBookingSlot */
+        AvailableBookingSlot: {
             /** Id */
             id: number;
             /**
@@ -100,46 +177,261 @@ export interface components {
              * Format: date-time
              */
             time: string;
+            /**
+             * Duration
+             * Format: duration
+             */
+            duration: string;
+            /** Capacity */
+            capacity: number;
+            /** Bloodbank Id */
+            bloodbank_id: number;
+            /** Bloodbank Name */
+            bloodbank_name: string;
+            /** Location Id */
+            location_id: number;
+            /** Valid */
+            valid: boolean;
         };
         /** BookAppointmentRequest */
         BookAppointmentRequest: {
-            /** Free Appointment Id */
-            free_appointment_id: number;
-            /** User Id */
-            user_id: number;
+            /** Bookingslot Id */
+            bookingslot_id: number;
         };
-        /** GetAllAppointmentsRow */
-        GetAllAppointmentsRow: {
+        /** BookBookingslotRow */
+        BookBookingslotRow: {
+            /** Id */
+            id: number;
+            /** Donor Id */
+            donor_id: number;
+            /** Bookingslot Id */
+            bookingslot_id: number;
+            /** Cancelled */
+            cancelled: boolean | null;
+        };
+        /** DonationTestDetailsRow */
+        DonationTestDetailsRow: {
+            /** Id */
+            id: number;
+            /** Donor Id */
+            donor_id: number;
+            /** Form Id */
+            form_id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Validity Duration
+             * Format: duration
+             */
+            validity_duration: string;
+            /** Invalidated */
+            invalidated: boolean;
+            /** Ok To Donate */
+            ok_to_donate: boolean | null;
+            /** Donation Test Id */
+            donation_test_id: number | null;
+            /** Donation Id */
+            donation_id: number;
+            /** Tester Admin Id */
+            tester_admin_id: number;
+            /** Appointment Id */
+            appointment_id: number;
+            /** Amount Ml */
+            amount_ml: number;
+            /** Is Blood Not Plasma */
+            is_blood_not_plasma: boolean;
+            /** Tester Admin Name */
+            tester_admin_name: string;
+        };
+        /** DonationTestResultRow */
+        DonationTestResultRow: {
+            /** Id */
+            id: number;
+            /** Donor Id */
+            donor_id: number;
+            /** Form Id */
+            form_id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Validity Duration
+             * Format: duration
+             */
+            validity_duration: string;
+            /** Invalidated */
+            invalidated: boolean;
+            /** Donation Test Id */
+            donation_test_id: number | null;
+            /** Admin Name */
+            admin_name: string;
+        };
+        /** EntryFormDetailsRow */
+        EntryFormDetailsRow: {
+            /** Id */
+            id: number;
+            /** Donor Id */
+            donor_id: number;
+            /** Form Id */
+            form_id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Validity Duration
+             * Format: duration
+             */
+            validity_duration: string;
+            /** Invalidated */
+            invalidated: boolean;
+            /** Ok To Donate */
+            ok_to_donate: boolean | null;
+            /** Entry Form Id */
+            entry_form_id: number | null;
+        };
+        /** EntryFormResultRow */
+        EntryFormResultRow: {
+            /** Id */
+            id: number;
+            /** Donor Id */
+            donor_id: number;
+            /** Form Id */
+            form_id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Validity Duration
+             * Format: duration
+             */
+            validity_duration: string;
+            /** Invalidated */
+            invalidated: boolean;
+            /** Entry Form Id */
+            entry_form_id: number | null;
+        };
+        /** GetAppointmentsByUserIdRow */
+        GetAppointmentsByUserIdRow: {
             /** Id */
             id: number;
             /** Username */
             username: string;
-            /** Locationname */
-            locationname: string;
             /**
              * Time
              * Format: date-time
              */
             time: string;
-        };
-        /** GetAvailableAppointmentsRow */
-        GetAvailableAppointmentsRow: {
-            /** Id */
-            id: number;
             /**
-             * Time
-             * Format: date-time
+             * Duration
+             * Format: duration
              */
-            time: string;
-            /** Location Id */
-            location_id: number;
-            /** Locationname */
-            locationname: string;
+            duration: string;
+            /** Bloodbank Name */
+            bloodbank_name: string;
+            /** Cancelled */
+            cancelled: boolean | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** InterviewDetailsRow */
+        InterviewDetailsRow: {
+            /** Id */
+            id: number;
+            /** Donor Id */
+            donor_id: number;
+            /** Form Id */
+            form_id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Validity Duration
+             * Format: duration
+             */
+            validity_duration: string;
+            /** Invalidated */
+            invalidated: boolean;
+            /** Ok To Donate */
+            ok_to_donate: boolean | null;
+            /** Interview Id */
+            interview_id: number | null;
+            /** Interviewer Admin Id */
+            interviewer_admin_id: number;
+            /** Interviewer Admin Name */
+            interviewer_admin_name: string;
+        };
+        /** InterviewResponse */
+        InterviewResponse: {
+            /** Interviews */
+            interviews: components["schemas"]["InterviewResultRow"][];
+            /** Entry Forms */
+            entry_forms: components["schemas"]["EntryFormResultRow"][];
+            /** Donation Tests */
+            donation_tests: components["schemas"]["DonationTestResultRow"][];
+        };
+        /** InterviewResultRow */
+        InterviewResultRow: {
+            /** Id */
+            id: number;
+            /** Donor Id */
+            donor_id: number;
+            /** Form Id */
+            form_id: number;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Validity Duration
+             * Format: duration
+             */
+            validity_duration: string;
+            /** Invalidated */
+            invalidated: boolean;
+            /** Interview Id */
+            interview_id: number | null;
+            /** Admin Name */
+            admin_name: string;
+        };
+        /** LoginRequestData */
+        LoginRequestData: {
+            /** Email */
+            email: string;
+            /** Password */
+            password: string;
+        };
+        /** UpdateAppointmentRow */
+        UpdateAppointmentRow: {
+            /** Id */
+            id: number;
+            /** Bookingslot Id */
+            bookingslot_id: number;
+            /** Cancelled */
+            cancelled: boolean | null;
+            /** Donor Id */
+            donor_id: number;
+        };
+        /** UserInfo */
+        UserInfo: {
+            /** User Id */
+            user_id: number;
+            /** User Name */
+            user_name: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -163,6 +455,82 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    log_in: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequestData"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unauthorized. Incorrect email or password */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    log_out: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    me: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserInfo"];
+                };
+            };
+        };
+    };
     find_all: {
         parameters: {
             query?: never;
@@ -178,7 +546,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GetAllAppointmentsRow"][];
+                    "application/json": components["schemas"]["GetAppointmentsByUserIdRow"][];
                 };
             };
         };
@@ -187,7 +555,9 @@ export interface operations {
         parameters: {
             query?: never;
             header?: never;
-            path?: never;
+            path: {
+                appointment_id: number;
+            };
             cookie?: never;
         };
         requestBody: {
@@ -202,7 +572,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Appointment"];
+                    "application/json": components["schemas"]["UpdateAppointmentRow"];
                 };
             };
             /** @description Validation Error */
@@ -231,7 +601,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GetAvailableAppointmentsRow"][];
+                    "application/json": components["schemas"]["AvailableBookingSlot"][];
                 };
             };
         };
@@ -255,7 +625,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Appointment"];
+                    "application/json": components["schemas"]["BookBookingslotRow"];
                 };
             };
             /** @description Validation Error */
@@ -269,12 +639,32 @@ export interface operations {
             };
         };
     };
-    delete_one: {
+    get_all_testresults: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InterviewResponse"];
+                };
+            };
+        };
+    };
+    get_testresult: {
         parameters: {
             query?: never;
             header?: never;
             path: {
-                id: number;
+                testresult_id: number;
             };
             cookie?: never;
         };
@@ -286,7 +676,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Appointment"];
+                    "application/json": components["schemas"]["InterviewDetailsRow"] | components["schemas"]["DonationTestDetailsRow"] | components["schemas"]["EntryFormDetailsRow"];
                 };
             };
             /** @description Validation Error */

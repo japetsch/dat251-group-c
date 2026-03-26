@@ -1,0 +1,4 @@
+backend/app/db/sqlc linguist-generated
+frontend/src/lib/api/schema.d.ts linguist-generated
+frontend/openapi/openapi.json linguist-generated
+

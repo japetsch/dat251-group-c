@@ -1,0 +1,14 @@
+@startuml
+start
+
+:Admin creates new booking-slot;
+
+if (Within opening hours? (See check in "Verify opening hours" diagram)) then (Yes)
+  :Create new booking slot in database;
+else (No)
+  :Show error message "Booking-slot not in opening hours";
+  stop
+endif
+
+stop
+@enduml

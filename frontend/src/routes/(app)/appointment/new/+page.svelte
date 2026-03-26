@@ -48,10 +48,6 @@
       flex-direction: column;
     }
 
-    .home-button {
-      margin-top: 0;
-    }
-
     .header {
       flex-direction: column;
     }
@@ -127,7 +123,7 @@
   // Bloodbank options
   $: bloodbanks = [
     "All",
-    ...new Set(sortedAppointments.map((item) => item.locationname)),
+    ...new Set(sortedAppointments.map((item) => item.bloodbank_name)),
   ];
 
   // Filter appointments by selected bloodbank
@@ -136,7 +132,7 @@
       filteredAppointments = sortedAppointments;
     } else {
       filteredAppointments = sortedAppointments.filter((item) => {
-        return item.locationname === selectedBloodbank;
+        return item.bloodbank_name === selectedBloodbank;
       });
     }
   }
@@ -196,14 +192,13 @@
     bookingMessage = "";
 
     try {
-      const response = await fetch("/api/appointment/book", {
+      const response = await fetch("/api/bookingslot/book", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          free_appointment_id: selectedAppointment.id,
-          user_id: 1,
+          bookingslot_id: selectedAppointment.id,
         }),
       });
 

@@ -3,13 +3,13 @@ import type { Appointment } from "$lib/types/appointment";
 import type { PageLoad } from "./$types";
 
 type NewApptPreloaded = {
-  availableAppointments: Appointment;
+  availableAppointments: Appointment[];
   error: string | null;
 };
 
 export const load: PageLoad<NewApptPreloaded> = async ({ fetch, url }) => {
   const client = createLoadClient(fetch, url);
-  const r = await client.GET("/appointment/available");
+  const r = await client.GET("/bookingslot/available");
 
   if (!r.response.ok || !r.data) {
     return {

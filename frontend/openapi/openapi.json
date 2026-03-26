@@ -6,6 +6,78 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Log In",
+        "operationId": "log_in",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequestData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Unauthorized. Incorrect email or password"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Log Out",
+        "operationId": "log_out",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Me",
+        "operationId": "me",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInfo"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/appointment": {
       "get": {
         "summary": "Find All",
@@ -17,7 +89,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/GetAllAppointmentsRow"
+                    "$ref": "#/components/schemas/GetAppointmentsByUserIdRow"
                   },
                   "type": "array",
                   "title": "Response Find All Appointment Get"
@@ -26,19 +98,32 @@
             }
           }
         }
-      },
+      }
+    },
+    "/appointment/{appointment_id}": {
       "patch": {
         "summary": "Update",
         "operationId": "update",
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Appointment Id"
+            }
+          }
+        ],
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AppointmentUpdateRequest"
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
@@ -46,7 +131,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Appointment"
+                  "$ref": "#/components/schemas/UpdateAppointmentRow"
                 }
               }
             }
@@ -64,7 +149,7 @@
         }
       }
     },
-    "/appointment/available": {
+    "/bookingslot/available": {
       "get": {
         "summary": "Get Available",
         "operationId": "get_available",
@@ -75,10 +160,10 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/GetAvailableAppointmentsRow"
+                    "$ref": "#/components/schemas/AvailableBookingSlot"
                   },
                   "type": "array",
-                  "title": "Response Get Available Appointment Available Get"
+                  "title": "Response Get Available Bookingslot Available Get"
                 }
               }
             }
@@ -86,7 +171,7 @@
         }
       }
     },
-    "/appointment/book": {
+    "/bookingslot/book": {
       "post": {
         "summary": "Book",
         "operationId": "book",
@@ -106,7 +191,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Appointment"
+                  "$ref": "#/components/schemas/BookBookingslotRow"
                 }
               }
             }
@@ -124,18 +209,36 @@
         }
       }
     },
-    "/appointment/{id}": {
-      "delete": {
-        "summary": "Delete One",
-        "operationId": "delete_one",
+    "/testresult": {
+      "get": {
+        "summary": "Get All Testresults",
+        "operationId": "get_all_testresults",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterviewResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/testresult/{testresult_id}": {
+      "get": {
+        "summary": "Get Testresult",
+        "operationId": "get_testresult",
         "parameters": [
           {
-            "name": "id",
+            "name": "testresult_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
-              "title": "Id"
+              "title": "Testresult Id"
             }
           }
         ],
@@ -145,7 +248,18 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Appointment"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/InterviewDetailsRow"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DonationTestDetailsRow"
+                    },
+                    {
+                      "$ref": "#/components/schemas/EntryFormDetailsRow"
+                    }
+                  ],
+                  "title": "Response Get Testresult Testresult  Testresult Id  Get"
                 }
               }
             }
@@ -166,73 +280,390 @@
   },
   "components": {
     "schemas": {
-      "Appointment": {
+      "AppointmentUpdateRequest": {
+        "properties": {
+          "bookingslot_id": {
+            "type": "integer",
+            "title": "Bookingslot Id"
+          },
+          "cancelled": {
+            "type": "boolean",
+            "title": "Cancelled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bookingslot_id",
+          "cancelled"
+        ],
+        "title": "AppointmentUpdateRequest"
+      },
+      "AvailableBookingSlot": {
         "properties": {
           "id": {
             "type": "integer",
             "title": "Id"
           },
-          "user_id": {
-            "type": "integer",
-            "title": "User Id"
-          },
           "time": {
             "type": "string",
             "format": "date-time",
             "title": "Time"
+          },
+          "duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Duration"
+          },
+          "capacity": {
+            "type": "integer",
+            "title": "Capacity"
+          },
+          "bloodbank_id": {
+            "type": "integer",
+            "title": "Bloodbank Id"
+          },
+          "bloodbank_name": {
+            "type": "string",
+            "title": "Bloodbank Name"
           },
           "location_id": {
             "type": "integer",
             "title": "Location Id"
+          },
+          "valid": {
+            "type": "boolean",
+            "title": "Valid"
           }
         },
         "type": "object",
         "required": [
           "id",
-          "user_id",
           "time",
-          "location_id"
+          "duration",
+          "capacity",
+          "bloodbank_id",
+          "bloodbank_name",
+          "location_id",
+          "valid"
         ],
-        "title": "Appointment"
+        "title": "AvailableBookingSlot"
       },
-      "AppointmentUpdateRequest": {
+      "BookAppointmentRequest": {
+        "properties": {
+          "bookingslot_id": {
+            "type": "integer",
+            "title": "Bookingslot Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bookingslot_id"
+        ],
+        "title": "BookAppointmentRequest"
+      },
+      "BookBookingslotRow": {
         "properties": {
           "id": {
             "type": "integer",
             "title": "Id"
           },
-          "time": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Time"
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "bookingslot_id": {
+            "type": "integer",
+            "title": "Bookingslot Id"
+          },
+          "cancelled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelled"
           }
         },
         "type": "object",
         "required": [
           "id",
-          "time"
+          "donor_id",
+          "bookingslot_id",
+          "cancelled"
         ],
-        "title": "AppointmentUpdateRequest"
+        "title": "BookBookingslotRow"
       },
-      "BookAppointmentRequest": {
+      "DonationTestDetailsRow": {
         "properties": {
-          "free_appointment_id": {
+          "id": {
             "type": "integer",
-            "title": "Free Appointment Id"
+            "title": "Id"
           },
-          "user_id": {
+          "donor_id": {
             "type": "integer",
-            "title": "User Id"
+            "title": "Donor Id"
+          },
+          "form_id": {
+            "type": "integer",
+            "title": "Form Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "invalidated": {
+            "type": "boolean",
+            "title": "Invalidated"
+          },
+          "ok_to_donate": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok To Donate"
+          },
+          "donation_test_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Donation Test Id"
+          },
+          "donation_id": {
+            "type": "integer",
+            "title": "Donation Id"
+          },
+          "tester_admin_id": {
+            "type": "integer",
+            "title": "Tester Admin Id"
+          },
+          "appointment_id": {
+            "type": "integer",
+            "title": "Appointment Id"
+          },
+          "amount_ml": {
+            "type": "number",
+            "title": "Amount Ml"
+          },
+          "is_blood_not_plasma": {
+            "type": "boolean",
+            "title": "Is Blood Not Plasma"
+          },
+          "tester_admin_name": {
+            "type": "string",
+            "title": "Tester Admin Name"
           }
         },
         "type": "object",
         "required": [
-          "free_appointment_id",
-          "user_id"
+          "id",
+          "donor_id",
+          "form_id",
+          "time",
+          "validity_duration",
+          "invalidated",
+          "ok_to_donate",
+          "donation_test_id",
+          "donation_id",
+          "tester_admin_id",
+          "appointment_id",
+          "amount_ml",
+          "is_blood_not_plasma",
+          "tester_admin_name"
         ],
-        "title": "BookAppointmentRequest"
+        "title": "DonationTestDetailsRow"
       },
-      "GetAllAppointmentsRow": {
+      "DonationTestResultRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "form_id": {
+            "type": "integer",
+            "title": "Form Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "invalidated": {
+            "type": "boolean",
+            "title": "Invalidated"
+          },
+          "donation_test_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Donation Test Id"
+          },
+          "admin_name": {
+            "type": "string",
+            "title": "Admin Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "donor_id",
+          "form_id",
+          "time",
+          "validity_duration",
+          "invalidated",
+          "donation_test_id",
+          "admin_name"
+        ],
+        "title": "DonationTestResultRow"
+      },
+      "EntryFormDetailsRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "form_id": {
+            "type": "integer",
+            "title": "Form Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "invalidated": {
+            "type": "boolean",
+            "title": "Invalidated"
+          },
+          "ok_to_donate": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok To Donate"
+          },
+          "entry_form_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry Form Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "donor_id",
+          "form_id",
+          "time",
+          "validity_duration",
+          "invalidated",
+          "ok_to_donate",
+          "entry_form_id"
+        ],
+        "title": "EntryFormDetailsRow"
+      },
+      "EntryFormResultRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "form_id": {
+            "type": "integer",
+            "title": "Form Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "invalidated": {
+            "type": "boolean",
+            "title": "Invalidated"
+          },
+          "entry_form_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entry Form Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "donor_id",
+          "form_id",
+          "time",
+          "validity_duration",
+          "invalidated",
+          "entry_form_id"
+        ],
+        "title": "EntryFormResultRow"
+      },
+      "GetAppointmentsByUserIdRow": {
         "properties": {
           "id": {
             "type": "integer",
@@ -242,53 +673,42 @@
             "type": "string",
             "title": "Username"
           },
-          "locationname": {
-            "type": "string",
-            "title": "Locationname"
-          },
           "time": {
             "type": "string",
             "format": "date-time",
             "title": "Time"
+          },
+          "duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Duration"
+          },
+          "bloodbank_name": {
+            "type": "string",
+            "title": "Bloodbank Name"
+          },
+          "cancelled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelled"
           }
         },
         "type": "object",
         "required": [
           "id",
           "username",
-          "locationname",
-          "time"
-        ],
-        "title": "GetAllAppointmentsRow"
-      },
-      "GetAvailableAppointmentsRow": {
-        "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "time": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Time"
-          },
-          "location_id": {
-            "type": "integer",
-            "title": "Location Id"
-          },
-          "locationname": {
-            "type": "string",
-            "title": "Locationname"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
           "time",
-          "location_id",
-          "locationname"
+          "duration",
+          "bloodbank_name",
+          "cancelled"
         ],
-        "title": "GetAvailableAppointmentsRow"
+        "title": "GetAppointmentsByUserIdRow"
       },
       "HTTPValidationError": {
         "properties": {
@@ -302,6 +722,240 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "InterviewDetailsRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "form_id": {
+            "type": "integer",
+            "title": "Form Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "invalidated": {
+            "type": "boolean",
+            "title": "Invalidated"
+          },
+          "ok_to_donate": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ok To Donate"
+          },
+          "interview_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interview Id"
+          },
+          "interviewer_admin_id": {
+            "type": "integer",
+            "title": "Interviewer Admin Id"
+          },
+          "interviewer_admin_name": {
+            "type": "string",
+            "title": "Interviewer Admin Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "donor_id",
+          "form_id",
+          "time",
+          "validity_duration",
+          "invalidated",
+          "ok_to_donate",
+          "interview_id",
+          "interviewer_admin_id",
+          "interviewer_admin_name"
+        ],
+        "title": "InterviewDetailsRow"
+      },
+      "InterviewResponse": {
+        "properties": {
+          "interviews": {
+            "items": {
+              "$ref": "#/components/schemas/InterviewResultRow"
+            },
+            "type": "array",
+            "title": "Interviews"
+          },
+          "entry_forms": {
+            "items": {
+              "$ref": "#/components/schemas/EntryFormResultRow"
+            },
+            "type": "array",
+            "title": "Entry Forms"
+          },
+          "donation_tests": {
+            "items": {
+              "$ref": "#/components/schemas/DonationTestResultRow"
+            },
+            "type": "array",
+            "title": "Donation Tests"
+          }
+        },
+        "type": "object",
+        "required": [
+          "interviews",
+          "entry_forms",
+          "donation_tests"
+        ],
+        "title": "InterviewResponse"
+      },
+      "InterviewResultRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "form_id": {
+            "type": "integer",
+            "title": "Form Id"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "invalidated": {
+            "type": "boolean",
+            "title": "Invalidated"
+          },
+          "interview_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Interview Id"
+          },
+          "admin_name": {
+            "type": "string",
+            "title": "Admin Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "donor_id",
+          "form_id",
+          "time",
+          "validity_duration",
+          "invalidated",
+          "interview_id",
+          "admin_name"
+        ],
+        "title": "InterviewResultRow"
+      },
+      "LoginRequestData": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password"
+        ],
+        "title": "LoginRequestData"
+      },
+      "UpdateAppointmentRow": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "bookingslot_id": {
+            "type": "integer",
+            "title": "Bookingslot Id"
+          },
+          "cancelled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cancelled"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "bookingslot_id",
+          "cancelled",
+          "donor_id"
+        ],
+        "title": "UpdateAppointmentRow"
+      },
+      "UserInfo": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "user_name": {
+            "type": "string",
+            "title": "User Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "user_name"
+        ],
+        "title": "UserInfo"
       },
       "ValidationError": {
         "properties": {

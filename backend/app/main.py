@@ -2,12 +2,17 @@ import os
 import sys
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.routing import APIRoute
+
+from app.auth import AuthUtil
 
 from .config import Settings
 from .db.db import DBManager
 from .routes.appointment_router import AppointmentRouter
+from .routes.auth_router import AuthRouter
+from .routes.bookingslot_router import BookingslotRouter
+from .routes.testresult_router import TestresultRouter
 from .swagger import SwaggerJsonGenerator
 
 
@@ -26,7 +31,22 @@ class Main:
         )
 
         # Include custom routers here
-        self.app.include_router(AppointmentRouter(), prefix="/appointment")
+        self.app.include_router(AuthRouter(), prefix="/auth")
+        self.app.include_router(
+            AppointmentRouter(),
+            prefix="/appointment",
+            dependencies=[Depends(AuthUtil.get_donor_user_requried)],
+        )
+        self.app.include_router(
+            BookingslotRouter(),
+            prefix="/bookingslot",
+            dependencies=[Depends(AuthUtil.get_donor_user_requried)],
+        )
+        self.app.include_router(
+            TestresultRouter(),
+            prefix="/testresult",
+            dependencies=[Depends(AuthUtil.get_donor_user_requried)],
+        )
 
         # Make the OpenAPI operation ids match the route function name
         # Ensures nicer names on the generated client
@@ -49,6 +69,8 @@ class Main:
 
         print("Creating SQLAlchemy engine...")
         app.state.db_engine = DBManager.create_db_engine(settings)
+
+        app.state.auth_utils = AuthUtil(settings)
 
         yield
 

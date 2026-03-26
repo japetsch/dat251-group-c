@@ -4,6 +4,7 @@ import subprocess
 from pathlib import Path
 
 import pytest
+from fastapi.testclient import TestClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 
@@ -48,3 +49,39 @@ def use_test_db():
     app.dependency_overrides[DBManager.get_db_connection] = _override_get_db_connection
     yield
     app.dependency_overrides.clear()
+
+
+@pytest.fixture
+def client():
+    with TestClient(app, root_path="") as c:
+        yield c
+
+
+@pytest.fixture
+def olav_client(client: TestClient):
+    resp = client.post(
+        "/api/auth/login",
+        json={"email": "olav@uib.no", "password": "correct horse battery staple"},
+    )
+    assert resp.status_code == 204
+    return client
+
+
+@pytest.fixture
+def peter_client(client: TestClient):
+    resp = client.post(
+        "/api/auth/login",
+        json={"email": "peter@hvl.no", "password": "password123"},
+    )
+    assert resp.status_code == 204
+    return client
+
+
+@pytest.fixture
+def sigrid_client(client: TestClient):
+    resp = client.post(
+        "/api/auth/login",
+        json={"email": "sigrid@gmain.com", "password": "hunter2"},
+    )
+    assert resp.status_code == 204
+    return client
