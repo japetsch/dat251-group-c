@@ -523,7 +523,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/GetAppointmentsByUserIdRow"
+                    "$ref": "#/components/schemas/GetAppointmentsByDonorIdRow"
                   },
                   "type": "array",
                   "title": "Response Find All Appointment Get"
@@ -537,6 +537,7 @@
     "/appointment/{appointment_id}": {
       "patch": {
         "summary": "Update",
+        "description": "Update an appointment, either changing its booking slot or cancelling it altogether\n\nThis action can be performed by the donor or an admin at the blood bank(s) in question\n\nTODO:\n- validate that requested bookingslot works\n- add appointment note entry documenting the change",
         "operationId": "update",
         "parameters": [
           {
@@ -609,13 +610,8 @@
           }
         },
         "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {}
-              }
-            }
+          "204": {
+            "description": "Successful Response"
           },
           "422": {
             "description": "Validation Error",
@@ -1088,7 +1084,7 @@
         ],
         "title": "GetAllBloodBanksRow"
       },
-      "GetAppointmentsByUserIdRow": {
+      "GetAppointmentsByDonorIdRow": {
         "properties": {
           "id": {
             "type": "integer",
@@ -1115,6 +1111,9 @@
           "cancelled": {
             "type": "boolean",
             "title": "Cancelled"
+          },
+          "notes": {
+            "title": "Notes"
           }
         },
         "type": "object",
@@ -1124,9 +1123,10 @@
           "time",
           "duration",
           "bloodbank_name",
-          "cancelled"
+          "cancelled",
+          "notes"
         ],
-        "title": "GetAppointmentsByUserIdRow"
+        "title": "GetAppointmentsByDonorIdRow"
       },
       "HTTPValidationError": {
         "properties": {

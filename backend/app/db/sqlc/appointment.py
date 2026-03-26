@@ -4,7 +4,7 @@
 # source: appointment.sql
 import datetime
 import pydantic
-from typing import AsyncIterator, Optional
+from typing import Any, AsyncIterator, Optional
 
 import sqlalchemy
 import sqlalchemy.ext.asyncio
@@ -12,22 +12,49 @@ import sqlalchemy.ext.asyncio
 from app.db.sqlc import models
 
 
-GET_APPOINTMENTS_BY_USER_ID = """-- name: get_appointments_by_user_id \\:many
-SELECT a.id as id, u.name as username, b.time as time, b.duration as duration, ba.name as bloodbank_name, a.cancelled FROM appointment a
-  INNER JOIN "user" u on a.donor_id = u.id
-  INNER JOIN bookingslot b on a.bookingslot_id = b.id
-  INNER JOIN bloodbank ba on b.bloodbank_id = ba.id
-  WHERE a.donor_id = :p1
+ADD_NOTE = """-- name: add_note \\:exec
+INSERT INTO appointment_note (appointment_id, author_id, message, time)
+VALUES (:p1, :p2, :p3, NOW())
 """
 
 
-class GetAppointmentsByUserIdRow(pydantic.BaseModel):
+GET_APPOINTMENTS_BY_DONOR_ID = """-- name: get_appointments_by_donor_id \\:many
+WITH notes AS (
+    SELECT an.appointment_id,
+        json_agg(json_build_object(
+            'author_user_id', u.id,
+            'author_name', u.name,
+            'message', an.message,
+            'time', an.time
+        ) ORDER BY an.time DESC) as nl
+    FROM appointment_note an
+    INNER JOIN "user" u ON an.author_id = u.id
+    GROUP BY an.id
+)
+SELECT a.id as id,
+    u.name as username,
+    b.time as time,
+    b.duration as duration,
+    ba.name as bloodbank_name,
+    a.cancelled,
+    COALESCE(n.nl, '[]'\\:\\:json) as notes
+FROM appointment a
+INNER JOIN "user" u on a.donor_id = u.id
+INNER JOIN bookingslot b on a.bookingslot_id = b.id
+INNER JOIN bloodbank ba on b.bloodbank_id = ba.id
+LEFT JOIN notes n ON n.appointment_id = a.id
+WHERE a.donor_id = :p1
+"""
+
+
+class GetAppointmentsByDonorIdRow(pydantic.BaseModel):
     id: int
     username: str
     time: datetime.datetime
     duration: datetime.timedelta
     bloodbank_name: str
     cancelled: bool
+    notes: Any
 
 
 UPDATE_APPOINTMENT = """-- name: update_appointment \\:one
@@ -85,16 +112,20 @@ class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
         self._conn = conn
 
-    async def get_appointments_by_user_id(self, *, donor_id: int) -> AsyncIterator[GetAppointmentsByUserIdRow]:
-        result = await self._conn.stream(sqlalchemy.text(GET_APPOINTMENTS_BY_USER_ID), {"p1": donor_id})
+    async def add_note(self, *, appointment_id: int, author_id: int, message: str) -> None:
+        await self._conn.execute(sqlalchemy.text(ADD_NOTE), {"p1": appointment_id, "p2": author_id, "p3": message})
+
+    async def get_appointments_by_donor_id(self, *, donor_id: int) -> AsyncIterator[GetAppointmentsByDonorIdRow]:
+        result = await self._conn.stream(sqlalchemy.text(GET_APPOINTMENTS_BY_DONOR_ID), {"p1": donor_id})
         async for row in result:
-            yield GetAppointmentsByUserIdRow(
+            yield GetAppointmentsByDonorIdRow(
                 id=row[0],
                 username=row[1],
                 time=row[2],
                 duration=row[3],
                 bloodbank_name=row[4],
                 cancelled=row[5],
+                notes=row[6],
             )
 
     async def update_appointment(self, *, id: int, cancelled: bool, bookingslot_id: int) -> Optional[UpdateAppointmentRow]:

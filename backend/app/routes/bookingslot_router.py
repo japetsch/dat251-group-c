@@ -9,7 +9,7 @@ from app.auth import DonorUserRequired
 from ..db.db import DBConnection
 from ..db.sqlc.appointment import (
     AsyncQuerier as AppointmentQuerier,
-    GetAppointmentsByUserIdRow,
+    GetAppointmentsByDonorIdRow,
 )
 from ..db.sqlc.bookingslot import (
     AsyncQuerier as BookingslotQuerier,
@@ -36,8 +36,8 @@ class BookingslotRouter(APIRouter):
         # Approximate 3 months since timedelta can't compare months
         MIN_WAITTIME = timedelta(days=90)
 
-        appointments: list[GetAppointmentsByUserIdRow] = []
-        async for x in a.get_appointments_by_user_id(donor_id=user.donor_id):
+        appointments: list[GetAppointmentsByDonorIdRow] = []
+        async for x in a.get_appointments_by_donor_id(donor_id=user.donor_id):
             appointments.append(x)
 
         rows: list[BookingslotRouter.AvailableBookingSlot] = []
