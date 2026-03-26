@@ -1,7 +1,7 @@
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
 
-from app.auth import CurrentUserOptional
+from app.auth import AdminInfo, CurrentUserOptional
 
 from ..db.db import DBConnection
 from ..db.sqlc.bloodbank import AsyncQuerier as BloodbankQuerier
@@ -27,7 +27,7 @@ class BloodbankRouter(APIRouter):
     ) -> list[BloodbankResponse]:
         # If the current user is an admin, pass their admin id to the query, otherwise pass -1
         admin_id = -1
-        if user is not None and getattr(user, "admin_id", None) is not None:
+        if isinstance(user, AdminInfo):
             admin_id = user.admin_id
 
         q = BloodbankQuerier(engine)
