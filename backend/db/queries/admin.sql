@@ -1,11 +1,11 @@
 -- name: GetAllBloodBanks :many
-SELECT b.name, a.street_name, a.street_number, a.postal_code, a.city, a.country,
+SELECT b.id as bloodbank_id, b.name, a.street_name, a.street_number, a.postal_code, a.city, a.country,
     COUNT(bba.admin_id) > 0 AS user_has_admin_access
 FROM bloodbank b
 INNER JOIN location l ON b.location_id = l.id
 INNER JOIN address a ON l.address_id = a.id
 LEFT JOIN bloodbank_admin bba ON (b.id = bba.bloodbank_id AND bba.admin_id = $1)
-GROUP BY b.id;
+GROUP BY b.id, a.id;
 
 -- name: CreateBloodBank :one
 WITH addr AS (
@@ -15,30 +15,28 @@ WITH addr AS (
 ),
 loc AS (
     INSERT INTO location (latitude, longitude, address_id)
-    VALUES ($6, $7, addr.id)
+    VALUES ($6, $7, (SELECT id FROM addr))
     RETURNING id
 ),
 bank AS (
     INSERT INTO bloodbank (name, location_id)
-    VALUES ($8, loc.id)
+    VALUES ($8, (SELECT id FROM loc))
     RETURNING id
 )
 INSERT INTO bloodbank_admin (bloodbank_id, admin_id)
-VALUES (bank.id, $9)
+VALUES ((SELECT id FROM bank), $9)
 RETURNING bloodbank_id;
 
 -- name: AddBloodBankAdmin :exec
 INSERT INTO bloodbank_admin (bloodbank_id, admin_id)
 VALUES ($1, $2);
 
--- name: RemoveBloodBankAdmin :exec
-WITH admin_ct AS (
-    SELECT count(id) FROM bloodbank_admin
-    WHERE bloodbank_id = sqlc.arg(bloodbank_id)
-)
+-- name: RemoveBloodBankAdmin :one
 DELETE FROM bloodbank_admin bba
 WHERE bba.bloodbank_id = sqlc.arg(bloodbank_id) AND
-    bba.admin_id = sqlc.arg(admin_id) AND admin_ct > 1;
+    bba.admin_id = sqlc.arg(admin_id) AND
+    (SELECT count(id) FROM bloodbank_admin WHERE bloodbank_id = sqlc.arg(bloodbank_id)) > 1
+RETURNING bba.admin_id;
 
 -- name: GetAppointmentsAtBloodBank :many
 SELECT bs.id as bookingslot_id, bs.time as bookingslot_time,
@@ -54,26 +52,24 @@ SELECT bs.id as bookingslot_id, bs.time as bookingslot_time,
         'donor_phone', u.phone_number,
         'notes', (
             SELECT COALESCE(json_agg(json_build_object(
-                'author_user_id', u.id,
-                'author_name', u.name,
+                'author_user_id', nu.id,
+                'author_name', nu.name,
                 'message', an.message,
                 'time', an.time
-            )), '[]'::json)
+            ) ORDER BY an.time DESC), '[]'::json)
             FROM appointment_note an
-            INNER JOIN "user" u ON an.author_id = u.id
+            INNER JOIN "user" nu ON an.author_id = nu.id
             WHERE an.appointment_id = a.id
-            ORDER BY an.time DESC
         ),
         'donations', (
             SELECT COALESCE(json_agg(json_build_object(
-                'donation_id', d.id,
-                'amount_ml', d.amount_ml,
-                'is_blood_not_plasma', d.is_blood_not_plasma
+                'donation_id', dn.id,
+                'amount_ml', dn.amount_ml,
+                'is_blood_not_plasma', dn.is_blood_not_plasma
                 -- TODO: testing status
-            )), '[]'::json)
-            FROM donation d
-            WHERE d.appointment_id = a.id
-            ORDER BY d.id
+            ) ORDER BY dn.id), '[]'::json)
+            FROM donation dn
+            WHERE dn.appointment_id = a.id
         )
     )) as appointments
 FROM bookingslot bs
@@ -90,7 +86,7 @@ GROUP BY bs.id;
 INSERT INTO appointment_note (appointment_id, author_id, message, time)
 VALUES ($1, $2, $3, NOW());
 
--- name: RegisterDonation :exec
+-- name: RegisterDonation :one
 INSERT INTO donation (appointment_id, amount_ml, is_blood_not_plasma)
 VALUES ($1, $2, $3)
 RETURNING id;
@@ -101,11 +97,11 @@ WITH iv AS (
     VALUES ($1) RETURNING id
 ), f AS (
     INSERT INTO form (ok_to_donate, interview_id)
-    VALUES ($3, iv)
+    VALUES ($3, (SELECT id FROM iv))
     RETURNING id
 )
 INSERT INTO test_result (donor_id, form_id, time, validity_duration)
-VALUES ($2, f, $4, $5);
+VALUES ($2, (SELECT id FROM f), $4, $5);
 
 -- name: GetDonationInfo :one
 SELECT a.donor_id, b.id as bloodbank_id
@@ -122,8 +118,8 @@ WITH dt AS (
     RETURNING id
 ), f AS (
     INSERT INTO form (ok_to_donate, donation_test_id)
-    VALUES ($4, dt)
+    VALUES ($4, (SELECT id FROM dt))
     RETURNING id
 )
 INSERT INTO test_result (donor_id, form_id, time, validity_duration)
-VALUES ($3, f, $5, $6);
+VALUES ($3, (SELECT id FROM f), $5, $6);

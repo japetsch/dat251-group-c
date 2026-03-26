@@ -32,16 +32,16 @@ WITH addr AS (
 ),
 loc AS (
     INSERT INTO location (latitude, longitude, address_id)
-    VALUES (:p6, :p7, addr.id)
+    VALUES (:p6, :p7, (SELECT id FROM addr))
     RETURNING id
 ),
 bank AS (
     INSERT INTO bloodbank (name, location_id)
-    VALUES (:p8, loc.id)
+    VALUES (:p8, (SELECT id FROM loc))
     RETURNING id
 )
 INSERT INTO bloodbank_admin (bloodbank_id, admin_id)
-VALUES (bank.id, :p9)
+VALUES ((SELECT id FROM bank), :p9)
 RETURNING bloodbank_id
 """
 
@@ -59,17 +59,18 @@ class CreateBloodBankParams(pydantic.BaseModel):
 
 
 GET_ALL_BLOOD_BANKS = """-- name: get_all_blood_banks \\:many
-SELECT b.name, a.street_name, a.street_number, a.postal_code, a.city, a.country,
+SELECT b.id as bloodbank_id, b.name, a.street_name, a.street_number, a.postal_code, a.city, a.country,
     COUNT(bba.admin_id) > 0 AS user_has_admin_access
 FROM bloodbank b
 INNER JOIN location l ON b.location_id = l.id
 INNER JOIN address a ON l.address_id = a.id
 LEFT JOIN bloodbank_admin bba ON (b.id = bba.bloodbank_id AND bba.admin_id = :p1)
-GROUP BY b.id
+GROUP BY b.id, a.id
 """
 
 
 class GetAllBloodBanksRow(pydantic.BaseModel):
+    bloodbank_id: int
     name: str
     street_name: str
     street_number: str
@@ -93,26 +94,24 @@ SELECT bs.id as bookingslot_id, bs.time as bookingslot_time,
         'donor_phone', u.phone_number,
         'notes', (
             SELECT COALESCE(json_agg(json_build_object(
-                'author_user_id', u.id,
-                'author_name', u.name,
+                'author_user_id', nu.id,
+                'author_name', nu.name,
                 'message', an.message,
                 'time', an.time
-            )), '[]'\\:\\:json)
+            ) ORDER BY an.time DESC), '[]'\\:\\:json)
             FROM appointment_note an
-            INNER JOIN "user" u ON an.author_id = u.id
+            INNER JOIN "user" nu ON an.author_id = nu.id
             WHERE an.appointment_id = a.id
-            ORDER BY an.time DESC
         ),
         'donations', (
             SELECT COALESCE(json_agg(json_build_object(
-                'donation_id', d.id,
-                'amount_ml', d.amount_ml,
-                'is_blood_not_plasma', d.is_blood_not_plasma
+                'donation_id', dn.id,
+                'amount_ml', dn.amount_ml,
+                'is_blood_not_plasma', dn.is_blood_not_plasma
                 -- TODO\\: testing status
-            )), '[]'\\:\\:json)
-            FROM donation d
-            WHERE d.appointment_id = a.id
-            ORDER BY d.id
+            ) ORDER BY dn.id), '[]'\\:\\:json)
+            FROM donation dn
+            WHERE dn.appointment_id = a.id
         )
     )) as appointments
 FROM bookingslot bs
@@ -150,7 +149,7 @@ class GetDonationInfoRow(pydantic.BaseModel):
     bloodbank_id: int
 
 
-REGISTER_DONATION = """-- name: register_donation \\:exec
+REGISTER_DONATION = """-- name: register_donation \\:one
 INSERT INTO donation (appointment_id, amount_ml, is_blood_not_plasma)
 VALUES (:p1, :p2, :p3)
 RETURNING id
@@ -164,11 +163,11 @@ WITH dt AS (
     RETURNING id
 ), f AS (
     INSERT INTO form (ok_to_donate, donation_test_id)
-    VALUES (:p4, dt)
+    VALUES (:p4, (SELECT id FROM dt))
     RETURNING id
 )
 INSERT INTO test_result (donor_id, form_id, time, validity_duration)
-VALUES (:p3, f, :p5, :p6)
+VALUES (:p3, (SELECT id FROM f), :p5, :p6)
 """
 
 
@@ -187,11 +186,11 @@ WITH iv AS (
     VALUES (:p1) RETURNING id
 ), f AS (
     INSERT INTO form (ok_to_donate, interview_id)
-    VALUES (:p3, iv)
+    VALUES (:p3, (SELECT id FROM iv))
     RETURNING id
 )
 INSERT INTO test_result (donor_id, form_id, time, validity_duration)
-VALUES (:p2, f, :p4, :p5)
+VALUES (:p2, (SELECT id FROM f), :p4, :p5)
 """
 
 
@@ -203,14 +202,12 @@ class RegisterInterviewParams(pydantic.BaseModel):
     validity_duration: datetime.timedelta
 
 
-REMOVE_BLOOD_BANK_ADMIN = """-- name: remove_blood_bank_admin \\:exec
-WITH admin_ct AS (
-    SELECT count(id) FROM bloodbank_admin
-    WHERE bloodbank_id = :p1
-)
+REMOVE_BLOOD_BANK_ADMIN = """-- name: remove_blood_bank_admin \\:one
 DELETE FROM bloodbank_admin bba
 WHERE bba.bloodbank_id = :p1 AND
-    bba.admin_id = :p2 AND admin_ct > 1
+    bba.admin_id = :p2 AND
+    (SELECT count(id) FROM bloodbank_admin WHERE bloodbank_id = :p1) > 1
+RETURNING bba.admin_id
 """
 
 
@@ -244,13 +241,14 @@ class AsyncQuerier:
         result = await self._conn.stream(sqlalchemy.text(GET_ALL_BLOOD_BANKS), {"p1": admin_id})
         async for row in result:
             yield GetAllBloodBanksRow(
-                name=row[0],
-                street_name=row[1],
-                street_number=row[2],
-                postal_code=row[3],
-                city=row[4],
-                country=row[5],
-                user_has_admin_access=row[6],
+                bloodbank_id=row[0],
+                name=row[1],
+                street_name=row[2],
+                street_number=row[3],
+                postal_code=row[4],
+                city=row[5],
+                country=row[6],
+                user_has_admin_access=row[7],
             )
 
     async def get_appointments_at_blood_bank(self, *, bloodbank_id: int, after: datetime.datetime, before: Optional[datetime.datetime], show_cancelled: bool) -> AsyncIterator[GetAppointmentsAtBloodBankRow]:
@@ -278,8 +276,11 @@ class AsyncQuerier:
             bloodbank_id=row[1],
         )
 
-    async def register_donation(self, *, appointment_id: int, amount_ml: float, is_blood_not_plasma: bool) -> None:
-        await self._conn.execute(sqlalchemy.text(REGISTER_DONATION), {"p1": appointment_id, "p2": amount_ml, "p3": is_blood_not_plasma})
+    async def register_donation(self, *, appointment_id: int, amount_ml: float, is_blood_not_plasma: bool) -> Optional[int]:
+        row = (await self._conn.execute(sqlalchemy.text(REGISTER_DONATION), {"p1": appointment_id, "p2": amount_ml, "p3": is_blood_not_plasma})).first()
+        if row is None:
+            return None
+        return row[0]
 
     async def register_donation_test(self, arg: RegisterDonationTestParams) -> None:
         await self._conn.execute(sqlalchemy.text(REGISTER_DONATION_TEST), {
@@ -300,5 +301,8 @@ class AsyncQuerier:
             "p5": arg.validity_duration,
         })
 
-    async def remove_blood_bank_admin(self, *, bloodbank_id: int, admin_id: int) -> None:
-        await self._conn.execute(sqlalchemy.text(REMOVE_BLOOD_BANK_ADMIN), {"p1": bloodbank_id, "p2": admin_id})
+    async def remove_blood_bank_admin(self, *, bloodbank_id: int, admin_id: int) -> Optional[int]:
+        row = (await self._conn.execute(sqlalchemy.text(REMOVE_BLOOD_BANK_ADMIN), {"p1": bloodbank_id, "p2": admin_id})).first()
+        if row is None:
+            return None
+        return row[0]

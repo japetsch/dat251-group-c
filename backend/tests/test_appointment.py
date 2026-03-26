@@ -92,6 +92,30 @@ class TestAppointment:
         response = await peter_client.patch("/api/appointment/1", json=request_body)
         assert response.status_code == 404
 
+    async def test_donor_add_note(self, olav_client: httpx.AsyncClient):
+        r = await olav_client.post(
+            "/api/appointment/1/note",
+            json={"message": "My heart aches for donating blood!"},
+        )
+        assert r.status_code == 204
+
+        r2 = await olav_client.get("/api/appointment")
+        appt = next(a for a in r2.json() if a["id"] == 1)
+        assert any(
+            n["message"] == "My heart aches for donating blood!" for n in appt["notes"]
+        )
+
+    async def test_donor_cannot_add_note_to_other_appointment(
+        self, peter_client: httpx.AsyncClient
+    ):
+        r = await peter_client.post(
+            "/api/appointment/1/note",  # (Olav's appointment)
+            json={
+                "message": "The definition of insanity is doing the same thing over and over again, and expecting different results"
+            },
+        )
+        assert r.status_code == 404
+
     async def assert_bookingslot_capacity(
         self, client: httpx.AsyncClient, bookingslot_id: int, capacity: int
     ):

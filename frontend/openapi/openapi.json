@@ -797,10 +797,10 @@
             "type": "string",
             "title": "Message"
           },
-          "timestamp": {
+          "time": {
             "type": "string",
             "format": "date-time",
-            "title": "Timestamp"
+            "title": "Time"
           }
         },
         "type": "object",
@@ -808,7 +808,7 @@
           "author_user_id",
           "author_name",
           "message",
-          "timestamp"
+          "time"
         ],
         "title": "AppointmentNoteType"
       },
@@ -1364,6 +1364,10 @@
       },
       "GetAllBloodBanksRow": {
         "properties": {
+          "bloodbank_id": {
+            "type": "integer",
+            "title": "Bloodbank Id"
+          },
           "name": {
             "type": "string",
             "title": "Name"
@@ -1395,6 +1399,7 @@
         },
         "type": "object",
         "required": [
+          "bloodbank_id",
           "name",
           "street_name",
           "street_number",

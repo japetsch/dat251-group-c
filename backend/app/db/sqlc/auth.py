@@ -43,7 +43,8 @@ WHERE bba.admin_id = :p1 AND bba.bloodbank_id = :p2
 HAS_ADMIN_WHERE_APPOINTMENT_IS = """-- name: has_admin_where_appointment_is \\:one
 SELECT TRUE
 FROM bloodbank_admin bba
-INNER JOIN appointment a ON a.bloodbank_id = bba.bloodbank_id
+INNER JOIN bookingslot bs ON bs.bloodbank_id = bba.bloodbank_id
+INNER JOIN appointment a ON a.bookingslot_id = bs.id
 WHERE bba.admin_id = :p1 AND a.id = :p2
 """
 

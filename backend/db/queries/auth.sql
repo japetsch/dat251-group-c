@@ -15,7 +15,8 @@ WHERE bba.admin_id = $1 AND bba.bloodbank_id = $2;
 -- name: HasAdminWhereAppointmentIs :one
 SELECT TRUE
 FROM bloodbank_admin bba
-INNER JOIN appointment a ON a.bloodbank_id = bba.bloodbank_id
+INNER JOIN bookingslot bs ON bs.bloodbank_id = bba.bloodbank_id
+INNER JOIN appointment a ON a.bookingslot_id = bs.id
 WHERE bba.admin_id = $1 AND a.id = sqlc.arg(appointment_id);
 
 -- name: TestResultBelongsTo :one

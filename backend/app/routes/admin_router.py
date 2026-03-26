@@ -187,9 +187,14 @@ class AdminRouter(APIRouter):
         """
         await self._assert_bb_access(user.admin_id, bloodbank_id, engine)
         aq = AdminQuerier(engine)
-        await aq.remove_blood_bank_admin(
+        removed_admin_id = await aq.remove_blood_bank_admin(
             bloodbank_id=bloodbank_id, admin_id=data.admin_id
         )
+        if removed_admin_id is None:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="Cannot remove the last admin of a blood bank",
+            )
 
     class BookingSlotType(GetAppointmentsAtBloodBankRow):
         appointments: list[AdminRouter.AppointmentType]
@@ -209,7 +214,7 @@ class AdminRouter(APIRouter):
         author_user_id: int
         author_name: str
         message: str
-        timestamp: datetime
+        time: datetime
 
     class DonationType(BaseModel):
         donation_id: int
@@ -248,7 +253,9 @@ class AdminRouter(APIRouter):
 
         slots: list[AdminRouter.BookingSlotType] = []
         async for a in appts:
-            slots.append(AdminRouter.BookingSlotType.model_validate(a))
+            slots.append(
+                AdminRouter.BookingSlotType.model_validate(a, from_attributes=True)
+            )
         return slots
 
     class AddNoteRequest(BaseModel):
