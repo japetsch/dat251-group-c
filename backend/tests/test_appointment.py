@@ -1,4 +1,8 @@
+from datetime import datetime
+
 import httpx
+
+from tests.util import assert_dicts_match
 
 
 class TestAppointment:
@@ -7,32 +11,30 @@ class TestAppointment:
         assert response.status_code == 200
 
         response_json = response.json()
-        expected = [
-            {
-                "id": 1,
-                "username": "Olav",
-                "time": "2026-02-20T16:00:00Z",
-                "duration": "PT30M",
-                "bloodbank_name": "Haukeland universitetssjukehus",
-                "cancelled": False,
-                "notes": [
-                    {
-                        "author_user_id": 4,
-                        "author_name": "AdminHaukeland",
-                        "message": "Hi, I am AdminHaukeland!",
-                        "time": "2026-02-18T15:30:00+01:00",
-                    },
-                    {
-                        "author_user_id": 1,
-                        "author_name": "Olav",
-                        "message": "Hi my name is Olav!",
-                        "time": "2026-02-18T11:00:00+01:00",
-                    },
-                ],
-            }
-        ]
-        for elem in expected:
-            assert elem in response_json
+        expected = {
+            "id": 1,
+            "username": "Olav",
+            "time": datetime.fromisoformat("2026-02-20T16:00:00Z"),
+            "duration": "PT30M",
+            "bloodbank_name": "Haukeland universitetssjukehus",
+            "cancelled": False,
+            "notes": [
+                {
+                    "author_user_id": 4,
+                    "author_name": "AdminHaukeland",
+                    "message": "Hi, I am AdminHaukeland!",
+                    "time": datetime.fromisoformat("2026-02-18T15:30:00+01:00"),
+                },
+                {
+                    "author_user_id": 1,
+                    "author_name": "Olav",
+                    "message": "Hi my name is Olav!",
+                    "time": datetime.fromisoformat("2026-02-18T11:00:00+01:00"),
+                },
+            ],
+        }
+        olav_appt = next(a for a in response_json if a["id"] == 1)
+        assert_dicts_match(olav_appt, expected)
 
     async def test_cannot_get_appointments_unauthenticated(
         self, client: httpx.AsyncClient
@@ -47,7 +49,7 @@ class TestAppointment:
         expected = {"id": 1, "bookingslot_id": 3, "cancelled": True, "donor_id": 1}
         assert response_json == expected
 
-        # verify whole data
+        # verify data updated
         response = await olav_client.get("/api/appointment")
         response_json = response.json()
         assert len(response_json) == 1, "More than one appointment for Olav returned"
@@ -62,9 +64,7 @@ class TestAppointment:
             "bloodbank_name": "Haukeland universitetssjukehus",
             "cancelled": True,
         }
-        for k, v in expected_data.items():
-            assert k in response_data
-            assert response_data[k] == v
+        assert_dicts_match(response_data, expected_data)
 
         await self.assert_bookingslot_capacity(olav_client, 1, 11)
         await self.assert_bookingslot_capacity(olav_client, 3, 9)

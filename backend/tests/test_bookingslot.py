@@ -1,4 +1,8 @@
+from datetime import datetime
+
 import httpx
+
+from tests.util import dictmatch_in
 
 
 class TestBookingslot:
@@ -18,7 +22,7 @@ class TestBookingslot:
         expected = [
             {
                 "id": 1,
-                "time": "2026-02-20T16:00:00Z",
+                "time": datetime.fromisoformat("2026-02-20T16:00:00Z"),
                 "duration": "PT30M",
                 "capacity": 10,
                 "bloodbank_id": 1,
@@ -28,7 +32,7 @@ class TestBookingslot:
             },
             {
                 "id": 2,
-                "time": "2026-05-11T11:30:00Z",
+                "time": datetime.fromisoformat("2026-05-11T11:30:00Z"),
                 "duration": "PT30M",
                 "capacity": 10,
                 "bloodbank_id": 1,
@@ -38,7 +42,7 @@ class TestBookingslot:
             },
             {
                 "id": 3,
-                "time": "2026-12-05T06:00:00Z",
+                "time": datetime.fromisoformat("2026-12-05T06:00:00Z"),
                 "duration": "PT30M",
                 "capacity": 10,
                 "bloodbank_id": 1,
@@ -48,7 +52,7 @@ class TestBookingslot:
             },
             {
                 "id": 4,
-                "time": "2026-12-05T06:00:00Z",
+                "time": datetime.fromisoformat("2026-12-05T06:00:00Z"),
                 "duration": "PT30M",
                 "capacity": 0,
                 "bloodbank_id": 1,
@@ -58,7 +62,7 @@ class TestBookingslot:
             },
             {
                 "id": 5,
-                "time": "2026-06-21T06:00:00Z",
+                "time": datetime.fromisoformat("2026-06-21T06:00:00Z"),
                 "duration": "PT30M",
                 "capacity": 10,
                 "bloodbank_id": 1,
@@ -71,7 +75,7 @@ class TestBookingslot:
         assert isinstance(response_json, list)
         assert len(response_json) >= 1
         for elem in expected:
-            assert elem in response_json
+            assert dictmatch_in(response_json, elem)
 
     async def test_get_available_bookingslots_peter(
         self, peter_client: httpx.AsyncClient
