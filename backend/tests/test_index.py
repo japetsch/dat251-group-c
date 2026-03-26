@@ -1,10 +1,7 @@
-from fastapi.testclient import TestClient
-
-from app.main import app
+import httpx
 
 
 class TestIndex:
-    def test_openapi_docs_available(self):
-        with TestClient(app, root_path="") as client:
-            response = client.get("/docs")
-            assert response.status_code == 200
+    async def test_openapi_docs_available(self, client: httpx.AsyncClient):
+        response = await client.get("/docs")
+        assert response.status_code == 200

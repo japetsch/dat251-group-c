@@ -1,17 +1,21 @@
-from fastapi.testclient import TestClient
+import httpx
 
 
 class TestTestresult:
-    def test_cannot_get_testresults_unauthenticated(self, client: TestClient):
-        response = client.get("/api/testresult")
+    async def test_cannot_get_testresults_unauthenticated(
+        self, client: httpx.AsyncClient
+    ):
+        response = await client.get("/api/testresult")
         assert response.status_code == 401
 
-    def test_cannot_get_testresult_unauthenticated(self, client: TestClient):
-        response = client.get("/api/testresult/1")
+    async def test_cannot_get_testresult_unauthenticated(
+        self, client: httpx.AsyncClient
+    ):
+        response = await client.get("/api/testresult/1")
         assert response.status_code == 401
 
-    def test_can_get_testresults(self, olav_client: TestClient):
-        response = olav_client.get("/api/testresult")
+    async def test_can_get_testresults(self, olav_client: httpx.AsyncClient):
+        response = await olav_client.get("/api/testresult")
         assert response.status_code == 200
 
         response_json = response.json()
@@ -49,8 +53,10 @@ class TestTestresult:
         for elem in expected["donation_tests"]:
             assert elem in response_json["donation_tests"]
 
-    def test_can_get_testresults_empty_list(self, sigrid_client: TestClient):
-        response = sigrid_client.get("/api/testresult")
+    async def test_can_get_testresults_empty_list(
+        self, sigrid_client: httpx.AsyncClient
+    ):
+        response = await sigrid_client.get("/api/testresult")
         assert response.status_code == 200
 
         response_json = response.json()
@@ -61,8 +67,8 @@ class TestTestresult:
         assert isinstance(response_json["donation_tests"], list)
         assert len(response_json["donation_tests"]) == 0
 
-    def test_can_get_testresult_interview(self, olav_client: TestClient):
-        response = olav_client.get("/api/testresult/1")
+    async def test_can_get_testresult_interview(self, olav_client: httpx.AsyncClient):
+        response = await olav_client.get("/api/testresult/1")
 
         expected = {
             "id": 1,
@@ -81,8 +87,8 @@ class TestTestresult:
 
         assert response_json == expected
 
-    def test_can_get_testresult_donation(self, olav_client: TestClient):
-        response = olav_client.get("/api/testresult/5")
+    async def test_can_get_testresult_donation(self, olav_client: httpx.AsyncClient):
+        response = await olav_client.get("/api/testresult/5")
 
         expected = {
             "id": 5,
@@ -105,8 +111,10 @@ class TestTestresult:
 
         assert response_json == expected
 
-    def test_cannot_get_testresult_of_other_user(self, olav_client: TestClient):
-        response = olav_client.get("/api/testresult/2")
+    async def test_cannot_get_testresult_of_other_user(
+        self, olav_client: httpx.AsyncClient
+    ):
+        response = await olav_client.get("/api/testresult/2")
 
         assert response.status_code == 404
         assert response.json() == {"detail": "Test result for diffenrent user"}
