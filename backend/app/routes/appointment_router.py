@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from fastapi import HTTPException, status
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
@@ -27,16 +29,34 @@ class AppointmentRouter(APIRouter):
             status_code=status.HTTP_204_NO_CONTENT,
         )
 
+    class AppointmentType(BaseModel):
+        id: int
+        username: str
+        time: datetime
+        duration: timedelta
+        bloodbank_name: str
+        cancelled: bool
+        notes: list[AppointmentRouter.NoteType]
+
+    # TODO: refactor (this is duplicate of a structure in AdminRouter)
+    class NoteType(BaseModel):
+        author_user_id: int
+        author_name: str
+        message: str
+        time: datetime
+
     async def find_all(
         self, user: DonorUserRequired, engine: DBConnection
-    ) -> list[GetAppointmentsByDonorIdRow]:
+    ) -> list[AppointmentRouter.AppointmentType]:
         q = AppointmentQuerier(engine)
 
-        # TODO: enhance type information
-        rows: list[GetAppointmentsByDonorIdRow] = []
+        rows: list[AppointmentRouter.AppointmentType] = []
         async for x in q.get_appointments_by_donor_id(donor_id=user.donor_id):
-            rows.append(x)
-
+            rows.append(
+                AppointmentRouter.AppointmentType.model_validate(
+                    x, from_attributes=True
+                )
+            )
         return rows
 
     async def _assert_appointment_owner(

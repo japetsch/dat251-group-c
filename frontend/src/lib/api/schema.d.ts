@@ -388,26 +388,6 @@ export interface components {
              */
             time: string;
         };
-        /** AppointmentType */
-        AppointmentType: {
-            /** Appointment Id */
-            appointment_id: number;
-            /** Appointment Cancelled */
-            appointment_cancelled: boolean;
-            /** Donor Id */
-            donor_id: number;
-            donor_blood_type: components["schemas"]["BloodType"] | null;
-            /** Donor Name */
-            donor_name: string;
-            /** Donor Email */
-            donor_email: string;
-            /** Donor Phone */
-            donor_phone: string;
-            /** Notes */
-            notes: components["schemas"]["AppointmentNoteType"][];
-            /** Donations */
-            donations: components["schemas"]["DonationType"][];
-        };
         /** AppointmentUpdateRequest */
         AppointmentUpdateRequest: {
             /** Bookingslot Id */
@@ -478,7 +458,7 @@ export interface components {
             /** Bookingslot Remaining Capacity */
             bookingslot_remaining_capacity: number;
             /** Appointments */
-            appointments: components["schemas"]["AppointmentType"][];
+            appointments: components["schemas"]["app__routes__admin_router__AdminRouter__AppointmentType"][];
         };
         /** CreateBloodBankRequest */
         CreateBloodBankRequest: {
@@ -640,29 +620,6 @@ export interface components {
             /** User Has Admin Access */
             user_has_admin_access: boolean;
         };
-        /** GetAppointmentsByDonorIdRow */
-        GetAppointmentsByDonorIdRow: {
-            /** Id */
-            id: number;
-            /** Username */
-            username: string;
-            /**
-             * Time
-             * Format: date-time
-             */
-            time: string;
-            /**
-             * Duration
-             * Format: duration
-             */
-            duration: string;
-            /** Bloodbank Name */
-            bloodbank_name: string;
-            /** Cancelled */
-            cancelled: boolean;
-            /** Notes */
-            notes: unknown;
-        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -743,6 +700,20 @@ export interface components {
             /** Admin Id */
             admin_id: number;
         };
+        /** NoteType */
+        NoteType: {
+            /** Author User Id */
+            author_user_id: number;
+            /** Author Name */
+            author_name: string;
+            /** Message */
+            message: string;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+        };
         /** RegisterDonationRequest */
         RegisterDonationRequest: {
             /** Amount Ml */
@@ -815,6 +786,49 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** AppointmentType */
+        app__routes__admin_router__AdminRouter__AppointmentType: {
+            /** Appointment Id */
+            appointment_id: number;
+            /** Appointment Cancelled */
+            appointment_cancelled: boolean;
+            /** Donor Id */
+            donor_id: number;
+            donor_blood_type: components["schemas"]["BloodType"] | null;
+            /** Donor Name */
+            donor_name: string;
+            /** Donor Email */
+            donor_email: string;
+            /** Donor Phone */
+            donor_phone: string;
+            /** Notes */
+            notes: components["schemas"]["AppointmentNoteType"][];
+            /** Donations */
+            donations: components["schemas"]["DonationType"][];
+        };
+        /** AppointmentType */
+        app__routes__appointment_router__AppointmentRouter__AppointmentType: {
+            /** Id */
+            id: number;
+            /** Username */
+            username: string;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Duration
+             * Format: duration
+             */
+            duration: string;
+            /** Bloodbank Name */
+            bloodbank_name: string;
+            /** Cancelled */
+            cancelled: boolean;
+            /** Notes */
+            notes: components["schemas"]["NoteType"][];
         };
     };
     responses: never;
@@ -1204,7 +1218,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GetAppointmentsByDonorIdRow"][];
+                    "application/json": components["schemas"]["app__routes__appointment_router__AppointmentRouter__AppointmentType"][];
                 };
             };
         };
