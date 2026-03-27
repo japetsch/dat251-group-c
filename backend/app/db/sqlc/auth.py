@@ -33,6 +33,22 @@ class GetUserRow(pydantic.BaseModel):
     admin_id: Optional[int]
 
 
+HAS_ADMIN_AT_BLOOD_BANK = """-- name: has_admin_at_blood_bank \\:one
+SELECT TRUE
+FROM bloodbank_admin bba
+WHERE bba.admin_id = :p1 AND bba.bloodbank_id = :p2
+"""
+
+
+HAS_ADMIN_WHERE_APPOINTMENT_IS = """-- name: has_admin_where_appointment_is \\:one
+SELECT TRUE
+FROM bloodbank_admin bba
+INNER JOIN bookingslot bs ON bs.bloodbank_id = bba.bloodbank_id
+INNER JOIN appointment a ON a.bookingslot_id = bs.id
+WHERE bba.admin_id = :p1 AND a.id = :p2
+"""
+
+
 TEST_RESULT_BELONGS_TO = """-- name: test_result_belongs_to \\:one
 SELECT TRUE
 FROM test_result t
@@ -66,6 +82,18 @@ class AsyncQuerier:
             donor_id=row[4],
             admin_id=row[5],
         )
+
+    async def has_admin_at_blood_bank(self, *, admin_id: int, bloodbank_id: int) -> Optional[bool]:
+        row = (await self._conn.execute(sqlalchemy.text(HAS_ADMIN_AT_BLOOD_BANK), {"p1": admin_id, "p2": bloodbank_id})).first()
+        if row is None:
+            return None
+        return row[0]
+
+    async def has_admin_where_appointment_is(self, *, admin_id: int, appointment_id: int) -> Optional[bool]:
+        row = (await self._conn.execute(sqlalchemy.text(HAS_ADMIN_WHERE_APPOINTMENT_IS), {"p1": admin_id, "p2": appointment_id})).first()
+        if row is None:
+            return None
+        return row[0]
 
     async def test_result_belongs_to(self, *, testresult_id: int, donor_id: int) -> Optional[bool]:
         row = (await self._conn.execute(sqlalchemy.text(TEST_RESULT_BELONGS_TO), {"p1": testresult_id, "p2": donor_id})).first()

@@ -55,6 +55,183 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/bloodbank": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Bloodbanks
+         * @description Lists all blood banks in the system, even the ones the logged in user is not adminstrator for
+         *
+         *     TODO:
+         *     - enhance with opening hours information
+         *     - allow admins to list which people are admins
+         */
+        get: operations["list_bloodbanks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/bloodbank/create": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Bloodbank
+         * @description Creates a new bloodbank with the logged in admin user as an administrator
+         */
+        post: operations["create_bloodbank"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/bloodbank/{bloodbank_id}/admin/add": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Admin To Bloodbank
+         * @description Add another admin to a blood bank the logged in user is administrator for
+         */
+        post: operations["add_admin_to_bloodbank"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/bloodbank/{bloodbank_id}/admin/remove": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Remove Admin From Bloodbank
+         * @description Remove an admin from a blood bank the logged in user is administrator for
+         *
+         *     The user can remove themselves.
+         *     The user can't remove the last admin of a blood bank.
+         */
+        delete: operations["remove_admin_from_bloodbank"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/bloodbank/{bloodbank_id}/appointment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Bloodbank Appointments
+         * @description Show appointments for blood bank.
+         *
+         *     By default only the ones scheduled after 00:00 in Oslo on the same day
+         */
+        get: operations["bloodbank_appointments"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/appointment/{appointment_id}/note": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Appointment Add Note */
+        post: operations["appointment_add_note"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/appointment/{appointment_id}/donation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Appointment Register Donation */
+        post: operations["appointment_register_donation"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/donor/{donor_id}/form/interview": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Register Interview */
+        post: operations["register_interview"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/donor/{donor_id}/form/donation-test": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Register Donation Test */
+        post: operations["register_donation_test"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/appointment": {
         parameters: {
             query?: never;
@@ -85,8 +262,34 @@ export interface paths {
         delete?: never;
         options?: never;
         head?: never;
-        /** Update */
+        /**
+         * Update
+         * @description Update an appointment, either changing its booking slot or cancelling it altogether
+         *
+         *     This action can be performed by the donor or an admin at the blood bank(s) in question
+         *
+         *     TODO:
+         *     - validate that requested bookingslot works
+         *     - add appointment note entry documenting the change
+         */
         patch: operations["update"];
+        trace?: never;
+    };
+    "/appointment/{appointment_id}/note": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Note */
+        post: operations["add_note"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/bookingslot/available": {
@@ -178,6 +381,30 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AddNoteRequest */
+        AddNoteRequest: {
+            /** Message */
+            message: string;
+        };
+        /** AppointmentNote */
+        AppointmentNote: {
+            /** Message */
+            message: string;
+        };
+        /** AppointmentNoteType */
+        AppointmentNoteType: {
+            /** Author User Id */
+            author_user_id: number;
+            /** Author Name */
+            author_name: string;
+            /** Message */
+            message: string;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+        };
         /** AppointmentUpdateRequest */
         AppointmentUpdateRequest: {
             /** Bookingslot Id */
@@ -210,6 +437,11 @@ export interface components {
             /** Valid */
             valid: boolean;
         };
+        /**
+         * BloodType
+         * @enum {string}
+         */
+        BloodType: "O+" | "O-" | "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-";
         /** BloodbankResponse */
         BloodbankResponse: {
             /** Bloodbank Id */
@@ -243,7 +475,48 @@ export interface components {
             /** Bookingslot Id */
             bookingslot_id: number;
             /** Cancelled */
-            cancelled: boolean | null;
+            cancelled: boolean;
+        };
+        /** BookingSlotType */
+        BookingSlotType: {
+            /** Bookingslot Id */
+            bookingslot_id: number;
+            /**
+             * Bookingslot Time
+             * Format: date-time
+             */
+            bookingslot_time: string;
+            /**
+             * Bookingslot Duration
+             * Format: duration
+             */
+            bookingslot_duration: string;
+            /** Bookingslot Remaining Capacity */
+            bookingslot_remaining_capacity: number;
+            /** Appointments */
+            appointments: components["schemas"]["app__routes__admin_router__AdminRouter__AppointmentType"][];
+        };
+        /** CreateBloodBankRequest */
+        CreateBloodBankRequest: {
+            /** Name */
+            name: string;
+            /** Street Name */
+            street_name: string;
+            /** Street Number */
+            street_number: string;
+            /** Postal Code */
+            postal_code: string;
+            /** City */
+            city: string;
+            /**
+             * Country
+             * @default NO
+             */
+            country: string;
+            /** Loc Lat */
+            loc_lat: number;
+            /** Loc Lon */
+            loc_lon: number;
         };
         /** DonationTestDetailsRow */
         DonationTestDetailsRow: {
@@ -266,7 +539,7 @@ export interface components {
             /** Invalidated */
             invalidated: boolean;
             /** Ok To Donate */
-            ok_to_donate: boolean | null;
+            ok_to_donate: boolean;
             /** Donation Test Id */
             donation_test_id: number | null;
             /** Donation Id */
@@ -307,6 +580,15 @@ export interface components {
             /** Admin Name */
             admin_name: string;
         };
+        /** DonationType */
+        DonationType: {
+            /** Donation Id */
+            donation_id: number;
+            /** Amount Ml */
+            amount_ml: number;
+            /** Is Blood Not Plasma */
+            is_blood_not_plasma: boolean;
+        };
         /** EntryFormDetailsRow */
         EntryFormDetailsRow: {
             /** Id */
@@ -328,7 +610,7 @@ export interface components {
             /** Invalidated */
             invalidated: boolean;
             /** Ok To Donate */
-            ok_to_donate: boolean | null;
+            ok_to_donate: boolean;
             /** Entry Form Id */
             entry_form_id: number | null;
         };
@@ -355,26 +637,24 @@ export interface components {
             /** Entry Form Id */
             entry_form_id: number | null;
         };
-        /** GetAppointmentsByUserIdRow */
-        GetAppointmentsByUserIdRow: {
-            /** Id */
-            id: number;
-            /** Username */
-            username: string;
-            /**
-             * Time
-             * Format: date-time
-             */
-            time: string;
-            /**
-             * Duration
-             * Format: duration
-             */
-            duration: string;
-            /** Bloodbank Name */
-            bloodbank_name: string;
-            /** Cancelled */
-            cancelled: boolean | null;
+        /** GetAllBloodBanksRow */
+        GetAllBloodBanksRow: {
+            /** Bloodbank Id */
+            bloodbank_id: number;
+            /** Name */
+            name: string;
+            /** Street Name */
+            street_name: string;
+            /** Street Number */
+            street_number: string;
+            /** Postal Code */
+            postal_code: string;
+            /** City */
+            city: string;
+            /** Country */
+            country: string;
+            /** User Has Admin Access */
+            user_has_admin_access: boolean;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -402,7 +682,7 @@ export interface components {
             /** Invalidated */
             invalidated: boolean;
             /** Ok To Donate */
-            ok_to_donate: boolean | null;
+            ok_to_donate: boolean;
             /** Interview Id */
             interview_id: number | null;
             /** Interviewer Admin Id */
@@ -451,6 +731,67 @@ export interface components {
             /** Password */
             password: string;
         };
+        /** MutateBloodbankAdminsRequest */
+        MutateBloodbankAdminsRequest: {
+            /** Admin Id */
+            admin_id: number;
+        };
+        /** NoteType */
+        NoteType: {
+            /** Author User Id */
+            author_user_id: number;
+            /** Author Name */
+            author_name: string;
+            /** Message */
+            message: string;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+        };
+        /** RegisterDonationRequest */
+        RegisterDonationRequest: {
+            /** Amount Ml */
+            amount_ml: number;
+            /**
+             * Is Blood Not Plasma
+             * @default true
+             */
+            is_blood_not_plasma: boolean;
+        };
+        /** RegisterDonationTestRequest */
+        RegisterDonationTestRequest: {
+            /**
+             * Submitted At
+             * Format: date-time
+             */
+            submitted_at?: string;
+            /** Ok To Donate */
+            ok_to_donate: boolean;
+            /**
+             * Validity Duration
+             * Format: duration
+             */
+            validity_duration: string;
+            /** Donation Id */
+            donation_id: number;
+        };
+        /** RegisterInterviewRequest */
+        RegisterInterviewRequest: {
+            /**
+             * Submitted At
+             * Format: date-time
+             */
+            submitted_at?: string;
+            /** Ok To Donate */
+            ok_to_donate: boolean;
+            /**
+             * Validity Duration
+             * Format: duration
+             */
+            validity_duration: string;
+        };
         /** UpdateAppointmentRow */
         UpdateAppointmentRow: {
             /** Id */
@@ -458,7 +799,7 @@ export interface components {
             /** Bookingslot Id */
             bookingslot_id: number;
             /** Cancelled */
-            cancelled: boolean | null;
+            cancelled: boolean;
             /** Donor Id */
             donor_id: number;
         };
@@ -481,6 +822,49 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /** AppointmentType */
+        app__routes__admin_router__AdminRouter__AppointmentType: {
+            /** Appointment Id */
+            appointment_id: number;
+            /** Appointment Cancelled */
+            appointment_cancelled: boolean;
+            /** Donor Id */
+            donor_id: number;
+            donor_blood_type: components["schemas"]["BloodType"] | null;
+            /** Donor Name */
+            donor_name: string;
+            /** Donor Email */
+            donor_email: string;
+            /** Donor Phone */
+            donor_phone: string;
+            /** Notes */
+            notes: components["schemas"]["AppointmentNoteType"][];
+            /** Donations */
+            donations: components["schemas"]["DonationType"][];
+        };
+        /** AppointmentType */
+        app__routes__appointment_router__AppointmentRouter__AppointmentType: {
+            /** Id */
+            id: number;
+            /** Username */
+            username: string;
+            /**
+             * Time
+             * Format: date-time
+             */
+            time: string;
+            /**
+             * Duration
+             * Format: duration
+             */
+            duration: string;
+            /** Bloodbank Name */
+            bloodbank_name: string;
+            /** Cancelled */
+            cancelled: boolean;
+            /** Notes */
+            notes: components["schemas"]["NoteType"][];
         };
     };
     responses: never;
@@ -567,6 +951,294 @@ export interface operations {
             };
         };
     };
+    list_bloodbanks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["GetAllBloodBanksRow"][];
+                };
+            };
+        };
+    };
+    create_bloodbank: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateBloodBankRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_admin_to_bloodbank: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bloodbank_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MutateBloodbankAdminsRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_admin_from_bloodbank: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bloodbank_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MutateBloodbankAdminsRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bloodbank_appointments: {
+        parameters: {
+            query?: {
+                after?: string | null;
+                before?: string | null;
+                show_cancelled?: boolean;
+            };
+            header?: never;
+            path: {
+                bloodbank_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BookingSlotType"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    appointment_add_note: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddNoteRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    appointment_register_donation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterDonationRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    register_interview: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                donor_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterInterviewRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    register_donation_test: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                donor_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterDonationTestRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     find_all: {
         parameters: {
             query?: never;
@@ -582,7 +1254,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GetAppointmentsByUserIdRow"][];
+                    "application/json": components["schemas"]["app__routes__appointment_router__AppointmentRouter__AppointmentType"][];
                 };
             };
         };
@@ -610,6 +1282,39 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["UpdateAppointmentRow"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_note: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AppointmentNote"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {

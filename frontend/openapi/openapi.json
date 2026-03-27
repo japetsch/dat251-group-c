@@ -78,6 +78,440 @@
         }
       }
     },
+    "/admin/bloodbank": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "List Bloodbanks",
+        "description": "Lists all blood banks in the system, even the ones the logged in user is not adminstrator for\n\nTODO:\n- enhance with opening hours information\n- allow admins to list which people are admins",
+        "operationId": "list_bloodbanks",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/GetAllBloodBanksRow"
+                  },
+                  "type": "array",
+                  "title": "Response List Bloodbanks Admin Bloodbank Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/bloodbank/create": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Create Bloodbank",
+        "description": "Creates a new bloodbank with the logged in admin user as an administrator",
+        "operationId": "create_bloodbank",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBloodBankRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/bloodbank/{bloodbank_id}/admin/add": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Add Admin To Bloodbank",
+        "description": "Add another admin to a blood bank the logged in user is administrator for",
+        "operationId": "add_admin_to_bloodbank",
+        "parameters": [
+          {
+            "name": "bloodbank_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Bloodbank Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MutateBloodbankAdminsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/bloodbank/{bloodbank_id}/admin/remove": {
+      "delete": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Remove Admin From Bloodbank",
+        "description": "Remove an admin from a blood bank the logged in user is administrator for\n\nThe user can remove themselves.\nThe user can't remove the last admin of a blood bank.",
+        "operationId": "remove_admin_from_bloodbank",
+        "parameters": [
+          {
+            "name": "bloodbank_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Bloodbank Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MutateBloodbankAdminsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/bloodbank/{bloodbank_id}/appointment": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Bloodbank Appointments",
+        "description": "Show appointments for blood bank.\n\nBy default only the ones scheduled after 00:00 in Oslo on the same day",
+        "operationId": "bloodbank_appointments",
+        "parameters": [
+          {
+            "name": "bloodbank_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Bloodbank Id"
+            }
+          },
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "After"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Before"
+            }
+          },
+          {
+            "name": "show_cancelled",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Show Cancelled"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/BookingSlotType"
+                  },
+                  "title": "Response Bloodbank Appointments Admin Bloodbank  Bloodbank Id  Appointment Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/appointment/{appointment_id}/note": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Appointment Add Note",
+        "operationId": "appointment_add_note",
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Appointment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddNoteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/appointment/{appointment_id}/donation": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Appointment Register Donation",
+        "operationId": "appointment_register_donation",
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Appointment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDonationRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/donor/{donor_id}/form/interview": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Register Interview",
+        "operationId": "register_interview",
+        "parameters": [
+          {
+            "name": "donor_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Donor Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterInterviewRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/admin/donor/{donor_id}/form/donation-test": {
+      "post": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Register Donation Test",
+        "operationId": "register_donation_test",
+        "parameters": [
+          {
+            "name": "donor_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Donor Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDonationTestRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/appointment": {
       "get": {
         "summary": "Find All",
@@ -89,7 +523,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/GetAppointmentsByUserIdRow"
+                    "$ref": "#/components/schemas/app__routes__appointment_router__AppointmentRouter__AppointmentType"
                   },
                   "type": "array",
                   "title": "Response Find All Appointment Get"
@@ -103,6 +537,7 @@
     "/appointment/{appointment_id}": {
       "patch": {
         "summary": "Update",
+        "description": "Update an appointment, either changing its booking slot or cancelling it altogether\n\nThis action can be performed by the donor or an admin at the blood bank(s) in question\n\nTODO:\n- validate that requested bookingslot works\n- add appointment note entry documenting the change",
         "operationId": "update",
         "parameters": [
           {
@@ -135,6 +570,48 @@
                 }
               }
             }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/appointment/{appointment_id}/note": {
+      "post": {
+        "summary": "Add Note",
+        "operationId": "add_note",
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Appointment Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AppointmentNote"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
           },
           "422": {
             "description": "Validation Error",
@@ -305,6 +782,61 @@
   },
   "components": {
     "schemas": {
+      "AddNoteRequest": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "AddNoteRequest"
+      },
+      "AppointmentNote": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "AppointmentNote"
+      },
+      "AppointmentNoteType": {
+        "properties": {
+          "author_user_id": {
+            "type": "integer",
+            "title": "Author User Id"
+          },
+          "author_name": {
+            "type": "string",
+            "title": "Author Name"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "author_user_id",
+          "author_name",
+          "message",
+          "time"
+        ],
+        "title": "AppointmentNoteType"
+      },
       "AppointmentUpdateRequest": {
         "properties": {
           "bookingslot_id": {
@@ -372,6 +904,20 @@
           "valid"
         ],
         "title": "AvailableBookingSlot"
+      },
+      "BloodType": {
+        "type": "string",
+        "enum": [
+          "O+",
+          "O-",
+          "A+",
+          "A-",
+          "B+",
+          "B-",
+          "AB+",
+          "AB-"
+        ],
+        "title": "BloodType"
       },
       "BloodbankResponse": {
         "properties": {
@@ -449,14 +995,7 @@
             "title": "Bookingslot Id"
           },
           "cancelled": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "boolean",
             "title": "Cancelled"
           }
         },
@@ -468,6 +1007,92 @@
           "cancelled"
         ],
         "title": "BookBookingslotRow"
+      },
+      "BookingSlotType": {
+        "properties": {
+          "bookingslot_id": {
+            "type": "integer",
+            "title": "Bookingslot Id"
+          },
+          "bookingslot_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Bookingslot Time"
+          },
+          "bookingslot_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Bookingslot Duration"
+          },
+          "bookingslot_remaining_capacity": {
+            "type": "integer",
+            "title": "Bookingslot Remaining Capacity"
+          },
+          "appointments": {
+            "items": {
+              "$ref": "#/components/schemas/app__routes__admin_router__AdminRouter__AppointmentType"
+            },
+            "type": "array",
+            "title": "Appointments"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bookingslot_id",
+          "bookingslot_time",
+          "bookingslot_duration",
+          "bookingslot_remaining_capacity",
+          "appointments"
+        ],
+        "title": "BookingSlotType"
+      },
+      "CreateBloodBankRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "street_name": {
+            "type": "string",
+            "title": "Street Name"
+          },
+          "street_number": {
+            "type": "string",
+            "title": "Street Number"
+          },
+          "postal_code": {
+            "type": "string",
+            "title": "Postal Code"
+          },
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country",
+            "default": "NO"
+          },
+          "loc_lat": {
+            "type": "number",
+            "title": "Loc Lat"
+          },
+          "loc_lon": {
+            "type": "number",
+            "title": "Loc Lon"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "street_name",
+          "street_number",
+          "postal_code",
+          "city",
+          "loc_lat",
+          "loc_lon"
+        ],
+        "title": "CreateBloodBankRequest"
       },
       "DonationTestDetailsRow": {
         "properties": {
@@ -498,14 +1123,7 @@
             "title": "Invalidated"
           },
           "ok_to_donate": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "boolean",
             "title": "Ok To Donate"
           },
           "donation_test_id": {
@@ -620,6 +1238,29 @@
         ],
         "title": "DonationTestResultRow"
       },
+      "DonationType": {
+        "properties": {
+          "donation_id": {
+            "type": "integer",
+            "title": "Donation Id"
+          },
+          "amount_ml": {
+            "type": "number",
+            "title": "Amount Ml"
+          },
+          "is_blood_not_plasma": {
+            "type": "boolean",
+            "title": "Is Blood Not Plasma"
+          }
+        },
+        "type": "object",
+        "required": [
+          "donation_id",
+          "amount_ml",
+          "is_blood_not_plasma"
+        ],
+        "title": "DonationType"
+      },
       "EntryFormDetailsRow": {
         "properties": {
           "id": {
@@ -649,14 +1290,7 @@
             "title": "Invalidated"
           },
           "ok_to_donate": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "boolean",
             "title": "Ok To Donate"
           },
           "entry_form_id": {
@@ -736,52 +1370,53 @@
         ],
         "title": "EntryFormResultRow"
       },
-      "GetAppointmentsByUserIdRow": {
+      "GetAllBloodBanksRow": {
         "properties": {
-          "id": {
+          "bloodbank_id": {
             "type": "integer",
-            "title": "Id"
+            "title": "Bloodbank Id"
           },
-          "username": {
+          "name": {
             "type": "string",
-            "title": "Username"
+            "title": "Name"
           },
-          "time": {
+          "street_name": {
             "type": "string",
-            "format": "date-time",
-            "title": "Time"
+            "title": "Street Name"
           },
-          "duration": {
+          "street_number": {
             "type": "string",
-            "format": "duration",
-            "title": "Duration"
+            "title": "Street Number"
           },
-          "bloodbank_name": {
+          "postal_code": {
             "type": "string",
-            "title": "Bloodbank Name"
+            "title": "Postal Code"
           },
-          "cancelled": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cancelled"
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country"
+          },
+          "user_has_admin_access": {
+            "type": "boolean",
+            "title": "User Has Admin Access"
           }
         },
         "type": "object",
         "required": [
-          "id",
-          "username",
-          "time",
-          "duration",
-          "bloodbank_name",
-          "cancelled"
+          "bloodbank_id",
+          "name",
+          "street_name",
+          "street_number",
+          "postal_code",
+          "city",
+          "country",
+          "user_has_admin_access"
         ],
-        "title": "GetAppointmentsByUserIdRow"
+        "title": "GetAllBloodBanksRow"
       },
       "HTTPValidationError": {
         "properties": {
@@ -825,14 +1460,7 @@
             "title": "Invalidated"
           },
           "ok_to_donate": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "boolean",
             "title": "Ok To Donate"
           },
           "interview_id": {
@@ -977,6 +1605,119 @@
         ],
         "title": "LoginRequestData"
       },
+      "MutateBloodbankAdminsRequest": {
+        "properties": {
+          "admin_id": {
+            "type": "integer",
+            "title": "Admin Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "admin_id"
+        ],
+        "title": "MutateBloodbankAdminsRequest"
+      },
+      "NoteType": {
+        "properties": {
+          "author_user_id": {
+            "type": "integer",
+            "title": "Author User Id"
+          },
+          "author_name": {
+            "type": "string",
+            "title": "Author Name"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          }
+        },
+        "type": "object",
+        "required": [
+          "author_user_id",
+          "author_name",
+          "message",
+          "time"
+        ],
+        "title": "NoteType"
+      },
+      "RegisterDonationRequest": {
+        "properties": {
+          "amount_ml": {
+            "type": "number",
+            "title": "Amount Ml"
+          },
+          "is_blood_not_plasma": {
+            "type": "boolean",
+            "title": "Is Blood Not Plasma",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "amount_ml"
+        ],
+        "title": "RegisterDonationRequest"
+      },
+      "RegisterDonationTestRequest": {
+        "properties": {
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Submitted At"
+          },
+          "ok_to_donate": {
+            "type": "boolean",
+            "title": "Ok To Donate"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          },
+          "donation_id": {
+            "type": "integer",
+            "title": "Donation Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok_to_donate",
+          "validity_duration",
+          "donation_id"
+        ],
+        "title": "RegisterDonationTestRequest"
+      },
+      "RegisterInterviewRequest": {
+        "properties": {
+          "submitted_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Submitted At"
+          },
+          "ok_to_donate": {
+            "type": "boolean",
+            "title": "Ok To Donate"
+          },
+          "validity_duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Validity Duration"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ok_to_donate",
+          "validity_duration"
+        ],
+        "title": "RegisterInterviewRequest"
+      },
       "UpdateAppointmentRow": {
         "properties": {
           "id": {
@@ -988,14 +1729,7 @@
             "title": "Bookingslot Id"
           },
           "cancelled": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
+            "type": "boolean",
             "title": "Cancelled"
           },
           "donor_id": {
@@ -1069,6 +1803,119 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "app__routes__admin_router__AdminRouter__AppointmentType": {
+        "properties": {
+          "appointment_id": {
+            "type": "integer",
+            "title": "Appointment Id"
+          },
+          "appointment_cancelled": {
+            "type": "boolean",
+            "title": "Appointment Cancelled"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "donor_blood_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BloodType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "donor_name": {
+            "type": "string",
+            "title": "Donor Name"
+          },
+          "donor_email": {
+            "type": "string",
+            "title": "Donor Email"
+          },
+          "donor_phone": {
+            "type": "string",
+            "title": "Donor Phone"
+          },
+          "notes": {
+            "items": {
+              "$ref": "#/components/schemas/AppointmentNoteType"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "donations": {
+            "items": {
+              "$ref": "#/components/schemas/DonationType"
+            },
+            "type": "array",
+            "title": "Donations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "appointment_id",
+          "appointment_cancelled",
+          "donor_id",
+          "donor_blood_type",
+          "donor_name",
+          "donor_email",
+          "donor_phone",
+          "notes",
+          "donations"
+        ],
+        "title": "AppointmentType"
+      },
+      "app__routes__appointment_router__AppointmentRouter__AppointmentType": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Duration"
+          },
+          "bloodbank_name": {
+            "type": "string",
+            "title": "Bloodbank Name"
+          },
+          "cancelled": {
+            "type": "boolean",
+            "title": "Cancelled"
+          },
+          "notes": {
+            "items": {
+              "$ref": "#/components/schemas/NoteType"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "time",
+          "duration",
+          "bloodbank_name",
+          "cancelled",
+          "notes"
+        ],
+        "title": "AppointmentType"
       }
     }
   }

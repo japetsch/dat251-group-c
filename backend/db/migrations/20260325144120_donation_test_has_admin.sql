@@ -6,5 +6,5 @@ ADD CONSTRAINT donation_test_fk_tester_admin_id
 
 -- migrate:down
 ALTER TABLE donation_test
-DROP CONSTRAINT donation_test_fk_tester_admin_id
+DROP CONSTRAINT donation_test_fk_tester_admin_id,
 DROP COLUMN tester_admin_id;

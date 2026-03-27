@@ -3,8 +3,8 @@ import os
 import subprocess
 from pathlib import Path
 
+import httpx
 import pytest
-from fastapi.testclient import TestClient
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import create_async_engine
 
@@ -36,30 +36,41 @@ async def migrate_test_db():
             await conn.execute(text(stmt))
 
 
-async def _override_get_db_connection():
+@pytest.fixture(autouse=True)
+async def test_db_conn():
+    """
+    Provide a DB connection wrapped in a transaction that is rolled back after
+    each test, so tests never mutate the shared mock data.
+    """
     settings = Settings.get_settings()
     engine = create_async_engine(settings.TEST_DB_URL)
-    async with engine.begin() as conn:
+    conn = await engine.connect()
+    tx = await conn.begin()
+
+    async def _override_get_db_connection():
         yield conn
-    await engine.dispose()
 
-
-@pytest.fixture(autouse=True)
-def use_test_db():
     app.dependency_overrides[DBManager.get_db_connection] = _override_get_db_connection
-    yield
+    yield conn
+    await tx.rollback()
+    await conn.close()
+    await engine.dispose()
     app.dependency_overrides.clear()
 
 
 @pytest.fixture
-def client():
-    with TestClient(app, root_path="") as c:
-        yield c
+async def client():
+    async with app.router.lifespan_context(app):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app, root_path=""),
+            base_url="http://test",
+        ) as c:
+            yield c
 
 
 @pytest.fixture
-def olav_client(client: TestClient):
-    resp = client.post(
+async def olav_client(client: httpx.AsyncClient):
+    resp = await client.post(
         "/api/auth/login",
         json={"email": "olav@uib.no", "password": "correct horse battery staple"},
     )
@@ -68,8 +79,8 @@ def olav_client(client: TestClient):
 
 
 @pytest.fixture
-def peter_client(client: TestClient):
-    resp = client.post(
+async def peter_client(client: httpx.AsyncClient):
+    resp = await client.post(
         "/api/auth/login",
         json={"email": "peter@hvl.no", "password": "password123"},
     )
@@ -78,10 +89,30 @@ def peter_client(client: TestClient):
 
 
 @pytest.fixture
-def sigrid_client(client: TestClient):
-    resp = client.post(
+async def sigrid_client(client: httpx.AsyncClient):
+    resp = await client.post(
         "/api/auth/login",
         json={"email": "sigrid@gmain.com", "password": "hunter2"},
+    )
+    assert resp.status_code == 204
+    return client
+
+
+@pytest.fixture
+async def admin_haukeland_client(client: httpx.AsyncClient):
+    resp = await client.post(
+        "/api/auth/login",
+        json={"email": "admin@haukeland.no", "password": "hunter2"},
+    )
+    assert resp.status_code == 204
+    return client
+
+
+@pytest.fixture
+async def admin_blodbuss_client(client: httpx.AsyncClient):
+    resp = await client.post(
+        "/api/auth/login",
+        json={"email": "admin@blodbuss.no", "password": "hunter2"},
     )
     assert resp.status_code == 204
     return client

@@ -106,6 +106,22 @@ class AuthUtil:
         return u
 
     @staticmethod
+    def get_user_union_required(
+        request: Request, response: Response
+    ) -> AdminInfo | DonorInfo:
+        """This is a special sauce method you probably shouldn't use unless required"""
+        u = AuthUtil.get_current_user_required(request, response)
+        if isinstance(u, AdminInfo):
+            return u
+        elif isinstance(u, DonorInfo):
+            return u
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="User entity inconsistent",
+            )
+
+    @staticmethod
     def get_auth_util(request: Request) -> AuthUtil:
         return request.app.state.auth_utils
 
@@ -117,3 +133,6 @@ CurrentUserOptional = Annotated[
 CurrentUserRequired = Annotated[UserInfo, Depends(AuthUtil.get_current_user_required)]
 AdminUserRequired = Annotated[AdminInfo, Depends(AuthUtil.get_admin_user_requried)]
 DonorUserRequired = Annotated[DonorInfo, Depends(AuthUtil.get_donor_user_requried)]
+UserUnionRequired = Annotated[
+    AdminInfo | DonorInfo, Depends(AuthUtil.get_user_union_required)
+]

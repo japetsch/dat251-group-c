@@ -35,6 +35,12 @@ INSERT INTO "user" (name, email, phone_number, home_address_id, admin_id, passwo
   ('AdminHaukeland', 'admin@haukeland.no', '911', 2, 1, '$argon2id$v=19$m=65536,t=3,p=4$llmunGw2K2kWx9Vhv/7OZQ$e4nkzeV3j1dRshEHsuNIsYp+FF6UwMyb6lDu04ecISQ'), -- hunter2
   ('AdminBlodbuss', 'admin@blodbuss.no', '112', 3, 2, '$argon2id$v=19$m=65536,t=3,p=4$llmunGw2K2kWx9Vhv/7OZQ$e4nkzeV3j1dRshEHsuNIsYp+FF6UwMyb6lDu04ecISQ'); -- hunter2
 
+-- admin_id 1 (AdminHaukeland) -> bloodbank_id 1 (Haukeland)
+-- admin_id 2 (AdminBlodbuss) -> bloodbank_id 2 (Blodbussen)
+INSERT INTO bloodbank_admin (bloodbank_id, admin_id) VALUES
+  (1, 1),
+  (2, 2);
+
 INSERT into bookingslot (bloodbank_id, time, duration, capacity) VALUES
   (1, '2026-02-20T16:00:00Z', '00:30:00', 10),
   (1, '2026-05-11T11:30:00Z', '00:30:00', 10),
@@ -47,7 +53,13 @@ INSERT into appointment (bookingslot_id, cancelled, donor_id) VALUES
   (2, true, 2),
   (3, false, 3);
 
-INSERT INTO interview (interviewer_admin_id) VALUES 
+-- NOTE: author_id is user.id, not admin.id or donor.id
+INSERT INTO appointment_note (appointment_id, author_id, message, time) VALUES
+  (1, 1, 'Hi my name is Olav!', '2026-02-18T10:00:00Z'),
+  (1, 4, 'Hi, I am AdminHaukeland!', '2026-02-18T14:30:00Z'),
+  (3, 3, 'My name is Sigrid, and I''m secretly a time traveller', '2026-12-01T09:00:00Z');
+
+INSERT INTO interview (interviewer_admin_id) VALUES
 	(1),
 	(1);
 

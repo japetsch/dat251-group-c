@@ -30,7 +30,7 @@ class BookBookingslotRow(pydantic.BaseModel):
     id: int
     donor_id: int
     bookingslot_id: int
-    cancelled: Optional[bool]
+    cancelled: bool
 
 
 GET_BOOKING_SLOTS = """-- name: get_booking_slots \\:many

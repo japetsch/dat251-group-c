@@ -1,17 +1,25 @@
-from fastapi.testclient import TestClient
+from datetime import datetime
+
+import httpx
+
+from tests.util import assert_dicts_match, dictmatch_in
 
 
 class TestTestresult:
-    def test_cannot_get_testresults_unauthenticated(self, client: TestClient):
-        response = client.get("/api/testresult")
+    async def test_cannot_get_testresults_unauthenticated(
+        self, client: httpx.AsyncClient
+    ):
+        response = await client.get("/api/testresult")
         assert response.status_code == 401
 
-    def test_cannot_get_testresult_unauthenticated(self, client: TestClient):
-        response = client.get("/api/testresult/1")
+    async def test_cannot_get_testresult_unauthenticated(
+        self, client: httpx.AsyncClient
+    ):
+        response = await client.get("/api/testresult/1")
         assert response.status_code == 401
 
-    def test_can_get_testresults(self, olav_client: TestClient):
-        response = olav_client.get("/api/testresult")
+    async def test_can_get_testresults(self, olav_client: httpx.AsyncClient):
+        response = await olav_client.get("/api/testresult")
         assert response.status_code == 200
 
         response_json = response.json()
@@ -21,7 +29,7 @@ class TestTestresult:
                     "id": 1,
                     "donor_id": 1,
                     "form_id": 1,
-                    "time": "2025-04-30T10:00:00Z",
+                    "time": datetime.fromisoformat("2025-04-30T10:00:00Z"),
                     "validity_duration": "P180D",
                     "invalidated": True,
                     "interview_id": 1,
@@ -34,7 +42,7 @@ class TestTestresult:
                     "id": 5,
                     "donor_id": 1,
                     "form_id": 5,
-                    "time": "2026-02-20T16:00:00Z",
+                    "time": datetime.fromisoformat("2026-02-20T16:00:00Z"),
                     "validity_duration": "P180D",
                     "invalidated": False,
                     "donation_test_id": 1,
@@ -43,14 +51,16 @@ class TestTestresult:
             ],
         }
         for elem in expected["interviews"]:
-            assert elem in response_json["interviews"]
+            assert dictmatch_in(response_json["interviews"], elem)
         for elem in expected["entry_forms"]:
-            assert elem in response_json["entry_forms"]
+            assert dictmatch_in(response_json["entry_forms"], elem)
         for elem in expected["donation_tests"]:
-            assert elem in response_json["donation_tests"]
+            assert dictmatch_in(response_json["donation_tests"], elem)
 
-    def test_can_get_testresults_empty_list(self, sigrid_client: TestClient):
-        response = sigrid_client.get("/api/testresult")
+    async def test_can_get_testresults_empty_list(
+        self, sigrid_client: httpx.AsyncClient
+    ):
+        response = await sigrid_client.get("/api/testresult")
         assert response.status_code == 200
 
         response_json = response.json()
@@ -61,14 +71,14 @@ class TestTestresult:
         assert isinstance(response_json["donation_tests"], list)
         assert len(response_json["donation_tests"]) == 0
 
-    def test_can_get_testresult_interview(self, olav_client: TestClient):
-        response = olav_client.get("/api/testresult/1")
+    async def test_can_get_testresult_interview(self, olav_client: httpx.AsyncClient):
+        response = await olav_client.get("/api/testresult/1")
 
         expected = {
             "id": 1,
             "donor_id": 1,
             "form_id": 1,
-            "time": "2025-04-30T10:00:00Z",
+            "time": datetime.fromisoformat("2025-04-30T10:00:00Z"),
             "validity_duration": "P180D",
             "invalidated": True,
             "ok_to_donate": False,
@@ -78,17 +88,16 @@ class TestTestresult:
         }
 
         response_json = response.json()
+        assert_dicts_match(response_json, expected)
 
-        assert response_json == expected
-
-    def test_can_get_testresult_donation(self, olav_client: TestClient):
-        response = olav_client.get("/api/testresult/5")
+    async def test_can_get_testresult_donation(self, olav_client: httpx.AsyncClient):
+        response = await olav_client.get("/api/testresult/5")
 
         expected = {
             "id": 5,
             "donor_id": 1,
             "form_id": 5,
-            "time": "2026-02-20T16:00:00Z",
+            "time": datetime.fromisoformat("2026-02-20T16:00:00Z"),
             "validity_duration": "P180D",
             "invalidated": False,
             "ok_to_donate": True,
@@ -103,10 +112,12 @@ class TestTestresult:
 
         response_json = response.json()
 
-        assert response_json == expected
+        assert_dicts_match(response_json, expected)
 
-    def test_cannot_get_testresult_of_other_user(self, olav_client: TestClient):
-        response = olav_client.get("/api/testresult/2")
+    async def test_cannot_get_testresult_of_other_user(
+        self, olav_client: httpx.AsyncClient
+    ):
+        response = await olav_client.get("/api/testresult/2")
 
         assert response.status_code == 404
         assert response.json() == {"detail": "Test result for diffenrent user"}

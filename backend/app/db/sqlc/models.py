@@ -35,7 +35,7 @@ class Admin(pydantic.BaseModel):
 class Appointment(pydantic.BaseModel):
     id: int
     bookingslot_id: int
-    cancelled: Optional[bool]
+    cancelled: bool
     donor_id: int
 
 
@@ -44,6 +44,7 @@ class AppointmentNote(pydantic.BaseModel):
     appointment_id: int
     time: datetime.datetime
     message: str
+    author_id: int
 
 
 class Bloodbank(pydantic.BaseModel):
@@ -106,7 +107,7 @@ class EntryForm(pydantic.BaseModel):
 
 class Form(pydantic.BaseModel):
     id: int
-    ok_to_donate: Optional[bool]
+    ok_to_donate: bool
     interview_id: Optional[int]
     entry_form_id: Optional[int]
     donation_test_id: Optional[int]
