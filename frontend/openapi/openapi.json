@@ -276,6 +276,31 @@
           }
         }
       }
+    },
+    "/bloodbank": {
+      "get": {
+        "tags": [
+          "bloodbank"
+        ],
+        "summary": "Get All Bloodbanks",
+        "operationId": "get_all_bloodbanks",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BloodbankResponse"
+                  },
+                  "type": "array",
+                  "title": "Response Get All Bloodbanks Bloodbank Get"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -347,6 +372,54 @@
           "valid"
         ],
         "title": "AvailableBookingSlot"
+      },
+      "BloodbankResponse": {
+        "properties": {
+          "bloodbank_id": {
+            "type": "integer",
+            "title": "Bloodbank Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "street_name": {
+            "type": "string",
+            "title": "Street Name"
+          },
+          "street_number": {
+            "type": "string",
+            "title": "Street Number"
+          },
+          "postal_code": {
+            "type": "string",
+            "title": "Postal Code"
+          },
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country"
+          },
+          "user_has_admin_access": {
+            "type": "boolean",
+            "title": "User Has Admin Access"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bloodbank_id",
+          "name",
+          "street_name",
+          "street_number",
+          "postal_code",
+          "city",
+          "country",
+          "user_has_admin_access"
+        ],
+        "title": "BloodbankResponse"
       },
       "BookAppointmentRequest": {
         "properties": {
