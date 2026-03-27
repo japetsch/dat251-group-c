@@ -12,12 +12,6 @@ import sqlalchemy.ext.asyncio
 from app.db.sqlc import models
 
 
-ADD_APPOINTMENT_NOTE = """-- name: add_appointment_note \\:exec
-INSERT INTO appointment_note (appointment_id, author_id, message, time)
-VALUES (:p1, :p2, :p3, NOW())
-"""
-
-
 ADD_BLOOD_BANK_ADMIN = """-- name: add_blood_bank_admin \\:exec
 INSERT INTO bloodbank_admin (bloodbank_id, admin_id)
 VALUES (:p1, :p2)
@@ -56,28 +50,6 @@ class CreateBloodBankParams(pydantic.BaseModel):
     longitude: float
     name: str
     admin_id: int
-
-
-GET_ALL_BLOOD_BANKS = """-- name: get_all_blood_banks \\:many
-SELECT b.id as bloodbank_id, b.name, a.street_name, a.street_number, a.postal_code, a.city, a.country,
-    COUNT(bba.admin_id) > 0 AS user_has_admin_access
-FROM bloodbank b
-INNER JOIN location l ON b.location_id = l.id
-INNER JOIN address a ON l.address_id = a.id
-LEFT JOIN bloodbank_admin bba ON (b.id = bba.bloodbank_id AND bba.admin_id = :p1)
-GROUP BY b.id, a.id
-"""
-
-
-class GetAllBloodBanksRow(pydantic.BaseModel):
-    bloodbank_id: int
-    name: str
-    street_name: str
-    street_number: str
-    postal_code: str
-    city: str
-    country: str
-    user_has_admin_access: bool
 
 
 GET_APPOINTMENTS_AT_BLOOD_BANK = """-- name: get_appointments_at_blood_bank \\:many
@@ -215,9 +187,6 @@ class AsyncQuerier:
     def __init__(self, conn: sqlalchemy.ext.asyncio.AsyncConnection):
         self._conn = conn
 
-    async def add_appointment_note(self, *, appointment_id: int, author_id: int, message: str) -> None:
-        await self._conn.execute(sqlalchemy.text(ADD_APPOINTMENT_NOTE), {"p1": appointment_id, "p2": author_id, "p3": message})
-
     async def add_blood_bank_admin(self, *, bloodbank_id: int, admin_id: int) -> None:
         await self._conn.execute(sqlalchemy.text(ADD_BLOOD_BANK_ADMIN), {"p1": bloodbank_id, "p2": admin_id})
 
@@ -236,20 +205,6 @@ class AsyncQuerier:
         if row is None:
             return None
         return row[0]
-
-    async def get_all_blood_banks(self, *, admin_id: int) -> AsyncIterator[GetAllBloodBanksRow]:
-        result = await self._conn.stream(sqlalchemy.text(GET_ALL_BLOOD_BANKS), {"p1": admin_id})
-        async for row in result:
-            yield GetAllBloodBanksRow(
-                bloodbank_id=row[0],
-                name=row[1],
-                street_name=row[2],
-                street_number=row[3],
-                postal_code=row[4],
-                city=row[5],
-                country=row[6],
-                user_has_admin_access=row[7],
-            )
 
     async def get_appointments_at_blood_bank(self, *, bloodbank_id: int, after: datetime.datetime, before: Optional[datetime.datetime], show_cancelled: bool) -> AsyncIterator[GetAppointmentsAtBloodBankRow]:
         result = await self._conn.stream(sqlalchemy.text(GET_APPOINTMENTS_AT_BLOOD_BANK), {

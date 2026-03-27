@@ -12,12 +12,13 @@ from ..db.db import DBConnection
 from ..db.sqlc.admin import (
     AsyncQuerier as AdminQuerier,
     CreateBloodBankParams,
-    GetAllBloodBanksRow,
     GetAppointmentsAtBloodBankRow,
     RegisterDonationTestParams,
     RegisterInterviewParams,
 )
+from ..db.sqlc.appointment import AsyncQuerier as AppointmentQuerier
 from ..db.sqlc.auth import AsyncQuerier as AuthQuerier
+from ..db.sqlc.bloodbank import AsyncQuerier as BloodbankQuerier, GetAllBloodBanksRow
 from ..db.sqlc.models import BloodType
 
 
@@ -82,7 +83,7 @@ class AdminRouter(APIRouter):
         - enhance with opening hours information
         - allow admins to list which people are admins
         """
-        aq = AdminQuerier(engine)
+        aq = BloodbankQuerier(engine)
         blood_banks: list[GetAllBloodBanksRow] = []
         async for r in aq.get_all_blood_banks(admin_id=user.admin_id):
             blood_banks.append(r)
@@ -269,8 +270,8 @@ class AdminRouter(APIRouter):
         engine: DBConnection,
     ):
         await self._assert_appt_access(user.admin_id, appointment_id, engine)
-        aq = AdminQuerier(engine)
-        await aq.add_appointment_note(
+        aq = AppointmentQuerier(engine)
+        await aq.add_note(
             appointment_id=appointment_id,
             author_id=user.user_id,  # NOTE: this is the user_id, not admin_id
             message=data.message,
