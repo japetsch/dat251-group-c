@@ -360,6 +360,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/bloodbank": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get All Bloodbanks */
+        get: operations["get_all_bloodbanks"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -425,6 +442,25 @@ export interface components {
          * @enum {string}
          */
         BloodType: "O+" | "O-" | "A+" | "A-" | "B+" | "B-" | "AB+" | "AB-";
+        /** BloodbankResponse */
+        BloodbankResponse: {
+            /** Bloodbank Id */
+            bloodbank_id: number;
+            /** Name */
+            name: string;
+            /** Street Name */
+            street_name: string;
+            /** Street Number */
+            street_number: string;
+            /** Postal Code */
+            postal_code: string;
+            /** City */
+            city: string;
+            /** Country */
+            country: string;
+            /** User Has Admin Access */
+            user_has_admin_access: boolean;
+        };
         /** BookAppointmentRequest */
         BookAppointmentRequest: {
             /** Bookingslot Id */
@@ -1391,6 +1427,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_all_bloodbanks: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BloodbankResponse"][];
                 };
             };
         };

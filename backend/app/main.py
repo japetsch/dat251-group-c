@@ -12,6 +12,7 @@ from .db.db import DBManager
 from .routes.admin_router import AdminRouter
 from .routes.appointment_router import AppointmentRouter
 from .routes.auth_router import AuthRouter
+from .routes.bloodbank_router import BloodbankRouter
 from .routes.bookingslot_router import BookingslotRouter
 from .routes.testresult_router import TestresultRouter
 from .swagger import SwaggerJsonGenerator
@@ -52,6 +53,11 @@ class Main:
             TestresultRouter(),
             prefix="/testresult",
             dependencies=[Depends(AuthUtil.get_donor_user_requried)],
+        )
+
+        self.app.include_router(
+            BloodbankRouter(),
+            prefix="/bloodbank",
         )
 
         # Make the OpenAPI operation ids match the route function name
