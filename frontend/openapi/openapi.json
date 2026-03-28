@@ -523,7 +523,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/app__routes__appointment_router__AppointmentRouter__AppointmentType"
+                    "$ref": "#/components/schemas/AppointmentDTO"
                   },
                   "type": "array",
                   "title": "Response Find All Appointment Get"
@@ -566,7 +566,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UpdateAppointmentRow"
+                  "$ref": "#/components/schemas/AppointmentUpdateDTO"
                 }
               }
             }
@@ -795,6 +795,54 @@
         ],
         "title": "AddNoteRequest"
       },
+      "AppointmentDTO": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Time"
+          },
+          "duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Duration"
+          },
+          "bloodbank_name": {
+            "type": "string",
+            "title": "Bloodbank Name"
+          },
+          "cancelled": {
+            "type": "boolean",
+            "title": "Cancelled"
+          },
+          "notes": {
+            "items": {
+              "$ref": "#/components/schemas/NoteDTO"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "username",
+          "time",
+          "duration",
+          "bloodbank_name",
+          "cancelled",
+          "notes"
+        ],
+        "title": "AppointmentDTO"
+      },
       "AppointmentNote": {
         "properties": {
           "message": {
@@ -836,6 +884,99 @@
           "time"
         ],
         "title": "AppointmentNoteType"
+      },
+      "AppointmentType": {
+        "properties": {
+          "appointment_id": {
+            "type": "integer",
+            "title": "Appointment Id"
+          },
+          "appointment_cancelled": {
+            "type": "boolean",
+            "title": "Appointment Cancelled"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "donor_blood_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BloodType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "donor_name": {
+            "type": "string",
+            "title": "Donor Name"
+          },
+          "donor_email": {
+            "type": "string",
+            "title": "Donor Email"
+          },
+          "donor_phone": {
+            "type": "string",
+            "title": "Donor Phone"
+          },
+          "notes": {
+            "items": {
+              "$ref": "#/components/schemas/AppointmentNoteType"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "donations": {
+            "items": {
+              "$ref": "#/components/schemas/DonationType"
+            },
+            "type": "array",
+            "title": "Donations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "appointment_id",
+          "appointment_cancelled",
+          "donor_id",
+          "donor_blood_type",
+          "donor_name",
+          "donor_email",
+          "donor_phone",
+          "notes",
+          "donations"
+        ],
+        "title": "AppointmentType"
+      },
+      "AppointmentUpdateDTO": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "bookingslot_id": {
+            "type": "integer",
+            "title": "Bookingslot Id"
+          },
+          "cancelled": {
+            "type": "boolean",
+            "title": "Cancelled"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "bookingslot_id",
+          "cancelled",
+          "donor_id"
+        ],
+        "title": "AppointmentUpdateDTO"
       },
       "AppointmentUpdateRequest": {
         "properties": {
@@ -1030,7 +1171,7 @@
           },
           "appointments": {
             "items": {
-              "$ref": "#/components/schemas/app__routes__admin_router__AdminRouter__AppointmentType"
+              "$ref": "#/components/schemas/AppointmentType"
             },
             "type": "array",
             "title": "Appointments"
@@ -1618,7 +1759,7 @@
         ],
         "title": "MutateBloodbankAdminsRequest"
       },
-      "NoteType": {
+      "NoteDTO": {
         "properties": {
           "author_user_id": {
             "type": "integer",
@@ -1645,7 +1786,7 @@
           "message",
           "time"
         ],
-        "title": "NoteType"
+        "title": "NoteDTO"
       },
       "RegisterDonationRequest": {
         "properties": {
@@ -1718,34 +1859,6 @@
         ],
         "title": "RegisterInterviewRequest"
       },
-      "UpdateAppointmentRow": {
-        "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "bookingslot_id": {
-            "type": "integer",
-            "title": "Bookingslot Id"
-          },
-          "cancelled": {
-            "type": "boolean",
-            "title": "Cancelled"
-          },
-          "donor_id": {
-            "type": "integer",
-            "title": "Donor Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "bookingslot_id",
-          "cancelled",
-          "donor_id"
-        ],
-        "title": "UpdateAppointmentRow"
-      },
       "UserInfo": {
         "properties": {
           "user_id": {
@@ -1803,119 +1916,6 @@
           "type"
         ],
         "title": "ValidationError"
-      },
-      "app__routes__admin_router__AdminRouter__AppointmentType": {
-        "properties": {
-          "appointment_id": {
-            "type": "integer",
-            "title": "Appointment Id"
-          },
-          "appointment_cancelled": {
-            "type": "boolean",
-            "title": "Appointment Cancelled"
-          },
-          "donor_id": {
-            "type": "integer",
-            "title": "Donor Id"
-          },
-          "donor_blood_type": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/BloodType"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "donor_name": {
-            "type": "string",
-            "title": "Donor Name"
-          },
-          "donor_email": {
-            "type": "string",
-            "title": "Donor Email"
-          },
-          "donor_phone": {
-            "type": "string",
-            "title": "Donor Phone"
-          },
-          "notes": {
-            "items": {
-              "$ref": "#/components/schemas/AppointmentNoteType"
-            },
-            "type": "array",
-            "title": "Notes"
-          },
-          "donations": {
-            "items": {
-              "$ref": "#/components/schemas/DonationType"
-            },
-            "type": "array",
-            "title": "Donations"
-          }
-        },
-        "type": "object",
-        "required": [
-          "appointment_id",
-          "appointment_cancelled",
-          "donor_id",
-          "donor_blood_type",
-          "donor_name",
-          "donor_email",
-          "donor_phone",
-          "notes",
-          "donations"
-        ],
-        "title": "AppointmentType"
-      },
-      "app__routes__appointment_router__AppointmentRouter__AppointmentType": {
-        "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "username": {
-            "type": "string",
-            "title": "Username"
-          },
-          "time": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Time"
-          },
-          "duration": {
-            "type": "string",
-            "format": "duration",
-            "title": "Duration"
-          },
-          "bloodbank_name": {
-            "type": "string",
-            "title": "Bloodbank Name"
-          },
-          "cancelled": {
-            "type": "boolean",
-            "title": "Cancelled"
-          },
-          "notes": {
-            "items": {
-              "$ref": "#/components/schemas/NoteType"
-            },
-            "type": "array",
-            "title": "Notes"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "username",
-          "time",
-          "duration",
-          "bloodbank_name",
-          "cancelled",
-          "notes"
-        ],
-        "title": "AppointmentType"
       }
     }
   }

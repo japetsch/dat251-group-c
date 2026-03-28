@@ -1,15 +1,13 @@
-from datetime import datetime, timedelta
-
 from fastapi import HTTPException, status
 from fastapi.routing import APIRouter
 from pydantic import BaseModel
 
 from app.auth import DonorInfo, DonorUserRequired, UserUnionRequired
+from app.schemas.appointment import AppointmentDTO, AppointmentUpdateDTO
 
 from ..db.db import DBConnection
 from ..db.sqlc.appointment import (
     AsyncQuerier as AppointmentQuerier,
-    GetAppointmentsByDonorIdRow,
     UpdateAppointmentRow,
 )
 from ..db.sqlc.auth import AsyncQuerier as AuthQuerier
@@ -29,34 +27,14 @@ class AppointmentRouter(APIRouter):
             status_code=status.HTTP_204_NO_CONTENT,
         )
 
-    class AppointmentType(BaseModel):
-        id: int
-        username: str
-        time: datetime
-        duration: timedelta
-        bloodbank_name: str
-        cancelled: bool
-        notes: list[AppointmentRouter.NoteType]
-
-    # TODO: refactor (this is duplicate of a structure in AdminRouter)
-    class NoteType(BaseModel):
-        author_user_id: int
-        author_name: str
-        message: str
-        time: datetime
-
     async def find_all(
         self, user: DonorUserRequired, engine: DBConnection
-    ) -> list[AppointmentRouter.AppointmentType]:
+    ) -> list[AppointmentDTO]:
         q = AppointmentQuerier(engine)
 
-        rows: list[AppointmentRouter.AppointmentType] = []
+        rows: list[AppointmentDTO] = []
         async for x in q.get_appointments_by_donor_id(donor_id=user.donor_id):
-            rows.append(
-                AppointmentRouter.AppointmentType.model_validate(
-                    x, from_attributes=True
-                )
-            )
+            rows.append(AppointmentDTO.map_appointment(x))
         return rows
 
     async def _assert_appointment_owner(
@@ -83,7 +61,7 @@ class AppointmentRouter(APIRouter):
         updateRequest: AppointmentUpdateRequest,
         user: UserUnionRequired,
         engine: DBConnection,
-    ) -> UpdateAppointmentRow:
+    ) -> AppointmentUpdateDTO:
         """
         Update an appointment, either changing its booking slot or cancelling it altogether
 
@@ -118,7 +96,7 @@ class AppointmentRouter(APIRouter):
                 status_code=404,
                 detail="Appointment not found or no capacity on booking slot",
             )
-        return updatedAppointment
+        return AppointmentUpdateDTO.map_appointment_update(updatedAppointment)
 
     class AppointmentNote(BaseModel):
         message: str
