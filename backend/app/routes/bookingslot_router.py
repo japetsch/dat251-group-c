@@ -14,7 +14,10 @@ from ..db.sqlc.appointment import (
 from ..db.sqlc.bookingslot import (
     AsyncQuerier as BookingslotQuerier,
     BookBookingslotRow,
-    GetBookingSlotsRow,
+)
+from ..schemas.bookingslot import (
+    BookBookingSlotDTO,
+    BookingSlotDTO,
 )
 
 
@@ -25,12 +28,9 @@ class BookingslotRouter(APIRouter):
         self.add_api_route("/available", self.get_available, methods=["GET"])
         self.add_api_route("/book", self.book, methods=["POST"])
 
-    class AvailableBookingSlot(GetBookingSlotsRow):
-        valid: bool
-
     async def get_available(
         self, user: DonorUserRequired, engine: DBConnection
-    ) -> list[AvailableBookingSlot]:
+    ) -> list[BookingSlotDTO]:
         q = BookingslotQuerier(engine)
         a = AppointmentQuerier(engine)
         # Approximate 3 months since timedelta can't compare months
@@ -40,7 +40,7 @@ class BookingslotRouter(APIRouter):
         async for x in a.get_appointments_by_donor_id(donor_id=user.donor_id):
             appointments.append(x)
 
-        rows: list[BookingslotRouter.AvailableBookingSlot] = []
+        rows: list[BookingSlotDTO] = []
         async for x in q.get_booking_slots():
             lower = x.time - MIN_WAITTIME
             upper = x.time + MIN_WAITTIME
@@ -48,7 +48,7 @@ class BookingslotRouter(APIRouter):
             is_valid = x.capacity != 0 and not any(
                 (lower < a.time < upper and a.cancelled != True) for a in appointments
             )
-            rows.append(self.AvailableBookingSlot(**x.model_dump(), valid=is_valid))
+            rows.append(BookingSlotDTO.map_bookingslot(x, is_valid))
         return rows
 
     class BookAppointmentRequest(BaseModel):
@@ -59,7 +59,7 @@ class BookingslotRouter(APIRouter):
         request: BookAppointmentRequest,
         user: DonorUserRequired,
         engine: DBConnection,
-    ) -> BookBookingslotRow:
+    ) -> BookBookingSlotDTO:
         q = BookingslotQuerier(engine)
         booked: BookBookingslotRow | None = await q.book_bookingslot(
             bookingslot_id=request.bookingslot_id,
@@ -67,4 +67,4 @@ class BookingslotRouter(APIRouter):
         )
         if booked is None:
             raise HTTPException(status_code=404, detail="Bookingslot not available")
-        return booked
+        return BookBookingSlotDTO.map(booked)

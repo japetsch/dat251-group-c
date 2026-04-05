@@ -3,22 +3,11 @@ from typing import Annotated, final
 import jwt
 from fastapi import Depends, HTTPException, Request, Response, status
 from jwt.exceptions import DecodeError
-from pydantic import BaseModel, ValidationError
+from pydantic import ValidationError
 
 from app.config import Settings
 
-
-class UserInfo(BaseModel):
-    user_id: int
-    user_name: str
-
-
-class DonorInfo(UserInfo):
-    donor_id: int
-
-
-class AdminInfo(UserInfo):
-    admin_id: int
+from .schemas.auth import AdminInfo, DonorInfo, UserInfo
 
 
 @final
