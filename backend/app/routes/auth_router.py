@@ -7,15 +7,13 @@ from fastapi.routing import APIRouter
 from pydantic import BaseModel
 
 from app.auth import (
-    AdminInfo,
     AuthUtilDependency,
     CurrentUserRequired,
-    DonorInfo,
-    UserInfo,
 )
 
 from ..db.db import DBConnection
 from ..db.sqlc.auth import AsyncQuerier as AuthQuerier
+from ..schemas.auth import AdminInfo, DonorInfo, UserInfo
 
 
 @final

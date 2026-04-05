@@ -1,21 +1,21 @@
-from typing import List, TypedDict
-
 from fastapi import HTTPException
 from fastapi.routing import APIRouter
 
 from app.auth import DonorUserRequired
-from app.db.sqlc import models
 
 from ..db.db import DBConnection
 from ..db.sqlc.auth import AsyncQuerier as AuthQuerier
 from ..db.sqlc.testresults import (
     AsyncQuerier as TestresultQuerier,
-    DonationTestDetailsRow,
-    DonationTestResultRow,
-    EntryFormDetailsRow,
-    EntryFormResultRow,
-    InterviewDetailsRow,
-    InterviewResultRow,
+)
+from ..schemas.testresult import (
+    DonationTestDetailsDTO,
+    DonationTestResultDTO,
+    EntryFormDetailsDTO,
+    EntryFormResultDTO,
+    InterviewDetailsDTO,
+    InterviewResponse,
+    InterviewResultDTO,
 )
 
 
@@ -26,27 +26,22 @@ class TestresultRouter(APIRouter):
         self.add_api_route("", self.get_all_testresults, methods=["GET"])
         self.add_api_route("/{testresult_id}", self.get_testresult, methods=["GET"])
 
-    class InterviewResponse(TypedDict):
-        interviews: List[InterviewResultRow]
-        entry_forms: List[EntryFormResultRow]
-        donation_tests: List[DonationTestResultRow]
-
     async def get_all_testresults(
         self, user: DonorUserRequired, engine: DBConnection
-    ) -> TestresultRouter.InterviewResponse:
+    ) -> InterviewResponse:
         q = TestresultQuerier(engine)
 
-        interviews: list[InterviewResultRow] = []
+        interviews: list[InterviewResultDTO] = []
         async for x in q.interview_result(donor_id=user.donor_id):
-            interviews.append(x)
+            interviews.append(InterviewResultDTO.map(x))
 
-        entry_forms: list[EntryFormResultRow] = []
+        entry_forms: list[EntryFormResultDTO] = []
         async for x in q.entry_form_result(donor_id=user.donor_id):
-            entry_forms.append(x)
+            entry_forms.append(EntryFormResultDTO.map(x))
 
-        donation_tests: list[DonationTestResultRow] = []
+        donation_tests: list[DonationTestResultDTO] = []
         async for x in q.donation_test_result(donor_id=user.donor_id):
-            donation_tests.append(x)
+            donation_tests.append(DonationTestResultDTO.map(x))
 
         return {
             "interviews": interviews,
@@ -56,7 +51,7 @@ class TestresultRouter(APIRouter):
 
     async def get_testresult(
         self, testresult_id: int, user: DonorUserRequired, engine: DBConnection
-    ) -> InterviewDetailsRow | DonationTestDetailsRow | EntryFormDetailsRow:
+    ) -> InterviewDetailsDTO | DonationTestDetailsDTO | EntryFormDetailsDTO:
         q = TestresultQuerier(engine)
         aq = AuthQuerier(engine)
 
@@ -73,21 +68,21 @@ class TestresultRouter(APIRouter):
         if (
             interview_details := await q.interview_details(testresult_id=testresult_id)
         ) is not None:
-            return interview_details
+            return InterviewDetailsDTO.map(interview_details)
 
         if (
             entry_form_details := await q.entry_form_details(
                 testresult_id=testresult_id
             )
         ) is not None:
-            return entry_form_details
+            return EntryFormDetailsDTO.map(entry_form_details)
 
         if (
             donation_test_details := await q.donation_test_details(
                 testresult_id=testresult_id
             )
         ) is not None:
-            return donation_test_details
+            return DonationTestDetailsDTO.map(donation_test_details)
 
         raise HTTPException(
             status_code=404,

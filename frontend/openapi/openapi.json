@@ -637,7 +637,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/AvailableBookingSlot"
+                    "$ref": "#/components/schemas/BookingSlotDTO"
                   },
                   "type": "array",
                   "title": "Response Get Available Bookingslot Available Get"
@@ -668,7 +668,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/BookBookingslotRow"
+                  "$ref": "#/components/schemas/BookBookingSlotDTO"
                 }
               }
             }
@@ -727,13 +727,13 @@
                 "schema": {
                   "anyOf": [
                     {
-                      "$ref": "#/components/schemas/InterviewDetailsRow"
+                      "$ref": "#/components/schemas/InterviewDetailsDTO"
                     },
                     {
-                      "$ref": "#/components/schemas/DonationTestDetailsRow"
+                      "$ref": "#/components/schemas/DonationTestDetailsDTO"
                     },
                     {
-                      "$ref": "#/components/schemas/EntryFormDetailsRow"
+                      "$ref": "#/components/schemas/EntryFormDetailsDTO"
                     }
                   ],
                   "title": "Response Get Testresult Testresult  Testresult Id  Get"
@@ -768,7 +768,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/BloodbankResponse"
+                    "$ref": "#/components/schemas/BloodbankDTO"
                   },
                   "type": "array",
                   "title": "Response Get All Bloodbanks Bloodbank Get"
@@ -996,7 +996,110 @@
         ],
         "title": "AppointmentUpdateRequest"
       },
-      "AvailableBookingSlot": {
+      "BloodType": {
+        "type": "string",
+        "enum": [
+          "O+",
+          "O-",
+          "A+",
+          "A-",
+          "B+",
+          "B-",
+          "AB+",
+          "AB-"
+        ],
+        "title": "BloodType"
+      },
+      "BloodbankDTO": {
+        "properties": {
+          "bloodbank_id": {
+            "type": "integer",
+            "title": "Bloodbank Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "street_name": {
+            "type": "string",
+            "title": "Street Name"
+          },
+          "street_number": {
+            "type": "string",
+            "title": "Street Number"
+          },
+          "postal_code": {
+            "type": "string",
+            "title": "Postal Code"
+          },
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country"
+          },
+          "user_has_admin_access": {
+            "type": "boolean",
+            "title": "User Has Admin Access"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bloodbank_id",
+          "name",
+          "street_name",
+          "street_number",
+          "postal_code",
+          "city",
+          "country",
+          "user_has_admin_access"
+        ],
+        "title": "BloodbankDTO"
+      },
+      "BookAppointmentRequest": {
+        "properties": {
+          "bookingslot_id": {
+            "type": "integer",
+            "title": "Bookingslot Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bookingslot_id"
+        ],
+        "title": "BookAppointmentRequest"
+      },
+      "BookBookingSlotDTO": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "bookingslot_id": {
+            "type": "integer",
+            "title": "Bookingslot Id"
+          },
+          "cancelled": {
+            "type": "boolean",
+            "title": "Cancelled"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "donor_id",
+          "bookingslot_id",
+          "cancelled"
+        ],
+        "title": "BookBookingSlotDTO"
+      },
+      "BookingSlotDTO": {
         "properties": {
           "id": {
             "type": "integer",
@@ -1044,110 +1147,7 @@
           "location_id",
           "valid"
         ],
-        "title": "AvailableBookingSlot"
-      },
-      "BloodType": {
-        "type": "string",
-        "enum": [
-          "O+",
-          "O-",
-          "A+",
-          "A-",
-          "B+",
-          "B-",
-          "AB+",
-          "AB-"
-        ],
-        "title": "BloodType"
-      },
-      "BloodbankResponse": {
-        "properties": {
-          "bloodbank_id": {
-            "type": "integer",
-            "title": "Bloodbank Id"
-          },
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "street_name": {
-            "type": "string",
-            "title": "Street Name"
-          },
-          "street_number": {
-            "type": "string",
-            "title": "Street Number"
-          },
-          "postal_code": {
-            "type": "string",
-            "title": "Postal Code"
-          },
-          "city": {
-            "type": "string",
-            "title": "City"
-          },
-          "country": {
-            "type": "string",
-            "title": "Country"
-          },
-          "user_has_admin_access": {
-            "type": "boolean",
-            "title": "User Has Admin Access"
-          }
-        },
-        "type": "object",
-        "required": [
-          "bloodbank_id",
-          "name",
-          "street_name",
-          "street_number",
-          "postal_code",
-          "city",
-          "country",
-          "user_has_admin_access"
-        ],
-        "title": "BloodbankResponse"
-      },
-      "BookAppointmentRequest": {
-        "properties": {
-          "bookingslot_id": {
-            "type": "integer",
-            "title": "Bookingslot Id"
-          }
-        },
-        "type": "object",
-        "required": [
-          "bookingslot_id"
-        ],
-        "title": "BookAppointmentRequest"
-      },
-      "BookBookingslotRow": {
-        "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "donor_id": {
-            "type": "integer",
-            "title": "Donor Id"
-          },
-          "bookingslot_id": {
-            "type": "integer",
-            "title": "Bookingslot Id"
-          },
-          "cancelled": {
-            "type": "boolean",
-            "title": "Cancelled"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "donor_id",
-          "bookingslot_id",
-          "cancelled"
-        ],
-        "title": "BookBookingslotRow"
+        "title": "BookingSlotDTO"
       },
       "BookingSlotType": {
         "properties": {
@@ -1235,7 +1235,7 @@
         ],
         "title": "CreateBloodBankRequest"
       },
-      "DonationTestDetailsRow": {
+      "DonationTestDetailsDTO": {
         "properties": {
           "id": {
             "type": "integer",
@@ -1320,9 +1320,9 @@
           "is_blood_not_plasma",
           "tester_admin_name"
         ],
-        "title": "DonationTestDetailsRow"
+        "title": "DonationTestDetailsDTO"
       },
-      "DonationTestResultRow": {
+      "DonationTestResultDTO": {
         "properties": {
           "id": {
             "type": "integer",
@@ -1377,7 +1377,7 @@
           "donation_test_id",
           "admin_name"
         ],
-        "title": "DonationTestResultRow"
+        "title": "DonationTestResultDTO"
       },
       "DonationType": {
         "properties": {
@@ -1402,7 +1402,7 @@
         ],
         "title": "DonationType"
       },
-      "EntryFormDetailsRow": {
+      "EntryFormDetailsDTO": {
         "properties": {
           "id": {
             "type": "integer",
@@ -1457,9 +1457,9 @@
           "ok_to_donate",
           "entry_form_id"
         ],
-        "title": "EntryFormDetailsRow"
+        "title": "EntryFormDetailsDTO"
       },
-      "EntryFormResultRow": {
+      "EntryFormResultDTO": {
         "properties": {
           "id": {
             "type": "integer",
@@ -1509,7 +1509,7 @@
           "invalidated",
           "entry_form_id"
         ],
-        "title": "EntryFormResultRow"
+        "title": "EntryFormResultDTO"
       },
       "GetAllBloodBanksRow": {
         "properties": {
@@ -1572,7 +1572,7 @@
         "type": "object",
         "title": "HTTPValidationError"
       },
-      "InterviewDetailsRow": {
+      "InterviewDetailsDTO": {
         "properties": {
           "id": {
             "type": "integer",
@@ -1637,27 +1637,27 @@
           "interviewer_admin_id",
           "interviewer_admin_name"
         ],
-        "title": "InterviewDetailsRow"
+        "title": "InterviewDetailsDTO"
       },
       "InterviewResponse": {
         "properties": {
           "interviews": {
             "items": {
-              "$ref": "#/components/schemas/InterviewResultRow"
+              "$ref": "#/components/schemas/InterviewResultDTO"
             },
             "type": "array",
             "title": "Interviews"
           },
           "entry_forms": {
             "items": {
-              "$ref": "#/components/schemas/EntryFormResultRow"
+              "$ref": "#/components/schemas/EntryFormResultDTO"
             },
             "type": "array",
             "title": "Entry Forms"
           },
           "donation_tests": {
             "items": {
-              "$ref": "#/components/schemas/DonationTestResultRow"
+              "$ref": "#/components/schemas/DonationTestResultDTO"
             },
             "type": "array",
             "title": "Donation Tests"
@@ -1671,7 +1671,7 @@
         ],
         "title": "InterviewResponse"
       },
-      "InterviewResultRow": {
+      "InterviewResultDTO": {
         "properties": {
           "id": {
             "type": "integer",
@@ -1726,7 +1726,7 @@
           "interview_id",
           "admin_name"
         ],
-        "title": "InterviewResultRow"
+        "title": "InterviewResultDTO"
       },
       "LoginRequestData": {
         "properties": {

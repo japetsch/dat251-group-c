@@ -1,10 +1,10 @@
 from fastapi.routing import APIRouter
-from pydantic import BaseModel
 
 from app.auth import AdminInfo, CurrentUserOptional
 
 from ..db.db import DBConnection
 from ..db.sqlc.bloodbank import AsyncQuerier as BloodbankQuerier
+from ..schemas.bloodbank import BloodbankDTO
 
 
 class BloodbankRouter(APIRouter):
@@ -12,19 +12,9 @@ class BloodbankRouter(APIRouter):
         super().__init__(tags=["bloodbank"])
         self.add_api_route("", self.get_all_bloodbanks, methods=["GET"])
 
-    class BloodbankResponse(BaseModel):
-        bloodbank_id: int
-        name: str
-        street_name: str
-        street_number: str
-        postal_code: str
-        city: str
-        country: str
-        user_has_admin_access: bool
-
     async def get_all_bloodbanks(
         self, user: CurrentUserOptional, engine: DBConnection
-    ) -> list[BloodbankResponse]:
+    ) -> list[BloodbankDTO]:
         # If the current user is an admin, pass their admin id to the query, otherwise pass -1
         admin_id = -1
         if isinstance(user, AdminInfo):
@@ -32,12 +22,8 @@ class BloodbankRouter(APIRouter):
 
         q = BloodbankQuerier(engine)
 
-        rows: list = []
+        rows: list[BloodbankDTO] = []
         async for r in q.get_all_blood_banks(admin_id=admin_id):
-            rows.append(r)
+            rows.append(BloodbankDTO.map_bloodbank(r))
 
-        out: list[BloodbankRouter.BloodbankResponse] = [
-            BloodbankRouter.BloodbankResponse(**r.model_dump()) for r in rows
-        ]
-
-        return out
+        return rows
