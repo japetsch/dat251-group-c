@@ -44,7 +44,7 @@ class DonationTestDetailsRow(pydantic.BaseModel):
     time: datetime.datetime
     validity_duration: datetime.timedelta
     invalidated: bool
-    ok_to_donate: Optional[bool]
+    ok_to_donate: bool
     donation_test_id: Optional[int]
     donation_id: int
     tester_admin_id: int
@@ -107,7 +107,7 @@ class EntryFormDetailsRow(pydantic.BaseModel):
     time: datetime.datetime
     validity_duration: datetime.timedelta
     invalidated: bool
-    ok_to_donate: Optional[bool]
+    ok_to_donate: bool
     entry_form_id: Optional[int]
 
 
@@ -163,7 +163,7 @@ class InterviewDetailsRow(pydantic.BaseModel):
     time: datetime.datetime
     validity_duration: datetime.timedelta
     invalidated: bool
-    ok_to_donate: Optional[bool]
+    ok_to_donate: bool
     interview_id: Optional[int]
     interviewer_admin_id: int
     interviewer_admin_name: str

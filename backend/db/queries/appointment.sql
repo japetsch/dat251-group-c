@@ -1,9 +1,29 @@
--- name: GetAppointmentsByUserId :many
-SELECT a.id as id, u.name as username, b.time as time, b.duration as duration, ba.name as bloodbank_name, a.cancelled FROM appointment a
-  INNER JOIN "user" u on a.donor_id = u.id
-  INNER JOIN bookingslot b on a.bookingslot_id = b.id
-  INNER JOIN bloodbank ba on b.bloodbank_id = ba.id
-  WHERE a.donor_id = sqlc.arg('donor_id');
+-- name: GetAppointmentsByDonorId :many
+WITH notes AS (
+    SELECT an.appointment_id,
+        json_agg(json_build_object(
+            'author_user_id', u.id,
+            'author_name', u.name,
+            'message', an.message,
+            'time', an.time
+        ) ORDER BY an.time DESC) as nl
+    FROM appointment_note an
+    INNER JOIN "user" u ON an.author_id = u.id
+    GROUP BY an.appointment_id
+)
+SELECT a.id as id,
+    u.name as username,
+    b.time as time,
+    b.duration as duration,
+    ba.name as bloodbank_name,
+    a.cancelled,
+    COALESCE(n.nl, '[]'::json) as notes
+FROM appointment a
+INNER JOIN "user" u on a.donor_id = u.id
+INNER JOIN bookingslot b on a.bookingslot_id = b.id
+INNER JOIN bloodbank ba on b.bloodbank_id = ba.id
+LEFT JOIN notes n ON n.appointment_id = a.id
+WHERE a.donor_id = sqlc.arg('donor_id');
 
 -- name: UpdateAppointment :one
 WITH current AS (
@@ -47,3 +67,6 @@ increase_old AS (
 )
 SELECT * FROM updated_appointment;
 
+-- name: AddNote :exec
+INSERT INTO appointment_note (appointment_id, author_id, message, time)
+VALUES ($1, $2, $3, NOW());
