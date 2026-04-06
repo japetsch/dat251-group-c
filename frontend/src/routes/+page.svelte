@@ -82,7 +82,7 @@
 
     <!-- Formating of the contents inside the card -->
     <div
-      class="relative z-10 inline-block rounded-[32px] border border-black/10 bg-white px-[10rem] py-[6rem] text-center shadow-[0_4px_18px_rgba(0,0,0,0.05)]"
+      class="relative z-10 inline-block rounded-[32px] border border-black/10 bg-white px-[7rem] py-[4rem] text-center shadow-[0_4px_18px_rgba(0,0,0,0.05)]"
     >
       <div class="flex flex-col items-center gap-14">
         <img
@@ -176,15 +176,15 @@
       aria-label="Lukk donor-sjekk"
       onclick={() => (showEligibility = false)}
     ></Button>
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-6">
-      <Cards orientation="horizontal" tone="white" class="w-full max-w-2xl">
-        <div class="space-y-6">
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <Cards orientation="horizontal" tone="white" class="w-full max-w-[44rem]">
+        <div class="space-y-3">
           <div class="flex items-start justify-between gap-4">
             <div>
-              <h2 class="text-2xl font-semibold tracking-tight">
+              <h2 class="text-xl font-semibold tracking-tight">
                 Sjekk om du kan donere blod
               </h2>
-              <p class="mt-2 text-black/70">
+              <p class="mt-1 text-black/70">
                 Dette er en enkel veiledning og erstatter ikke vurdering fra
                 blodbanken.
               </p>
@@ -196,7 +196,7 @@
           </div>
           <div class="space-y-4">
             <div
-              class="rounded-[20px] border border-black/10 bg-[#faf7f6] px-6 py-5"
+              class="rounded-[18px] border border-black/10 bg-[#faf7f6] px-4 py-4"
             >
               <p class="mb-3 text-lg font-medium">Er du mellom 18 og 70 år?</p>
               <div class="flex gap-3">
@@ -226,7 +226,7 @@
             </div>
 
             <div
-              class="rounded-[20px] border border-black/10 bg-[#faf7f6] px-6 py-5"
+              class="rounded-[18px] border border-black/10 bg-[#faf7f6] px-4 py-4"
             >
               <p class="mb-3 text-lg font-medium">Veier du minst 50 kg?</p>
               <div class="flex gap-3">
@@ -256,7 +256,7 @@
             </div>
 
             <div
-              class="rounded-[20px] border border-black/10 bg-[#faf7f6] px-6 py-5"
+              class="rounded-[18px] border border-black/10 bg-[#faf7f6] px-4 py-4"
             >
               <p class="mb-3 text-lg font-medium">
                 Føler du deg frisk og i god helse i dag?
@@ -288,7 +288,7 @@
             </div>
 
             <div
-              class="rounded-[20px] border border-black/10 bg-[#faf7f6] px-6 py-5"
+              class="rounded-[18px] border border-black/10 bg-[#faf7f6] px-4 py-4"
             >
               <p class="mb-3 text-lg font-medium">
                 Har det gått lenge nok siden sist du donerte blod?
@@ -320,7 +320,7 @@
             </div>
 
             <div
-              class="rounded-[20px] border border-black/10 bg-[#faf7f6] px-6 py-5"
+              class="rounded-[18px] border border-black/10 bg-[#faf7f6] px-4 py-4"
             >
               <p class="mb-3 text-lg font-medium">Har du norsk personnummer?</p>
               <div class="flex gap-3">
