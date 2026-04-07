@@ -2,30 +2,65 @@
   import Buttons from "$lib/components/Buttons.svelte";
   import Cards from "$lib/components/Cards.svelte";
   import { Button } from "$lib/components/ui/button";
+  import { onMount } from "svelte";
   import "../app.css";
 
+  // variables for the display of bloodbanks
+  type Bloodbank = {
+    bloodbank_id: number;
+    name: string;
+    street_name: string;
+    street_number: string;
+    postal_code: string;
+    city: string;
+    country: string;
+    user_has_admin_access: boolean;
+  };
+
+  let bloodbanks = $state<Bloodbank[]>([]);
+  let bloodbanksLoading = $state(true);
+  let bloodbanksError = $state<string | null>(null);
+
+  onMount(async () => {
+    try {
+      const response = await fetch("/api/bloodbank");
+
+      if (!response.ok) {
+        bloodbanksError = "Kunne ikke hente blodbanker.";
+        return;
+      }
+      bloodbanks = await response.json();
+    } catch {
+      bloodbanksError = "Kunne ikke hente blodbanker.";
+    } finally {
+      bloodbanksLoading = false;
+    }
+  });
+
   // variables for the questionnaire
-  let showEligibility = false;
+  let showEligibility = $state(false);
 
-  let ageOk: boolean | null = null;
-  let weightOk: boolean | null = null;
-  let healthyOk: boolean | null = null;
-  let recentDonationOk: boolean | null = null;
-  let idOk: boolean | null = null;
+  let ageOk = $state<boolean | null>(null);
+  let weightOk = $state<boolean | null>(null);
+  let healthyOk = $state<boolean | null>(null);
+  let recentDonationOk = $state<boolean | null>(null);
+  let idOk = $state<boolean | null>(null);
 
-  $: allAnswered =
+  const allAnswered = $derived(
     ageOk !== null &&
-    weightOk !== null &&
-    healthyOk !== null &&
-    recentDonationOk !== null &&
-    idOk !== null;
+      weightOk !== null &&
+      healthyOk !== null &&
+      recentDonationOk !== null &&
+      idOk !== null,
+  );
 
-  $: eligible =
+  const eligible = $derived(
     ageOk === true &&
-    weightOk === true &&
-    healthyOk === true &&
-    recentDonationOk === true &&
-    idOk === true;
+      weightOk === true &&
+      healthyOk === true &&
+      recentDonationOk === true &&
+      idOk === true,
+  );
 
   function resetEligibility() {
     ageOk = null;
@@ -165,6 +200,51 @@
           </p>
         </Cards>
       </div>
+    </div>
+  </section>
+
+  <!-- Display bloodbanks -->
+  <section class="min-h-screen bg-[#f5f2f1] px-6 py-12 flex items-center">
+    <div class="mx-auto w-full max-w-5xl space-y-8">
+      <div class="space-y-3 text-center">
+        <h2 class="text-3xl font-semibold tracking-tight">Finn en blodbank</h2>
+        <p class="mx-auto max-w-3xl text-base leading-7 text-black/65">
+          Her er blodbanker du kan bestille time hos.
+        </p>
+      </div>
+
+      {#if bloodbanksLoading}
+        <p class="text-center text-black/65">Laster blodbanker...</p>
+      {:else if bloodbanksError}
+        <p class="text-center text-red-700">{bloodbanksError}</p>
+      {:else if bloodbanks.length === 0}
+        <p class="text-center text-black/65">Ingen blodbanker funnet.</p>
+      {:else}
+        <div class="flex flex-wrap justify-center gap-6">
+          {#each bloodbanks as bloodbank}
+            <Cards
+              orientation="vertical"
+              tone="white"
+              class="w-full max-w-[360px]"
+            >
+              <div class="space-y-2">
+                <h3 class="text-xl font-semibold tracking-tight">
+                  {bloodbank.name}
+                </h3>
+                <p class="text-black/70">
+                  {bloodbank.street_name}
+                  {bloodbank.street_number}
+                </p>
+                <p class="text-black/70">
+                  {bloodbank.postal_code}
+                  {bloodbank.city}
+                </p>
+                <p class="text-black/70">{bloodbank.country}</p>
+              </div>
+            </Cards>
+          {/each}
+        </div>
+      {/if}
     </div>
   </section>
 
