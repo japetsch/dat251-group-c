@@ -19,9 +19,12 @@
 </svelte:head>
 
 <div class="mb-8">
-  <h1 class="text-4xl font-bold tracking-tight text-slate-900">My appointments</h1>
+  <h1 class="text-4xl font-bold tracking-tight text-slate-900">
+    My appointments
+  </h1>
   <p class="mt-2 max-w-2xl text-base text-slate-500">
-    Here you can see upcoming and past appointments. Stay organized and plan your next donation.
+    Here you can see upcoming and past appointments. Stay organized and plan
+    your next donation.
   </p>
 </div>
 
