@@ -1,22 +1,17 @@
-from typing import List, TypedDict
-
 from fastapi import HTTPException
 from fastapi.routing import APIRouter
 
 from app.auth import DonorUserRequired
-from app.db.sqlc import models
 
 from ..db.db import DBConnection
 from ..db.sqlc.auth import AsyncQuerier as AuthQuerier
 from ..db.sqlc.testresults import (
     AsyncQuerier as TestresultQuerier,
     DonationTestDetailsRow,
-    DonationTestResultRow,
     EntryFormDetailsRow,
-    EntryFormResultRow,
     InterviewDetailsRow,
-    InterviewResultRow,
 )
+from ..schemas.testresult import InterviewResponse
 
 
 class TestresultRouter(APIRouter):
@@ -26,33 +21,27 @@ class TestresultRouter(APIRouter):
         self.add_api_route("", self.get_all_testresults, methods=["GET"])
         self.add_api_route("/{testresult_id}", self.get_testresult, methods=["GET"])
 
-    class InterviewResponse(TypedDict):
-        interviews: List[InterviewResultRow]
-        entry_forms: List[EntryFormResultRow]
-        donation_tests: List[DonationTestResultRow]
-
     async def get_all_testresults(
         self, user: DonorUserRequired, engine: DBConnection
-    ) -> TestresultRouter.InterviewResponse:
+    ) -> InterviewResponse:
         q = TestresultQuerier(engine)
 
-        interviews: list[InterviewResultRow] = []
-        async for x in q.interview_result(donor_id=user.donor_id):
-            interviews.append(x)
-
-        entry_forms: list[EntryFormResultRow] = []
-        async for x in q.entry_form_result(donor_id=user.donor_id):
-            entry_forms.append(x)
-
-        donation_tests: list[DonationTestResultRow] = []
-        async for x in q.donation_test_result(donor_id=user.donor_id):
-            donation_tests.append(x)
-
-        return {
-            "interviews": interviews,
-            "entry_forms": entry_forms,
-            "donation_tests": donation_tests,
+        response: InterviewResponse = {
+            "interviews": [],
+            "entry_forms": [],
+            "donation_tests": [],
         }
+
+        async for x in q.interview_result(donor_id=user.donor_id):
+            response.get("interviews").append(x)
+
+        async for x in q.entry_form_result(donor_id=user.donor_id):
+            response.get("entry_forms").append(x)
+
+        async for x in q.donation_test_result(donor_id=user.donor_id):
+            response.get("donation_tests").append(x)
+
+        return response
 
     async def get_testresult(
         self, testresult_id: int, user: DonorUserRequired, engine: DBConnection
