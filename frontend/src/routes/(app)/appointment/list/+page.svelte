@@ -14,15 +14,14 @@
 </script>
 
 <svelte:head>
-  <title>Mine avtaler</title>
+  <title>My appointments</title>
   <!-- <h1 class="text-3xl mb-4">My appointments</h1>-->
 </svelte:head>
 
 <div class="mb-8">
-  <h1 class="text-4xl font-bold tracking-tight text-slate-900">Mine avtaler</h1>
+  <h1 class="text-4xl font-bold tracking-tight text-slate-900">My appointments</h1>
   <p class="mt-2 max-w-2xl text-base text-slate-500">
-    Her ser du kommende og tidligere avtaler. Hold oversikten og planlegg neste
-    donasjon.
+    Here you can see upcoming and past appointments. Stay organized and plan your next donation.
   </p>
 </div>
 
@@ -36,16 +35,16 @@
   <div
     class="rounded-[32px] bg-white p-8 shadow-[0_16px_50px_rgba(15,23,42,0.06)] ring-1 ring-black/5"
   >
-    <h2 class="text-2xl font-semibold text-slate-900">Ingen avtaler ennå</h2>
+    <h2 class="text-2xl font-semibold text-slate-900">No appointments yet</h2>
     <p class="mt-2 text-slate-500">
-      Du har ingen registrerte avtaler akkurat nå.
+      You have no registered appointments at the moment.
     </p>
 
     <a
       href="/appointment/new"
       class="mt-6 inline-flex items-center rounded-full bg-red-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-600"
     >
-      Bestill ny time
+      Book new appointment
     </a>
   </div>
 {:else}
@@ -55,9 +54,9 @@
     >
       <div class="mb-6 flex items-center justify-between gap-4">
         <div>
-          <h2 class="text-2xl font-semibold text-slate-900">Kommende</h2>
+          <h2 class="text-2xl font-semibold text-slate-900">Upcoming</h2>
           <p class="mt-1 text-sm text-slate-500">
-            Dine neste planlagte donasjoner.
+            Your upcoming scheduled donations.
           </p>
         </div>
 
@@ -65,13 +64,13 @@
           class="rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-600"
         >
           {data.upcoming.length}
-          {data.upcoming.length === 1 ? "avtale" : "avtaler"}
+          {data.upcoming.length === 1 ? "appointment" : "appointments"}
         </span>
       </div>
 
       {#if data.upcoming.length === 0}
         <div class="rounded-2xl bg-slate-50 px-5 py-4 text-slate-500">
-          Ingen kommende avtaler.
+          No upcoming appointments.
         </div>
       {:else}
         <div class="space-y-4">
@@ -118,7 +117,7 @@
                   <span
                     class="mt-3 inline-flex rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-600"
                   >
-                    Kommende
+                    Upcoming
                   </span>
                 </div>
               </div>
@@ -133,9 +132,9 @@
     >
       <div class="mb-6 flex items-center justify-between gap-4">
         <div>
-          <h2 class="text-2xl font-semibold text-slate-900">Tidligere</h2>
+          <h2 class="text-2xl font-semibold text-slate-900">Previous</h2>
           <p class="mt-1 text-sm text-slate-500">
-            Donasjoner du allerede har gjennomført.
+            Donations you have already completed.
           </p>
         </div>
 
@@ -143,13 +142,13 @@
           class="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600"
         >
           {data.previous.length}
-          {data.previous.length === 1 ? "avtale" : "avtaler"}
+          {data.previous.length === 1 ? "appointment" : "appointments"}
         </span>
       </div>
 
       {#if data.previous.length === 0}
         <div class="rounded-2xl bg-slate-50 px-5 py-4 text-slate-500">
-          Ingen tidligere avtaler.
+          No previous appointments.
         </div>
       {:else}
         <div class="space-y-4">
@@ -176,7 +175,7 @@
                     <p
                       class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
                     >
-                      Sted
+                      Location
                     </p>
                     <p class="mt-1 text-base text-slate-700">
                       {appointment.bloodbank_name}
@@ -188,7 +187,7 @@
                   <p
                     class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
                   >
-                    Tid
+                    Time
                   </p>
                   <p class="mt-1 text-base font-semibold text-slate-900">
                     {formatDate(appointment.time)}
@@ -196,7 +195,7 @@
                   <span
                     class="mt-3 inline-flex rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600"
                   >
-                    Fullført
+                    Completed
                   </span>
                 </div>
               </div>
