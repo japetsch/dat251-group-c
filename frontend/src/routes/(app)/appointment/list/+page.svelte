@@ -4,7 +4,7 @@
   export let data: PageData;
 
   const formatDate = (value: string) =>
-    new Date(value).toLocaleString("nb-NO", {
+    new Date(value).toLocaleString("en-DK", {
       day: "numeric",
       month: "long",
       year: "numeric",
