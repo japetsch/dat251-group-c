@@ -1,10 +1,9 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from typing import final
 from zoneinfo import ZoneInfo
 
 from fastapi import HTTPException, status
 from fastapi.routing import APIRouter
-from pydantic import BaseModel, Field
 
 from app.auth import AdminUserRequired
 
@@ -12,14 +11,25 @@ from ..db.db import DBConnection
 from ..db.sqlc.admin import (
     AsyncQuerier as AdminQuerier,
     CreateBloodBankParams,
-    GetAppointmentsAtBloodBankRow,
     RegisterDonationTestParams,
     RegisterInterviewParams,
 )
 from ..db.sqlc.appointment import AsyncQuerier as AppointmentQuerier
 from ..db.sqlc.auth import AsyncQuerier as AuthQuerier
 from ..db.sqlc.bloodbank import AsyncQuerier as BloodbankQuerier, GetAllBloodBanksRow
-from ..db.sqlc.models import BloodType
+from ..schemas.admin import (
+    BookingSlotType,
+    CreateBloodBankRequest,
+    CreateBloodBankResponse,
+    MutateBloodbankAdminsRequest,
+    RegisterDonationRequest,
+    RegisterDonationResponse,
+    RegisterDonationTestRequest,
+    RegisterInterviewRequest,
+)
+from ..schemas.appointment import (
+    AddNoteRequest,
+)
 
 
 @final
@@ -89,20 +99,6 @@ class AdminRouter(APIRouter):
             blood_banks.append(r)
         return blood_banks
 
-    class CreateBloodBankRequest(BaseModel):
-        name: str
-        street_name: str
-        street_number: str
-        postal_code: str
-        city: str
-        country: str = "NO"
-        # TODO: make optional + use geocoding
-        loc_lat: float
-        loc_lon: float
-
-    class CreateBloodBankResponse(BaseModel):
-        bloodbank_id: int
-
     async def create_bloodbank(
         self,
         user: AdminUserRequired,
@@ -128,7 +124,7 @@ class AdminRouter(APIRouter):
         )
 
         assert res is not None, "blood bank creation success but no id returned???"
-        return self.CreateBloodBankResponse(bloodbank_id=res)
+        return CreateBloodBankResponse(bloodbank_id=res)
 
     async def _assert_bb_access(
         self, admin_id: int, bloodbank_id: int, engine: DBConnection
@@ -155,9 +151,6 @@ class AdminRouter(APIRouter):
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="User is not admin for this appointment",
             )
-
-    class MutateBloodbankAdminsRequest(BaseModel):
-        admin_id: int
 
     async def add_admin_to_bloodbank(
         self,
@@ -197,31 +190,6 @@ class AdminRouter(APIRouter):
                 detail="Cannot remove the last admin of a blood bank",
             )
 
-    class BookingSlotType(GetAppointmentsAtBloodBankRow):
-        appointments: list[AdminRouter.AppointmentType]
-
-    class AppointmentType(BaseModel):
-        appointment_id: int
-        appointment_cancelled: bool
-        donor_id: int
-        donor_blood_type: BloodType | None
-        donor_name: str
-        donor_email: str
-        donor_phone: str
-        notes: list[AdminRouter.AppointmentNoteType]
-        donations: list[AdminRouter.DonationType]
-
-    class AppointmentNoteType(BaseModel):
-        author_user_id: int
-        author_name: str
-        message: str
-        time: datetime
-
-    class DonationType(BaseModel):
-        donation_id: int
-        amount_ml: float
-        is_blood_not_plasma: bool
-
     async def bloodbank_appointments(
         self,
         user: AdminUserRequired,
@@ -230,7 +198,7 @@ class AdminRouter(APIRouter):
         after: datetime | None = None,
         before: datetime | None = None,
         show_cancelled: bool = False,
-    ) -> list[AdminRouter.BookingSlotType]:
+    ) -> list[BookingSlotType]:
         """
         Show appointments for blood bank.
 
@@ -252,15 +220,10 @@ class AdminRouter(APIRouter):
             show_cancelled=show_cancelled,
         )
 
-        slots: list[AdminRouter.BookingSlotType] = []
+        slots: list[BookingSlotType] = []
         async for a in appts:
-            slots.append(
-                AdminRouter.BookingSlotType.model_validate(a, from_attributes=True)
-            )
+            slots.append(BookingSlotType.model_validate(a, from_attributes=True))
         return slots
-
-    class AddNoteRequest(BaseModel):
-        message: str
 
     async def appointment_add_note(
         self,
@@ -276,13 +239,6 @@ class AdminRouter(APIRouter):
             author_id=user.user_id,  # NOTE: this is the user_id, not admin_id
             message=data.message,
         )
-
-    class RegisterDonationRequest(BaseModel):
-        amount_ml: float
-        is_blood_not_plasma: bool = True
-
-    class RegisterDonationResponse(BaseModel):
-        donation_id: int
 
     async def appointment_register_donation(
         self,
@@ -300,17 +256,7 @@ class AdminRouter(APIRouter):
         )
 
         assert res is not None, "donation registration success but no id returned???"
-        return self.RegisterDonationResponse(donation_id=res)
-
-    class AbstractTestResultRequest(BaseModel):
-        submitted_at: datetime = Field(
-            default_factory=lambda: datetime.now(tz=timezone.utc)
-        )
-        ok_to_donate: bool
-        validity_duration: timedelta
-
-    class RegisterInterviewRequest(AbstractTestResultRequest):
-        pass
+        return RegisterDonationResponse(donation_id=res)
 
     async def register_interview(
         self,
@@ -330,9 +276,6 @@ class AdminRouter(APIRouter):
                 validity_duration=data.validity_duration,
             )
         )
-
-    class RegisterDonationTestRequest(AbstractTestResultRequest):
-        donation_id: int
 
     async def register_donation_test(
         self,
