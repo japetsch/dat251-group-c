@@ -467,6 +467,48 @@
         }
       }
     },
+    "/admin/appointment/{appointment_id}/result": {
+      "get": {
+        "tags": [
+          "admin"
+        ],
+        "summary": "Get Testresult For Appointment Admin",
+        "operationId": "get_testresult_for_appointment_admin",
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Appointment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Donation"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/admin/donor/{donor_id}/form/donation-test": {
       "post": {
         "tags": [
@@ -737,6 +779,45 @@
                     }
                   ],
                   "title": "Response Get Testresult Testresult  Testresult Id  Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/testresult/appointment/{appointment_id}": {
+      "get": {
+        "summary": "Get Testresult For Appointment",
+        "operationId": "get_testresult_for_appointment",
+        "parameters": [
+          {
+            "name": "appointment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Appointment Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Donation"
                 }
               }
             }
@@ -1116,6 +1197,34 @@
           "loc_lon"
         ],
         "title": "CreateBloodBankRequest"
+      },
+      "Donation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "appointment_id": {
+            "type": "integer",
+            "title": "Appointment Id"
+          },
+          "amount_ml": {
+            "type": "number",
+            "title": "Amount Ml"
+          },
+          "is_blood_not_plasma": {
+            "type": "boolean",
+            "title": "Is Blood Not Plasma"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "appointment_id",
+          "amount_ml",
+          "is_blood_not_plasma"
+        ],
+        "title": "Donation"
       },
       "DonationTestDetailsRow": {
         "properties": {
