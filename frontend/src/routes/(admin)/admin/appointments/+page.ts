@@ -28,7 +28,9 @@ export const load: PageLoad<AdminApptPreloaded> = async ({ fetch, url }) => {
     };
   }
 
-  const selectedBloodbank = bloodbanks.data.find((x) => x.user_has_admin_access);
+  const selectedBloodbank = bloodbanks.data.find(
+    (x) => x.user_has_admin_access,
+  );
   if (!selectedBloodbank) {
     return {
       upcoming: [],
