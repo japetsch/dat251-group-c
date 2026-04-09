@@ -139,6 +139,8 @@
 </style>
 
 <script lang="ts">
+  import AdminAppointmentModal from "$lib/components/AdminAppointmentModal.svelte";
+  import type { AdminCalendarAppointment } from "$lib/types/admin";
   import type { PageData } from "./$types";
   import NotesModal from "$lib/components/NotesModal.svelte";
 
@@ -160,6 +162,7 @@
   }[] = [];
 
   let appointments: PageData["upcoming"] = data.upcoming;
+  let selectedAppointment: AdminCalendarAppointment | null = null;
   let selectedAppointments: PageData["upcoming"] = [];
 
   function openNotes(appointment: any) {
@@ -241,8 +244,21 @@
     }
   }
 
+  function openAppointmentModal(appointment: AdminCalendarAppointment) {
+    selectedAppointment = appointment;
+  }
+
+  function closeAppointmentModal() {
+    selectedAppointment = null;
+  }
+
   updateCalendar();
 </script>
+
+<AdminAppointmentModal
+  selectedAppointment={selectedAppointment}
+  onClose={closeAppointmentModal}
+/>
 
 <div class="header">
   <h1 class="page-title">Administrasjonstimer</h1>
@@ -292,8 +308,11 @@
         <div class="appointment-card">Ingen timer på denne datoen</div>
       {:else}
         {#each selectedAppointments as appointment}
-          <div class="appointment-card">
-            <p><strong>{appointment.username}</strong></p>
+          <div
+            class="appointment-card"
+            on:click={() => openAppointmentModal(appointment)}
+          >
+            <p><strong>{appointment.donor_name}</strong></p>
             <p>
               {new Date(appointment.time).toLocaleTimeString([], {
                 hour: "2-digit",

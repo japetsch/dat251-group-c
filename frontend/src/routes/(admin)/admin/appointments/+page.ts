@@ -1,15 +1,15 @@
 import { createLoadClient } from "$lib/api/client";
 import type { components } from "$lib/api/schema";
+import type { AdminCalendarAppointment } from "$lib/types/admin";
 import type { PageLoad } from "./$types";
 
-type AdminCalendarAppointment = {
-  appointment_id: number;
-  username: string;
-  time: string;
-  bloodbank_name: string;
-  cancelled: boolean;
-  notes: components["schemas"]["NoteType"][];
-};
+// type AdminCalendarAppointment = {
+//   appointment_id: number;
+//   username: string;
+//   time: string;
+//   bloodbank_name: string;
+//   cancelled: boolean;
+// };
 
 type AdminApptPreloaded = {
   upcoming: AdminCalendarAppointment[];
@@ -58,12 +58,9 @@ export const load: PageLoad<AdminApptPreloaded> = async ({ fetch, url }) => {
 
   const appointments: AdminCalendarAppointment[] = r.data.flatMap((slot) =>
     slot.appointments.map((appointment) => ({
-      appointment_id: appointment.appointment_id,
-      username: appointment.donor_name,
+      ...appointment,
       time: slot.bookingslot_time,
       bloodbank_name: selectedBloodbank.name,
-      cancelled: appointment.appointment_cancelled,
-      notes: appointment.notes ?? [],
     })),
   );
 
@@ -71,7 +68,7 @@ export const load: PageLoad<AdminApptPreloaded> = async ({ fetch, url }) => {
   return {
     previous: appointments.filter((x) => new Date(x.time) < now),
     upcoming: appointments.filter(
-      (x) => !x.cancelled && new Date(x.time) >= now,
+      (x) => !x.appointment_cancelled && new Date(x.time) >= now,
     ),
     error: null,
   };
