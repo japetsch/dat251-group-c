@@ -5,6 +5,7 @@ from app.auth import DonorUserRequired
 
 from ..db.db import DBConnection
 from ..db.sqlc.auth import AsyncQuerier as AuthQuerier
+from ..db.sqlc.models import Donation
 from ..db.sqlc.testresults import (
     AsyncQuerier as TestresultQuerier,
     DonationTestDetailsRow,
@@ -20,6 +21,11 @@ class TestresultRouter(APIRouter):
 
         self.add_api_route("", self.get_all_testresults, methods=["GET"])
         self.add_api_route("/{testresult_id}", self.get_testresult, methods=["GET"])
+        self.add_api_route(
+            "/appointment/{appointment_id}",
+            self.get_testresult_for_appointment,
+            methods=["GET"],
+        )
 
     async def get_all_testresults(
         self, user: DonorUserRequired, engine: DBConnection
@@ -82,3 +88,31 @@ class TestresultRouter(APIRouter):
             status_code=404,
             detail="Test result not found",
         )
+
+    async def get_testresult_for_appointment(
+        self, appointment_id: int, user: DonorUserRequired, engine: DBConnection
+    ) -> Donation:
+        q = TestresultQuerier(engine)
+        aq = AuthQuerier(engine)
+
+        access = await aq.appointment_belongs_to(
+            donor_id=user.donor_id, appointment_id=appointment_id
+        )
+
+        if not access:
+            raise HTTPException(
+                status_code=403,
+                detail="Appointment of diffenrent user",
+            )
+
+        donation: Donation | None = await q.donation_test_for_appointment(
+            appointment_id=appointment_id
+        )
+
+        if donation is None:
+            raise HTTPException(
+                status_code=404,
+                detail="No test results found for appointment",
+            )
+
+        return donation

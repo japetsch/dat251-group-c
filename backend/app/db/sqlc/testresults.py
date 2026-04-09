@@ -54,6 +54,13 @@ class DonationTestDetailsRow(pydantic.BaseModel):
     tester_admin_name: str
 
 
+DONATION_TEST_FOR_APPOINTMENT = """-- name: donation_test_for_appointment \\:one
+SELECT id, appointment_id, amount_ml, is_blood_not_plasma
+	FROM donation d
+	WHERE d.appointment_id = :p1
+"""
+
+
 DONATION_TEST_RESULT = """-- name: donation_test_result \\:many
 SELECT 
 	t.id as id,
@@ -221,6 +228,17 @@ class AsyncQuerier:
             amount_ml=row[11],
             is_blood_not_plasma=row[12],
             tester_admin_name=row[13],
+        )
+
+    async def donation_test_for_appointment(self, *, appointment_id: int) -> Optional[models.Donation]:
+        row = (await self._conn.execute(sqlalchemy.text(DONATION_TEST_FOR_APPOINTMENT), {"p1": appointment_id})).first()
+        if row is None:
+            return None
+        return models.Donation(
+            id=row[0],
+            appointment_id=row[1],
+            amount_ml=row[2],
+            is_blood_not_plasma=row[3],
         )
 
     async def donation_test_result(self, *, donor_id: int) -> AsyncIterator[DonationTestResultRow]:
