@@ -4,7 +4,6 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 from fastapi import HTTPException, Response, status
 from fastapi.routing import APIRouter
-from pydantic import BaseModel
 
 from app.auth import (
     AdminInfo,
@@ -12,10 +11,12 @@ from app.auth import (
     CurrentUserRequired,
     DonorInfo,
     UserInfo,
+    UserUnionRequired,
 )
 
 from ..db.db import DBConnection
 from ..db.sqlc.auth import AsyncQuerier as AuthQuerier
+from ..schemas.auth import LoginRequestData
 
 
 @final
@@ -46,10 +47,6 @@ class AuthRouter(APIRouter):
             status_code=status.HTTP_204_NO_CONTENT,
         )
         self.add_api_route("/me", self.me, methods=["GET"])
-
-    class LoginRequestData(BaseModel):
-        email: str
-        password: str
 
     async def log_in(
         self,
@@ -99,5 +96,5 @@ class AuthRouter(APIRouter):
     ):
         auth_utils.clear_auth_cookie(response)
 
-    async def me(self, user: CurrentUserRequired) -> UserInfo:
+    async def me(self, user: UserUnionRequired) -> AdminInfo | DonorInfo:
         return user

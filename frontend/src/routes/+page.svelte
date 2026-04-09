@@ -1,404 +1,466 @@
-<style>
-  :global(html) {
-    scroll-behavior: smooth;
-  }
-
-  :global(body) {
-    margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
-    background: #f8fafc;
-    color: #1e293b;
-  }
-
-  .hero {
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    padding: 2rem;
-    background: linear-gradient(to bottom right, #f8fafc, #fa0000);
-  }
-
-  .login-btn {
-    position: fixed;
-    top: 2rem;
-    right: 2rem;
-    text-decoration: none;
-    background: white;
-    color: #1e293b;
-    padding: 0.8rem 1.3rem;
-    border-radius: 999px;
-    font-weight: 600;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
-    transition: 0.2s ease;
-    cursor: pointer;
-  }
-
-  .login-btn:hover {
-    transform: translateY(-2px);
-  }
-
-  .container {
-    width: 100%;
-    max-width: 420px;
-    text-align: center;
-    background: white;
-    padding: 3.5rem 2.5rem;
-    border-radius: 2rem;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 1rem;
-  }
-
-  .logo {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 0 0 0.5rem 0;
-  }
-
-  /* makeshift logo */
-  .drop {
-    width: 34px;
-    height: 34px;
-    background: #ef4444;
-    border-radius: 50% 50% 50% 0;
-    transform: rotate(-225deg);
-    box-shadow: 0 4px 10px rgba(99, 99, 99, 0.35);
-  }
-
-  h1 {
-    margin: 0;
-    font-size: 2.5rem;
-    line-height: 1.1;
-  }
-
-  .subtitle {
-    margin: 0;
-    font-size: 1rem;
-  }
-
-  .scroll-btn {
-    margin-top: 0.5rem;
-    border: none;
-    background: #e5e7eb;
-    color: #1e293b;
-    padding: 0.95rem 1.6rem;
-    border-radius: 999px;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition:
-      background 0.2s ease,
-      transform 0.2s ease;
-  }
-
-  .scroll-btn:hover {
-    background: #d1d5db;
-    transform: translateY(-1px);
-  }
-
-  /* Login popup */
-  .overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.35);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-
-  .modal {
-    position: relative;
-    width: min(100%, 640px);
-    background: white;
-    border-radius: 1rem;
-    padding: 1.5rem;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-  }
-
-  h2 {
-    margin: 0;
-    font-size: 2rem;
-    color: #111827;
-  }
-
-  .modal-subtitle {
-    margin: 0.75rem 0 1.5rem;
-    color: #6b7280;
-    font-size: 1.1rem;
-  }
-
-  .bankid-btn {
-    width: 100%;
-    border: none;
-    border-radius: 0.75rem;
-    background: #2563eb;
-    color: white;
-    font-size: 1.4rem;
-    font-weight: 700;
-    padding: 1.25rem;
-    cursor: pointer;
-    display: block;
-    text-align: center;
-    margin-bottom: 1rem;
-    text-decoration: none;
-    box-sizing: border-box;
-  }
-
-  .info-box {
-    background: #eef2f7;
-    border: 1px solid #cfe0f5;
-    color: #4b5563;
-    border-radius: 0.75rem;
-    padding: 1rem;
-    font-size: 1rem;
-    line-height: 1.5;
-  }
-
-  .info-section {
-    min-height: 100vh;
-    background: #f8f4f4;
-    padding: 5rem 2rem;
-  }
-
-  .info-content {
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-
-  .info-content h2 {
-    margin: 0;
-    text-align: center;
-    font-size: 2.5rem;
-    color: #111827;
-  }
-
-  .info-intro {
-    max-width: 700px;
-    margin: 1rem auto 3rem;
-    text-align: center;
-    font-size: 1rem;
-    line-height: 1.7;
-    color: #6b7280;
-  }
-
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .stat-card {
-    background: white;
-    border-radius: 1rem;
-    padding: 2rem 1.5rem;
-    text-align: center;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-  }
-
-  .stat-card h3 {
-    margin: 0 0 0.5rem;
-    font-size: 2rem;
-    color: #111827;
-  }
-
-  .stat-card p {
-    margin: 0;
-    color: #6b7280;
-  }
-
-  .info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .info-card {
-    background: white;
-    border-radius: 1rem;
-    padding: 1.75rem;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-  }
-
-  .info-card h3 {
-    margin-top: 0;
-    margin-bottom: 1rem;
-    color: #111827;
-  }
-
-  .info-card ul {
-    margin: 0;
-    padding-left: 1.2rem;
-    color: #4b5563;
-    line-height: 1.8;
-  }
-
-  .safety-box {
-    background: #eef4ff;
-    border: 1px solid #cfe0ff;
-    border-radius: 1rem;
-    padding: 1.75rem;
-  }
-
-  .safety-box h3 {
-    margin-top: 0;
-    margin-bottom: 0.75rem;
-    color: #111827;
-  }
-
-  .safety-box p {
-    margin: 0;
-    color: #4b5563;
-    line-height: 1.7;
-  }
-
-  @media (max-width: 800px) {
-    .stats,
-    .info-grid {
-      grid-template-columns: 1fr;
-    }
-  }
-
-  .info-content h2 {
-    font-size: 2rem;
-  }
-</style>
-
 <script lang="ts">
-  import favicon from "$lib/assets/favicon.svg";
+  import Buttons from "$lib/components/Buttons.svelte";
+  import Cards from "$lib/components/Cards.svelte";
+  import { Button } from "$lib/components/ui/button";
+  import { onMount } from "svelte";
+  import "../app.css";
 
-  let showLogin = $state(false);
+  // variables for the display of bloodbanks
+  type Bloodbank = {
+    bloodbank_id: number;
+    name: string;
+    street_name: string;
+    street_number: string;
+    postal_code: string;
+    city: string;
+    country: string;
+    user_has_admin_access: boolean;
+  };
 
-  const title = "Blodbanken";
-  const subtitle = "Doner blod. Redd liv.";
+  let bloodbanks = $state<Bloodbank[]>([]);
+  let bloodbanksLoading = $state(true);
+  let bloodbanksError = $state<string | null>(null);
 
-  function openLogin() {
-    showLogin = true;
-  }
+  onMount(async () => {
+    try {
+      const response = await fetch("/api/bloodbank");
 
-  function closeLogin() {
-    showLogin = false;
-  }
-
-  function handleOverlayClick(e: MouseEvent) {
-    if (e.target === e.currentTarget) {
-      closeLogin();
+      if (!response.ok) {
+        bloodbanksError = "Kunne ikke hente blodbanker.";
+        return;
+      }
+      bloodbanks = await response.json();
+    } catch {
+      bloodbanksError = "Kunne ikke hente blodbanker.";
+    } finally {
+      bloodbanksLoading = false;
     }
+  });
+
+  // variables for the questionnaire
+  let showEligibility = $state(false);
+
+  let ageOk = $state<boolean | null>(null);
+  let weightOk = $state<boolean | null>(null);
+  let healthyOk = $state<boolean | null>(null);
+  let recentDonationOk = $state<boolean | null>(null);
+  let idOk = $state<boolean | null>(null);
+
+  const allAnswered = $derived(
+    ageOk !== null &&
+      weightOk !== null &&
+      healthyOk !== null &&
+      recentDonationOk !== null &&
+      idOk !== null,
+  );
+
+  const eligible = $derived(
+    ageOk === true &&
+      weightOk === true &&
+      healthyOk === true &&
+      recentDonationOk === true &&
+      idOk === true,
+  );
+
+  function resetEligibility() {
+    ageOk = null;
+    weightOk = null;
+    healthyOk = null;
+    recentDonationOk = null;
+    idOk = null;
   }
 
-  function scrollToInfo() {
+  //contents of the cards for the info section
+  const stats = [
+    { value: "3", label: "Liv reddet per donasjon" },
+    { value: "5%", label: "Av befolkningen som donerer" },
+    { value: "45 min", label: "Gjennomsnittlig donasjonstid" },
+  ];
+
+  const donorRequirements = [
+    "Være mellom 18 og 70 år",
+    "Veie minst 50kg",
+    "Være ved god helse",
+    "Ikke nylig donert blod",
+  ];
+
+  const donationSteps = [
+    "Registrering og helsesjekk",
+    "Blodprøve for å sjekke hemoglobin",
+    "Selve donasjonen",
+    "Hvile og noe å spise etterpå",
+  ];
+
+  //function for scrolling the info section into view
+  const scrollToInfo = () => {
     const section = document.getElementById("info-section");
-    section?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+    section?.scrollIntoView({ behavior: "smooth" });
+  };
 </script>
 
-<svelte:head>
-  <title>Blodbanken</title>
-  <link rel="icon" href={favicon} />
-</svelte:head>
-
-<section class="hero">
-  <button class="login-btn" onclick={openLogin}>Logg inn</button>
-
-  <div class="container">
-    <div class="logo">
-      <div class="drop"></div>
-    </div>
-
-    <h1>{title}</h1>
-    <p class="subtitle">{subtitle}</p>
-
-    <button class="scroll-btn" onclick={scrollToInfo}>Les mer</button>
-  </div>
-
-  {#if showLogin}
+<!-- The first page -->
+<div class="min-h-screen bg-[#f5f2f1] text-black">
+  <section
+    class="relative flex min-h-screen items-center justify-center overflow-hidden"
+  >
     <div
-      class="overlay"
-      role="button"
-      tabindex="0"
-      onclick={handleOverlayClick}
-      onkeydown={(e: KeyboardEvent) => {
-        if (e.key === "Enter" || e.key === " ") closeLogin();
-        if (e.key === "Escape") closeLogin();
-      }}
-    >
-      <div class="modal" role="dialog" aria-modal="true" tabindex="-1">
-        <h2>Logg inn</h2>
-        <p class="modal-subtitle">Bruk BankID for sikker pålogging</p>
+      class="absolute inset-0 bg-cover bg-bottom bg-no-repeat opacity-100"
+      style="background-image: url('/Background_Bloodbank.png');"
+    ></div>
 
-        <a
-          href="/dashboard"
-          class="bankid-btn"
-          data-sveltekit-preload-data="off">Logg inn med BankID</a
-        >
-        <div class="info-box">
-          Du vil bli bedt om å identifisere deg med BankID. Dette sikrer at dine
-          helseopplysninger forblir trygge og konfidensielle.
+    <!-- The login button routed to /login -->
+    <a href="/login">
+      <div class="fixed right-6 top-6 z-50">
+        <Buttons variant="primary">Logg inn</Buttons>
+      </div>
+    </a>
+
+    <!-- Formating of the contents inside the card -->
+    <div
+      class="relative z-10 inline-block rounded-[32px] border border-black/10 bg-white px-[7rem] py-[4rem] text-center shadow-[0_4px_18px_rgba(0,0,0,0.05)]"
+    >
+      <div class="flex flex-col items-center gap-14">
+        <img
+          src="/tmp_logo.svg"
+          alt="Norges Blodbank logo"
+          class="mx-auto h-40 w-40"
+        />
+
+        <h1 class="text-8xl font-semibold tracking-tight">Norges Blodbank</h1>
+        <p class="text-4xl text-black/70">
+          Bestill time for blodgiving ved blodbanker i hele Norge.
+        </p>
+
+        <div class="mt-8 flex justify-center gap-6">
+          <Buttons
+            variant="primary"
+            class="px-12 py-8 !text-3xl"
+            onclick={() => (showEligibility = true)}
+            >Sjekk om du kan donere</Buttons
+          >
+          <Buttons
+            variant="secondary"
+            class="px-12 py-8 !text-3xl"
+            onclick={scrollToInfo}>Les mer</Buttons
+          >
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- The info page -->
+  <section id="info-section" class="min-h-screen px-6 py-12 flex items-center">
+    <div class="mx-auto max-w-6xl space-y-12">
+      <div class="space-y-4 text-center">
+        <h2 class="text-4xl font-semibold tracking-tight">Hvorfor gi blod?</h2>
+        <p class="mx-auto max-w-3xl text-lg leading-8 text-black/65">
+          Bloddonasjon er en av de viktigste måtene du kan hjelpe andre på. Hvor
+          donasjon kan redde opptil tre liv.
+        </p>
+      </div>
+
+      <div class="flex flex-wrap justify-center gap-6">
+        {#each stats as stat}
+          <Cards orientation="vertical" tone="white" class="text-center">
+            <div class="text-4xl font-semibold tracking-tight">
+              {stat.value}
+            </div>
+            <p class="mt-3">{stat.label}</p>
+          </Cards>
+        {/each}
+      </div>
+
+      <div class="flex flex-wrap justify-center gap-6">
+        <Cards title="Hvem kan donere?" orientation="vertical" tone="white">
+          <ul class="space-y-2">
+            {#each donorRequirements as item}
+              <li>{item}</li>
+            {/each}
+          </ul>
+        </Cards>
+
+        <Cards
+          title="Hva skjer under donasjonen?"
+          orientation="vertical"
+          tone="white"
+        >
+          <ul class="space-y-2">
+            {#each donationSteps as item}
+              <li>{item}</li>
+            {/each}
+          </ul>
+        </Cards>
+      </div>
+
+      <div class="flex justify-center">
+        <Cards title="Trygt og sikkert" orientation="horizontal" tone="red">
+          <p>
+            Alle donasjoner gjennomføres med sterilt engangsutstyr, og du blir
+            fulgt opp av helsepersonell gjennom hele prosessen.
+          </p>
+        </Cards>
+      </div>
+    </div>
+  </section>
+
+  <!-- Display bloodbanks -->
+  <section class="min-h-screen bg-[#f5f2f1] px-6 py-12 flex items-center">
+    <div class="mx-auto w-full max-w-5xl space-y-8">
+      <div class="space-y-3 text-center">
+        <h2 class="text-3xl font-semibold tracking-tight">Finn en blodbank</h2>
+        <p class="mx-auto max-w-3xl text-base leading-7 text-black/65">
+          Her er blodbanker du kan bestille time hos.
+        </p>
+      </div>
+
+      {#if bloodbanksLoading}
+        <p class="text-center text-black/65">Laster blodbanker...</p>
+      {:else if bloodbanksError}
+        <p class="text-center text-red-700">{bloodbanksError}</p>
+      {:else if bloodbanks.length === 0}
+        <p class="text-center text-black/65">Ingen blodbanker funnet.</p>
+      {:else}
+        <div class="flex flex-wrap justify-center gap-6">
+          {#each bloodbanks as bloodbank}
+            <Cards
+              orientation="vertical"
+              tone="white"
+              class="w-full max-w-[360px]"
+            >
+              <div class="space-y-2">
+                <h3 class="text-xl font-semibold tracking-tight">
+                  {bloodbank.name}
+                </h3>
+                <p class="text-black/70">
+                  {bloodbank.street_name}
+                  {bloodbank.street_number}
+                </p>
+                <p class="text-black/70">
+                  {bloodbank.postal_code}
+                  {bloodbank.city}
+                </p>
+                <p class="text-black/70">{bloodbank.country}</p>
+              </div>
+            </Cards>
+          {/each}
+        </div>
+      {/if}
+    </div>
+  </section>
+
+  <!-- Handling of the questionnaire -->
+  {#if showEligibility}
+    <Button
+      type="button"
+      class="fixed"
+      aria-label="Lukk donor-sjekk"
+      onclick={() => (showEligibility = false)}
+    ></Button>
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <Cards orientation="horizontal" tone="white" class="w-full max-w-[44rem]">
+        <div class="space-y-3">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 class="text-xl font-semibold tracking-tight">
+                Sjekk om du kan donere blod
+              </h2>
+              <p class="mt-1 text-black/70">
+                Dette er en enkel veiledning og erstatter ikke vurdering fra
+                blodbanken.
+              </p>
+            </div>
+            <Buttons
+              variant="secondary"
+              onclick={() => (showEligibility = false)}>Lukk</Buttons
+            >
+          </div>
+          <div class="space-y-4">
+            <div
+              class="rounded-[18px] border border-black/10 bg-[#faf7f6] px-4 py-4"
+            >
+              <p class="mb-3 text-lg font-medium">Er du mellom 18 og 70 år?</p>
+              <div class="flex gap-3">
+                <Button
+                  type="button"
+                  class={`rounded-full border px-5 py-2.5 text-sm font-medium transition ${
+                    ageOk === true
+                      ? "border-black/15 bg-[#d9d2cf] text-black hover:bg-[#f3eeed]"
+                      : "border-black/10 bg-white text-black hover:bg-[#f3eeed]"
+                  }`}
+                  onclick={() => (ageOk = true)}
+                >
+                  Ja
+                </Button>
+                <Button
+                  type="button"
+                  class={`rounded-full border px-5 py-2.5 text-sm font-medium transition ${
+                    ageOk === false
+                      ? "border-black/15 bg-[#d9d2cf] text-black hover:bg-[#f3eeed]"
+                      : "border-black/10 bg-white text-black hover:bg-[#f3eeed]"
+                  }`}
+                  onclick={() => (ageOk = false)}
+                >
+                  Nei
+                </Button>
+              </div>
+            </div>
+
+            <div
+              class="rounded-[18px] border border-black/10 bg-[#faf7f6] px-4 py-4"
+            >
+              <p class="mb-3 text-lg font-medium">Veier du minst 50 kg?</p>
+              <div class="flex gap-3">
+                <Button
+                  type="button"
+                  class={`rounded-full border px-5 py-2.5 text-sm font-medium transition ${
+                    weightOk === true
+                      ? "border-black/15 bg-[#d9d2cf] text-black hover:bg-[#f3eeed]"
+                      : "border-black/10 bg-white text-black hover:bg-[#f3eeed]"
+                  }`}
+                  onclick={() => (weightOk = true)}
+                >
+                  Ja
+                </Button>
+                <Button
+                  type="button"
+                  class={`rounded-full border px-5 py-2.5 text-sm font-medium transition ${
+                    weightOk === false
+                      ? "border-black/15 bg-[#d9d2cf] text-black hover:bg-[#f3eeed]"
+                      : "border-black/10 bg-white text-black hover:bg-[#f3eeed]"
+                  }`}
+                  onclick={() => (weightOk = false)}
+                >
+                  Nei
+                </Button>
+              </div>
+            </div>
+
+            <div
+              class="rounded-[18px] border border-black/10 bg-[#faf7f6] px-4 py-4"
+            >
+              <p class="mb-3 text-lg font-medium">
+                Føler du deg frisk og i god helse i dag?
+              </p>
+              <div class="flex gap-3">
+                <Button
+                  type="button"
+                  class={`rounded-full border px-5 py-2.5 text-sm font-medium transition ${
+                    healthyOk === true
+                      ? "border-black/15 bg-[#d9d2cf] text-black hover:bg-[#f3eeed]"
+                      : "border-black/10 bg-white text-black hover:bg-[#f3eeed]"
+                  }`}
+                  onclick={() => (healthyOk = true)}
+                >
+                  Ja
+                </Button>
+                <Button
+                  type="button"
+                  class={`rounded-full border px-5 py-2.5 text-sm font-medium transition ${
+                    healthyOk === false
+                      ? "border-black/15 bg-[#d9d2cf] text-black hover:bg-[#f3eeed]"
+                      : "border-black/10 bg-white text-black hover:bg-[#f3eeed]"
+                  }`}
+                  onclick={() => (healthyOk = false)}
+                >
+                  Nei
+                </Button>
+              </div>
+            </div>
+
+            <div
+              class="rounded-[18px] border border-black/10 bg-[#faf7f6] px-4 py-4"
+            >
+              <p class="mb-3 text-lg font-medium">
+                Har det gått lenge nok siden sist du donerte blod?
+              </p>
+              <div class="flex gap-3">
+                <Button
+                  type="button"
+                  class={`rounded-full border px-5 py-2.5 text-sm font-medium transition ${
+                    recentDonationOk === true
+                      ? "border-black/15 bg-[#d9d2cf] text-black hover:bg-[#f3eeed]"
+                      : "border-black/10 bg-white text-black hover:bg-[#f3eeed]"
+                  }`}
+                  onclick={() => (recentDonationOk = true)}
+                >
+                  Ja
+                </Button>
+                <Button
+                  type="button"
+                  class={`rounded-full border px-5 py-2.5 text-sm font-medium transition ${
+                    recentDonationOk === false
+                      ? "border-black/15 bg-[#d9d2cf] text-black hover:bg-[#f3eeed]"
+                      : "border-black/10 bg-white text-black hover:bg-[#f3eeed]"
+                  }`}
+                  onclick={() => (recentDonationOk = false)}
+                >
+                  Nei
+                </Button>
+              </div>
+            </div>
+
+            <div
+              class="rounded-[18px] border border-black/10 bg-[#faf7f6] px-4 py-4"
+            >
+              <p class="mb-3 text-lg font-medium">Har du norsk personnummer?</p>
+              <div class="flex gap-3">
+                <Button
+                  type="button"
+                  class={`rounded-full border px-5 py-2.5 text-sm font-medium transition ${
+                    idOk === true
+                      ? "border-black/15 bg-[#d9d2cf] text-black hover:bg-[#f3eeed]"
+                      : "border-black/10 bg-white text-black hover:bg-[#f3eeed]"
+                  }`}
+                  onclick={() => (idOk = true)}
+                >
+                  Ja
+                </Button>
+                <Button
+                  type="button"
+                  class={`rounded-full border px-5 py-2.5 text-sm font-medium transition ${
+                    idOk === false
+                      ? "border-black/15 bg-[#d9d2cf] text-black hover:bg-[#f3eeed]"
+                      : "border-black/10 bg-white text-black hover:bg-[#f3eeed]"
+                  }`}
+                  onclick={() => (idOk = false)}
+                >
+                  Nei
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {#if allAnswered}
+            <div
+              class={`rounded-[20px] border p-5 ${eligible ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}
+            >
+              {#if eligible}
+                <p class="mb-3 text-lg font-medium">
+                  Du kan sannsynligvis donere blod.
+                </p>
+                <p class="mt-2 text-black/70">
+                  Neste steg er å bestille time eller kontakte blodbanken for
+                  endelig vurdering.
+                </p>
+              {:else}
+                <p class="mb-3 text-lg font-medium">
+                  Du bør kontakte blodbanken før du bestiller time.
+                </p>
+                <p class="mt-2 text-black/70">
+                  Ett ellere flere svar tyder på at du kanskje ikke kan donere
+                  blod akkurat nå.
+                </p>
+              {/if}
+            </div>
+          {/if}
+
+          <div class="flex justify-end">
+            <Buttons variant="secondary" onclick={resetEligibility}
+              >Nullstill</Buttons
+            >
+          </div>
+        </div>
+      </Cards>
+    </div>
   {/if}
-</section>
-
-<section id="info-section" class="info-section">
-  <div class="info-content">
-    <h2>Hvorfor gi blod?</h2>
-    <p class="info-intro">
-      Bloddonasjon er en av de viktigste måtene du kan hjelpe andre på. Hver
-      donasjon kan redde opptil tre liv.
-    </p>
-
-    <div class="stats">
-      <div class="stat-card">
-        <h3>3</h3>
-        <p>Liv reddet per donasjon</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>5%</h3>
-        <p>Av befolkningen som donerer</p>
-      </div>
-
-      <div class="stat-card">
-        <h3>45 min</h3>
-        <p>Gjennomsnittlig donasjonstid</p>
-      </div>
-    </div>
-
-    <div class="info-grid">
-      <div class="info-card">
-        <h3>Hvem kan donere?</h3>
-        <ul>
-          <li>Være mellom 18 og 70 år</li>
-          <li>Veie minst 50 kg</li>
-          <li>Være ved god helse</li>
-          <li>Ikke nylig donert blod</li>
-        </ul>
-      </div>
-
-      <div class="info-card">
-        <h3>Hva skjer under donasjonen?</h3>
-        <ul>
-          <li>Registrering og helsesjekk</li>
-          <li>Blodprøve for å sjekke hemoglobin</li>
-          <li>Selve donasjonen</li>
-          <li>Hvile og noe å spise etterpå</li>
-        </ul>
-      </div>
-    </div>
-
-    <div class="safety-box">
-      <h3>Trygt og sikkert</h3>
-      <p>
-        Alle donasjoner gjennomføres med sterilt engangsutstyr, og du blir fulgt
-        opp av helsepersonell gjennom hele prosessen.
-      </p>
-    </div>
-  </div>
-</section>
+</div>

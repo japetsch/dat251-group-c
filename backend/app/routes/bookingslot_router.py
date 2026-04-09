@@ -2,7 +2,6 @@ from datetime import timedelta
 
 from fastapi import HTTPException
 from fastapi.routing import APIRouter
-from pydantic import BaseModel
 
 from app.auth import DonorUserRequired
 
@@ -14,7 +13,10 @@ from ..db.sqlc.appointment import (
 from ..db.sqlc.bookingslot import (
     AsyncQuerier as BookingslotQuerier,
     BookBookingslotRow,
-    GetBookingSlotsRow,
+)
+from ..schemas.bookingslot import (
+    AvailableBookingSlot,
+    BookAppointmentRequest,
 )
 
 
@@ -24,9 +26,6 @@ class BookingslotRouter(APIRouter):
 
         self.add_api_route("/available", self.get_available, methods=["GET"])
         self.add_api_route("/book", self.book, methods=["POST"])
-
-    class AvailableBookingSlot(GetBookingSlotsRow):
-        valid: bool
 
     async def get_available(
         self, user: DonorUserRequired, engine: DBConnection
@@ -40,7 +39,7 @@ class BookingslotRouter(APIRouter):
         async for x in a.get_appointments_by_donor_id(donor_id=user.donor_id):
             appointments.append(x)
 
-        rows: list[BookingslotRouter.AvailableBookingSlot] = []
+        rows: list[AvailableBookingSlot] = []
         async for x in q.get_booking_slots():
             lower = x.time - MIN_WAITTIME
             upper = x.time + MIN_WAITTIME
@@ -48,11 +47,8 @@ class BookingslotRouter(APIRouter):
             is_valid = x.capacity != 0 and not any(
                 (lower < a.time < upper and a.cancelled != True) for a in appointments
             )
-            rows.append(self.AvailableBookingSlot(**x.model_dump(), valid=is_valid))
+            rows.append(AvailableBookingSlot(**x.model_dump(), valid=is_valid))
         return rows
-
-    class BookAppointmentRequest(BaseModel):
-        bookingslot_id: int
 
     async def book(
         self,
