@@ -17,6 +17,10 @@ from ..db.sqlc.admin import (
 from ..db.sqlc.appointment import AsyncQuerier as AppointmentQuerier
 from ..db.sqlc.auth import AsyncQuerier as AuthQuerier
 from ..db.sqlc.bloodbank import AsyncQuerier as BloodbankQuerier, GetAllBloodBanksRow
+from ..db.sqlc.models import Donation
+from ..db.sqlc.testresults import (
+    AsyncQuerier as TestresultQuerier,
+)
 from ..schemas.admin import (
     BookingSlotType,
     CreateBloodBankRequest,
@@ -75,6 +79,11 @@ class AdminRouter(APIRouter):
             self.register_interview,
             methods=["POST"],
             status_code=status.HTTP_204_NO_CONTENT,
+        )
+        self.add_api_route(
+            "/appointment/{appointment_id}/result",
+            self.get_testresult_for_appointment_admin,
+            methods=["GET"],
         )
         self.add_api_route(
             "/donor/{donor_id}/form/donation-test",
@@ -306,3 +315,31 @@ class AdminRouter(APIRouter):
                 validity_duration=data.validity_duration,
             )
         )
+
+    async def get_testresult_for_appointment_admin(
+        self, appointment_id: int, user: AdminUserRequired, engine: DBConnection
+    ) -> Donation:
+        q = TestresultQuerier(engine)
+        a = AuthQuerier(engine)
+
+        access = await a.has_admin_where_appointment_is(
+            admin_id=user.admin_id, appointment_id=appointment_id
+        )
+
+        if not access:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="User is not admin for this appointment",
+            )
+
+        donation: Donation | None = await q.donation_test_for_appointment(
+            appointment_id=appointment_id
+        )
+
+        if donation is None:
+            raise HTTPException(
+                status_code=404,
+                detail="No test results found for appointment",
+            )
+
+        return donation
