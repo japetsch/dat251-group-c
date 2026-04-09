@@ -531,7 +531,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/app__routes__appointment_router__AppointmentRouter__AppointmentType"
+                    "$ref": "#/components/schemas/AppointmentType"
                   },
                   "type": "array",
                   "title": "Response Find All Appointment Get"
@@ -612,7 +612,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/AppointmentNote"
+                "$ref": "#/components/schemas/AddNoteRequest"
               }
             }
           }
@@ -776,7 +776,7 @@
               "application/json": {
                 "schema": {
                   "items": {
-                    "$ref": "#/components/schemas/BloodbankResponse"
+                    "$ref": "#/components/schemas/GetAllBloodBanksRow"
                   },
                   "type": "array",
                   "title": "Response Get All Bloodbanks Bloodbank Get"
@@ -826,47 +826,118 @@
         ],
         "title": "AdminInfo"
       },
-      "AppointmentNote": {
+      "AppointmentType": {
         "properties": {
-          "message": {
-            "type": "string",
-            "title": "Message"
-          }
-        },
-        "type": "object",
-        "required": [
-          "message"
-        ],
-        "title": "AppointmentNote"
-      },
-      "AppointmentNoteType": {
-        "properties": {
-          "author_user_id": {
+          "id": {
             "type": "integer",
-            "title": "Author User Id"
+            "title": "Id"
           },
-          "author_name": {
+          "username": {
             "type": "string",
-            "title": "Author Name"
-          },
-          "message": {
-            "type": "string",
-            "title": "Message"
+            "title": "Username"
           },
           "time": {
             "type": "string",
             "format": "date-time",
             "title": "Time"
+          },
+          "duration": {
+            "type": "string",
+            "format": "duration",
+            "title": "Duration"
+          },
+          "bloodbank_name": {
+            "type": "string",
+            "title": "Bloodbank Name"
+          },
+          "cancelled": {
+            "type": "boolean",
+            "title": "Cancelled"
+          },
+          "notes": {
+            "items": {
+              "$ref": "#/components/schemas/NoteType"
+            },
+            "type": "array",
+            "title": "Notes"
           }
         },
         "type": "object",
         "required": [
-          "author_user_id",
-          "author_name",
-          "message",
-          "time"
+          "id",
+          "username",
+          "time",
+          "duration",
+          "bloodbank_name",
+          "cancelled",
+          "notes"
         ],
-        "title": "AppointmentNoteType"
+        "title": "AppointmentType"
+      },
+      "AppointmentTypeAdmin": {
+        "properties": {
+          "appointment_id": {
+            "type": "integer",
+            "title": "Appointment Id"
+          },
+          "appointment_cancelled": {
+            "type": "boolean",
+            "title": "Appointment Cancelled"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          },
+          "donor_blood_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BloodType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "donor_name": {
+            "type": "string",
+            "title": "Donor Name"
+          },
+          "donor_email": {
+            "type": "string",
+            "title": "Donor Email"
+          },
+          "donor_phone": {
+            "type": "string",
+            "title": "Donor Phone"
+          },
+          "notes": {
+            "items": {
+              "$ref": "#/components/schemas/NoteType"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "donations": {
+            "items": {
+              "$ref": "#/components/schemas/DonationType"
+            },
+            "type": "array",
+            "title": "Donations"
+          }
+        },
+        "type": "object",
+        "required": [
+          "appointment_id",
+          "appointment_cancelled",
+          "donor_id",
+          "donor_blood_type",
+          "donor_name",
+          "donor_email",
+          "donor_phone",
+          "notes",
+          "donations"
+        ],
+        "title": "AppointmentTypeAdmin"
       },
       "AppointmentUpdateRequest": {
         "properties": {
@@ -950,54 +1021,6 @@
         ],
         "title": "BloodType"
       },
-      "BloodbankResponse": {
-        "properties": {
-          "bloodbank_id": {
-            "type": "integer",
-            "title": "Bloodbank Id"
-          },
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "street_name": {
-            "type": "string",
-            "title": "Street Name"
-          },
-          "street_number": {
-            "type": "string",
-            "title": "Street Number"
-          },
-          "postal_code": {
-            "type": "string",
-            "title": "Postal Code"
-          },
-          "city": {
-            "type": "string",
-            "title": "City"
-          },
-          "country": {
-            "type": "string",
-            "title": "Country"
-          },
-          "user_has_admin_access": {
-            "type": "boolean",
-            "title": "User Has Admin Access"
-          }
-        },
-        "type": "object",
-        "required": [
-          "bloodbank_id",
-          "name",
-          "street_name",
-          "street_number",
-          "postal_code",
-          "city",
-          "country",
-          "user_has_admin_access"
-        ],
-        "title": "BloodbankResponse"
-      },
       "BookAppointmentRequest": {
         "properties": {
           "bookingslot_id": {
@@ -1061,7 +1084,7 @@
           },
           "appointments": {
             "items": {
-              "$ref": "#/components/schemas/app__routes__admin_router__AdminRouter__AppointmentType"
+              "$ref": "#/components/schemas/AppointmentTypeAdmin"
             },
             "type": "array",
             "title": "Appointments"
@@ -1839,119 +1862,6 @@
           "type"
         ],
         "title": "ValidationError"
-      },
-      "app__routes__admin_router__AdminRouter__AppointmentType": {
-        "properties": {
-          "appointment_id": {
-            "type": "integer",
-            "title": "Appointment Id"
-          },
-          "appointment_cancelled": {
-            "type": "boolean",
-            "title": "Appointment Cancelled"
-          },
-          "donor_id": {
-            "type": "integer",
-            "title": "Donor Id"
-          },
-          "donor_blood_type": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/BloodType"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "donor_name": {
-            "type": "string",
-            "title": "Donor Name"
-          },
-          "donor_email": {
-            "type": "string",
-            "title": "Donor Email"
-          },
-          "donor_phone": {
-            "type": "string",
-            "title": "Donor Phone"
-          },
-          "notes": {
-            "items": {
-              "$ref": "#/components/schemas/AppointmentNoteType"
-            },
-            "type": "array",
-            "title": "Notes"
-          },
-          "donations": {
-            "items": {
-              "$ref": "#/components/schemas/DonationType"
-            },
-            "type": "array",
-            "title": "Donations"
-          }
-        },
-        "type": "object",
-        "required": [
-          "appointment_id",
-          "appointment_cancelled",
-          "donor_id",
-          "donor_blood_type",
-          "donor_name",
-          "donor_email",
-          "donor_phone",
-          "notes",
-          "donations"
-        ],
-        "title": "AppointmentType"
-      },
-      "app__routes__appointment_router__AppointmentRouter__AppointmentType": {
-        "properties": {
-          "id": {
-            "type": "integer",
-            "title": "Id"
-          },
-          "username": {
-            "type": "string",
-            "title": "Username"
-          },
-          "time": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Time"
-          },
-          "duration": {
-            "type": "string",
-            "format": "duration",
-            "title": "Duration"
-          },
-          "bloodbank_name": {
-            "type": "string",
-            "title": "Bloodbank Name"
-          },
-          "cancelled": {
-            "type": "boolean",
-            "title": "Cancelled"
-          },
-          "notes": {
-            "items": {
-              "$ref": "#/components/schemas/NoteType"
-            },
-            "type": "array",
-            "title": "Notes"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "username",
-          "time",
-          "duration",
-          "bloodbank_name",
-          "cancelled",
-          "notes"
-        ],
-        "title": "AppointmentType"
       }
     }
   }
