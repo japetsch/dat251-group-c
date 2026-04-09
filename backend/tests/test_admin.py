@@ -1,5 +1,7 @@
 import httpx
 
+from tests.util import assert_dicts_match
+
 
 class TestAdminAccess:
     async def test_donor_cannot_access_admin_endpoints(
@@ -134,6 +136,32 @@ class TestBloodBankAppointments:
             params={"after": "2026-01-01T00:00:00Z"},
         )
         assert r.status_code == 403
+
+    async def test_donation_result_admin(
+        self, admin_haukeland_client: httpx.AsyncClient
+    ):
+        response = await admin_haukeland_client.get("/api/admin/appointment/1/result")
+
+        expected = {"appointment_id": 1, "amount_ml": 20, "is_blood_not_plasma": True}
+        response_json = response.json()
+        assert response.status_code == 200
+        assert_dicts_match(response_json, expected)
+
+    async def test_donation_result_without_result_admin(
+        self, admin_haukeland_client: httpx.AsyncClient
+    ):
+        response = await admin_haukeland_client.get("/api/admin/appointment/3/result")
+
+        assert response.status_code == 404
+        assert response.json() == {"detail": "No test results found for appointment"}
+
+    async def test_donation_result_of_other_bloodbank(
+        self, admin_blodbuss_client: httpx.AsyncClient
+    ):
+        response = await admin_blodbuss_client.get("/api/admin/appointment/1/result")
+
+        assert response.status_code == 403
+        assert response.json() == {"detail": "User is not admin for this appointment"}
 
 
 class TestAdminNotes:

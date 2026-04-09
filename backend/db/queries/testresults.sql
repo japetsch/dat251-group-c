@@ -98,3 +98,8 @@ SELECT
 	INNER JOIN donation don ON d.donation_id = don.id
 	INNER JOIN "user" a ON d.tester_admin_id = a.admin_id 
 	WHERE t.id = sqlc.arg(testresult_id) AND f.donation_test_id IS NOT NULL;
+
+-- name: DonationTestForAppointment :one
+SELECT *
+	FROM donation d
+	WHERE d.appointment_id = sqlc.arg(appointment_id);

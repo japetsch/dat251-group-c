@@ -121,3 +121,25 @@ class TestTestresult:
 
         assert response.status_code == 404
         assert response.json() == {"detail": "Test result for diffenrent user"}
+
+    async def test_donation_result(self, olav_client: httpx.AsyncClient):
+        response = await olav_client.get("/api/testresult/appointment/1")
+
+        expected = {"appointment_id": 1, "amount_ml": 20, "is_blood_not_plasma": True}
+        response_json = response.json()
+        assert response.status_code == 200
+        assert_dicts_match(response_json, expected)
+
+    async def test_donation_result_without_result(
+        self, sigrid_client: httpx.AsyncClient
+    ):
+        response = await sigrid_client.get("/api/testresult/appointment/3")
+
+        assert response.status_code == 404
+        assert response.json() == {"detail": "No test results found for appointment"}
+
+    async def test_donation_result_of_other_user(self, olav_client: httpx.AsyncClient):
+        response = await olav_client.get("/api/testresult/appointment/2")
+
+        assert response.status_code == 403
+        assert response.json() == {"detail": "Appointment of diffenrent user"}

@@ -215,6 +215,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/admin/appointment/{appointment_id}/result": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Testresult For Appointment Admin */
+        get: operations["get_testresult_for_appointment_admin"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/admin/donor/{donor_id}/form/donation-test": {
         parameters: {
             query?: never;
@@ -352,6 +369,23 @@ export interface paths {
         };
         /** Get Testresult */
         get: operations["get_testresult"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/testresult/appointment/{appointment_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Testresult For Appointment */
+        get: operations["get_testresult_for_appointment"];
         put?: never;
         post?: never;
         delete?: never;
@@ -531,6 +565,17 @@ export interface components {
             loc_lat: number;
             /** Loc Lon */
             loc_lon: number;
+        };
+        /** Donation */
+        Donation: {
+            /** Id */
+            id: number;
+            /** Appointment Id */
+            appointment_id: number;
+            /** Amount Ml */
+            amount_ml: number;
+            /** Is Blood Not Plasma */
+            is_blood_not_plasma: boolean;
         };
         /** DonationTestDetailsRow */
         DonationTestDetailsRow: {
@@ -1179,6 +1224,37 @@ export interface operations {
             };
         };
     };
+    get_testresult_for_appointment_admin: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Donation"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     register_donation_test: {
         parameters: {
             query?: never;
@@ -1391,6 +1467,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["InterviewDetailsRow"] | components["schemas"]["DonationTestDetailsRow"] | components["schemas"]["EntryFormDetailsRow"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_testresult_for_appointment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                appointment_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Donation"];
                 };
             };
             /** @description Validation Error */
