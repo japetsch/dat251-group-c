@@ -1,104 +1,26 @@
-<style>
-  .layout {
-    display: flex;
-    align-items: stretch;
-    min-height: 100vh;
-  }
-
-  .content {
-    flex: 1;
-  }
-
-  .page {
-    width: 100%;
-    max-width: 1400px;
-    margin: 0 auto;
-    background: #f5f5f5;
-  }
-
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 2rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .filter {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    min-width: 250px;
-  }
-
-  .filter label {
-    font-weight: 600;
-  }
-
-  .filter select {
-    padding: 0.8rem 3rem 0.8rem 1rem;
-    border: 1px solid #bbb;
-    border-radius: 10px;
-    background: white;
-    font-size: 1rem;
-  }
-
-  @media (max-width: 900px) {
-    .layout {
-      flex-direction: column;
-    }
-
-    .header {
-      flex-direction: column;
-    }
-
-    .page {
-      padding: 2rem;
-    }
-  }
-</style>
-
 <script lang="ts">
-  import {
-    addDays,
-    formatDateKey,
-    getStartOfWeek,
-    getWeekNumber,
-  } from "$lib/utils/date";
   import BookingModal from "$lib/components/BookingModal.svelte";
-  import WeekPlanner from "$lib/components/WeekPlanner.svelte";
-  import type {
-    Appointment,
-    AppointmentWithFormattedTime,
-    PlannerColumn,
-  } from "$lib/types/appointment";
+  import type { Appointment, AppointmentWithFormattedTime } from "$lib/types/appointment";
   import type { PageData } from "./$types";
 
   export let data: PageData;
 
-  // Filters and page state
-  let selectedBloodbank = "All";
-  let currentWeekStart: Date;
-  let sidebarOpen = true;
-  let filteredAppointments: Appointment[] = [];
+  let selectedDate: string | null = null;
 
-  // Booking modal state
+  let currentDate = new Date();
+  let monthYear = "";
+  let calendarDates: {
+    day: number;
+    inactive: boolean;
+    active: boolean;
+    datekey: string | null;
+    hasAppointment: boolean;
+  }[] = [];
+  let appointments: Appointment[] = data.availableAppointments; 
+  let selectedAppointments: Appointment[] = [];
   let selectedAppointment: AppointmentWithFormattedTime | null = null;
   let isBooking = false;
   let bookingMessage = "";
-
-  // Date and time formatters
-  const dayFormatter = new Intl.DateTimeFormat("en-GB", {
-    weekday: "long",
-    timeZone: "UTC",
-  });
-
-  const dateFormatter = new Intl.DateTimeFormat("en-GB", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    timeZone: "UTC",
-  });
 
   const timeFormatter = new Intl.DateTimeFormat("en-GB", {
     hour: "2-digit",
@@ -106,75 +28,69 @@
     timeZone: "UTC",
   });
 
-  // Sort appointments once
-  const sortedAppointments = [...data.availableAppointments].sort((a, b) =>
-    a.time.localeCompare(b.time),
-  );
+  function updateCalendar(){
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
 
-  // Start on the week of the first appointment
-  const firstAppointment = sortedAppointments[0];
+    const firstDay = new Date(currentYear, currentMonth, 1);
+    const lastDay = new Date(currentYear, currentMonth + 1, 0);
 
-  if (firstAppointment) {
-    currentWeekStart = getStartOfWeek(firstAppointment.time);
-  } else {
-    currentWeekStart = getStartOfWeek(new Date().toISOString());
-  }
+    const firstDayIndex = firstDay.getDay();
+    const totalDays = lastDay.getDate();
 
-  // Bloodbank options
-  $: bloodbanks = [
-    "All",
-    ...new Set(sortedAppointments.map((item) => item.bloodbank_name)),
-  ];
+    monthYear = currentDate.toLocaleString("en-GB", { month: "long", year: "numeric" });
 
-  // Filter appointments by selected bloodbank
-  $: {
-    if (selectedBloodbank === "All") {
-      filteredAppointments = sortedAppointments;
-    } else {
-      filteredAppointments = sortedAppointments.filter((item) => {
-        return item.bloodbank_name === selectedBloodbank;
+    calendarDates = [];
+
+    for(let i = firstDayIndex; i>0; i--){
+      const prevDate = new Date(currentYear, currentMonth, 0 - i + 1);
+      calendarDates.push({
+        day: prevDate.getDate(),
+        inactive: true,
+        active: false,
+        datekey: null,
+        hasAppointment: false
+      });
+    }
+
+    for (let i = 1; i <= totalDays; i++){
+      const date = new Date(currentYear, currentMonth, i);
+      const isToday = date.toDateString() === new Date().toDateString();
+      const datekey = date.toLocaleDateString("en-CA");
+      const hasAppointment = appointments.some((appointment) =>
+        appointment.time.startsWith(datekey)
+      );
+
+      calendarDates.push({
+        day: i,
+        inactive: false,
+        active: isToday,
+        datekey,
+        hasAppointment
       });
     }
   }
 
-  // Build the current week
-  $: daysInWeek = Array.from({ length: 7 }, (_, index) =>
-    addDays(currentWeekStart, index),
-  );
+  function showPreviousMonth(){
+    currentDate.setMonth(currentDate.getMonth() - 1);
+    updateCalendar();
+  }
 
-  // Build planner columns
-  $: columns = daysInWeek.map((date): PlannerColumn => {
-    const dateKey = formatDateKey(date);
+  function showNextMonth(){
+    currentDate.setMonth(currentDate.getMonth() + 1);
+    updateCalendar();
+  }
 
-    const appointmentsForDay = filteredAppointments
-      .filter((appointment) => appointment.time.startsWith(dateKey))
-      .map((appointment) => {
-        return {
-          ...appointment,
-          formattedTime: timeFormatter.format(new Date(appointment.time)),
-        };
-      });
+  function selectDate(datekey: string | null){
+    if (!datekey) return;
+    selectedDate = datekey;
+  }
 
-    return {
-      dayName: dayFormatter.format(date),
-      dateLabel: dateFormatter.format(date),
-      appointments: appointmentsForDay,
+  function openBookingModal(appointment: Appointment) {
+    selectedAppointment = {
+      ...appointment,
+      formattedTime: timeFormatter.format(new Date(appointment.time))
     };
-  });
-
-  // Week number shown in the tab
-  $: currentWeekNumber = getWeekNumber(currentWeekStart);
-
-  function showPreviousWeek() {
-    currentWeekStart = addDays(currentWeekStart, -7);
-  }
-
-  function showNextWeek() {
-    currentWeekStart = addDays(currentWeekStart, 7);
-  }
-
-  function openBookingModal(appointment: AppointmentWithFormattedTime) {
-    selectedAppointment = appointment;
     bookingMessage = "";
   }
 
@@ -184,9 +100,7 @@
   }
 
   async function bookAppointment() {
-    if (!selectedAppointment) {
-      return;
-    }
+    if (!selectedAppointment) return;
 
     isBooking = true;
     bookingMessage = "";
@@ -215,14 +129,143 @@
     }
   }
 
-  function toggleSidebar() {
-    sidebarOpen = !sidebarOpen;
+  $: {
+    if(selectedDate === null){
+      selectedAppointments = [];
+    }else{
+      const datekey = selectedDate;
+      selectedAppointments = appointments.filter((appointment) => appointment.time.startsWith(datekey)); 
+    }
   }
+
+  updateCalendar();
 </script>
 
-<svelte:head>
-  <title>Available Appointments</title>
-</svelte:head>
+
+<style>
+  .page-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start; 
+    justify-content: flex-start;
+    padding: 2rem;
+    gap: 10rem;
+  }
+
+  .calendar{
+    width: 600px; 
+    height: 600px;
+    display: flex;
+    flex-direction: column;
+    padding:10px; 
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0px rgba(0, 0, 0, 0.3);
+  }
+
+  .header{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+      }
+
+    .header button{
+      display:flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .days{
+        display:grid;
+        grid-template-columns: repeat(7, 1fr);
+      }
+  
+  .day {
+    text-align: center;
+    padding: 5px;
+    color: #999fa6;
+    font-weight: 500;
+  }
+    
+    .dates {
+      display: grid; 
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+
+    .date {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 70px; 
+    }
+
+    .date span {
+      width:42px; 
+      height: 42px;
+      display: flex; 
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+
+  .date:hover span,
+  .date.active span{
+    background: pink;
+    color: white; 
+  }
+
+  .date.inactive {
+    color: #ccc;
+  }
+
+  .date.inactive:hover {
+    color: white; 
+  }
+
+  .appointment-dot {
+    position: absolute;
+    bottom: 10px;
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+  }
+
+  .appointments-panel{
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; 
+    width:320px;
+  }
+
+  .appointment-card{
+    min-height: 100px;
+    width: 100%;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+  }
+
+  .page-title{
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+
+
+</style>
 
 <BookingModal
   selectedAppointment={selectedAppointment}
@@ -232,27 +275,63 @@
   onBook={bookAppointment}
 />
 
-<div class="layout">
-  <div class="page content">
+<div class= "header">
+  <h1 class="page-title">New Appointment</h1>
+</div>
+<div class="page-shell">
+  <div class="calendar">
     <div class="header">
-      <h1 class="text-3xl">Available appointments</h1>
-
-      <div class="filter">
-        <label for="bloodbank">Choose bloodbank</label>
-        <select id="bloodbank" bind:value={selectedBloodbank}>
-          {#each bloodbanks as bloodbank}
-            <option value={bloodbank}>{bloodbank}</option>
-          {/each}
-        </select>
-      </div>
+      <button type="button" on:click={showPreviousMonth}>&#8249;</button>
+      <div class="monthYear">{monthYear}</div>
+      <button type="button" on:click={showNextMonth}>&#8250;</button>
     </div>
 
-    <WeekPlanner
-      columns={columns}
-      currentWeekNumber={currentWeekNumber}
-      onPreviousWeek={showPreviousWeek}
-      onNextWeek={showNextWeek}
-      onSelectAppointment={openBookingModal}
-    />
+    <div class="days">
+      <div class="day">Mon</div>
+      <div class="day">Tue</div>
+      <div class="day">Wed</div>
+      <div class="day">Thu</div>
+      <div class="day">Fri</div>
+      <div class="day">Sat</div>
+      <div class="day">Sun</div>
+    </div>
+  
+    <div class="dates">
+      {#each calendarDates as date}
+        <div
+          class="date"
+          class:inactive={date.inactive}
+          class:active={selectedDate === date.datekey }
+          on:click={() => selectDate(date.datekey)}
+        >
+          {#if date.day !== 0}
+            <span>{date.day}</span>
+            {#if date.hasAppointment}
+              <div class="appointment-dot"></div>
+            {/if}
+          {/if}
+        </div> 
+      {/each}
+    </div>
   </div>
+  
+  <div class="appointments-panel">
+  {#if selectedAppointments.length === 0}
+    <div class="appointment-card">No available appointments</div>
+    {:else}
+     {#each selectedAppointments as appointment}
+     <button
+      type="button"
+      class="appointment-card"
+      on:click={() => openBookingModal(appointment)}
+     >
+      <p>
+        {new Date(appointment.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      </p>
+      <p>{appointment.bloodbank_name}</p>
+     </button>
+    {/each}
+  {/if}
 </div>
+</div>
+
