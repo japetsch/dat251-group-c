@@ -1,19 +1,9 @@
 import { createLoadClient } from "$lib/api/client";
-import type { components } from "$lib/api/schema";
 import type { AdminCalendarAppointment } from "$lib/types/admin";
 import type { PageLoad } from "./$types";
 
-// type AdminCalendarAppointment = {
-//   appointment_id: number;
-//   username: string;
-//   time: string;
-//   bloodbank_name: string;
-//   cancelled: boolean;
-// };
-
 type AdminApptPreloaded = {
-  upcoming: AdminCalendarAppointment[];
-  previous: AdminCalendarAppointment[];
+  appointments: AdminCalendarAppointment[];
   error: string | null;
 };
 
@@ -23,8 +13,7 @@ export const load: PageLoad<AdminApptPreloaded> = async ({ fetch, url }) => {
 
   if (!bloodbanks.response.ok || !bloodbanks.data) {
     return {
-      upcoming: [],
-      previous: [],
+      appointments: [],
       error: "Failed to load blood banks",
     };
   }
@@ -34,8 +23,7 @@ export const load: PageLoad<AdminApptPreloaded> = async ({ fetch, url }) => {
   );
   if (!selectedBloodbank) {
     return {
-      upcoming: [],
-      previous: [],
+      appointments: [],
       error: "No blood bank found for this admin",
     };
   }
@@ -45,13 +33,16 @@ export const load: PageLoad<AdminApptPreloaded> = async ({ fetch, url }) => {
       path: {
         bloodbank_id: selectedBloodbank.bloodbank_id,
       },
+      query: {
+        after: "2026-01-01T00:00:00Z",
+        show_cancelled: true,
+      },
     },
   });
 
   if (!r.response.ok || !r.data) {
     return {
-      upcoming: [],
-      previous: [],
+      appointments: [],
       error: "Failed to load appointments",
     };
   }
@@ -64,12 +55,8 @@ export const load: PageLoad<AdminApptPreloaded> = async ({ fetch, url }) => {
     })),
   );
 
-  const now = new Date();
   return {
-    previous: appointments.filter((x) => new Date(x.time) < now),
-    upcoming: appointments.filter(
-      (x) => !x.appointment_cancelled && new Date(x.time) >= now,
-    ),
+    appointments: appointments,
     error: null,
   };
 };
