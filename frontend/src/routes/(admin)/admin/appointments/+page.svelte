@@ -119,6 +119,15 @@
   .error-text {
     color: #dc2626;
   }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .right-text {
+    color: gray;
+  }
 </style>
 
 <script lang="ts">
@@ -140,9 +149,9 @@
     hasAppointment: boolean;
   }[] = [];
 
-  let appointments: PageData["upcoming"] = data.upcoming;
+  let appointments: PageData["appointments"] = data.appointments;
   let selectedAppointment: AdminCalendarAppointment | null = null;
-  let selectedAppointments: PageData["upcoming"] = [];
+  let selectedAppointments: PageData["appointments"] = [];
 
   function updateCalendar() {
     const currentYear = currentDate.getFullYear();
@@ -286,7 +295,12 @@
             class="appointment-card"
             on:click={() => openAppointmentModal(appointment)}
           >
-            <p><strong>{appointment.donor_name}</strong></p>
+            <div class="row">
+              <p><strong>{appointment.donor_name}</strong></p>
+              {#if appointment.appointment_cancelled}
+                <span class="right-text">Cancelled</span>
+              {/if}
+            </div>
             <p>
               {new Date(appointment.time).toLocaleTimeString([], {
                 hour: "2-digit",

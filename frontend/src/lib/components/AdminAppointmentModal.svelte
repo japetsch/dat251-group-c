@@ -17,7 +17,7 @@
     padding: 2rem;
     border-radius: 16px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-    min-width: 320px;
+    min-width: 60%;
     z-index: 10;
   }
 
@@ -42,6 +42,11 @@
     border-radius: 24px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  h2,
+  h3 {
+    all: revert;
   }
 </style>
 
@@ -82,6 +87,7 @@
 
     <p><strong>Appointment time:</strong> {selectedAppointment.time}</p>
 
+    <hr />
     <h3>Donor</h3>
     <p><strong>Name:</strong> {selectedAppointment.donor_name}</p>
     <p><strong>Phone:</strong> {selectedAppointment.donor_phone}</p>
@@ -93,6 +99,7 @@
     </p>
 
     {#if appointmentNotes.length !== 0}
+      <hr />
       <h3>Notes</h3>
       {#each appointmentNotes as note}
         <div class="modal-card">
@@ -104,6 +111,7 @@
     {/if}
 
     {#if appointmentDonations.length !== 0}
+      <hr />
       <h3>Donations</h3>
       {#each appointmentDonations as donation}
         <div class="modal-card">
