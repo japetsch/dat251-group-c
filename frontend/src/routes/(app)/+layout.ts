@@ -12,7 +12,7 @@ export const load: LayoutLoad = async ({ fetch, url }) => {
   }
 
   if ("admin_id" in r.data) {
-    window.location.href ="/admin";
+    window.location.href = "/admin";
     return {};
   }
 
