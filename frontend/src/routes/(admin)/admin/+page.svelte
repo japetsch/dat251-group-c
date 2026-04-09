@@ -32,9 +32,12 @@
 
 <div class="mx-auto max-w-7xl px-6 py-10">
   <div class="mb-8">
-    <h1 class="text-5xl font-bold tracking-tight text-slate-950">Admin Dashboard</h1>
+    <h1 class="text-5xl font-bold tracking-tight text-slate-950">
+      Admin Dashboard
+    </h1>
     <p class="mt-3 max-w-2xl text-base leading-7 text-slate-500">
-      Get an overview of today’s appointments and move quickly between important admin pages.
+      Get an overview of today’s appointments and move quickly between important
+      admin pages.
     </p>
   </div>
 
@@ -42,7 +45,9 @@
     <!-- LEFT COLUMN -->
     <div class="space-y-6 lg:col-span-4">
       <!-- Up next -->
-      <section class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+      <section
+        class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm"
+      >
         <div class="mb-4 flex items-start justify-between gap-4">
           <div>
             <h2 class="text-2xl font-semibold text-slate-950">Up next</h2>
@@ -55,7 +60,9 @@
             </p>
           </div>
 
-          <span class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600">
+          <span
+            class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600"
+          >
             {data.stats.todayCount} today
           </span>
         </div>
@@ -63,21 +70,33 @@
         {#if data.nextAppointment}
           <div class="rounded-3xl bg-slate-50 p-5">
             <div class="mb-4">
-              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Donor</p>
+              <p
+                class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+              >
+                Donor
+              </p>
               <p class="mt-2 text-2xl font-semibold text-slate-950">
                 {data.nextAppointment.donorName}
               </p>
             </div>
 
             <div class="mb-4">
-              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Time</p>
+              <p
+                class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+              >
+                Time
+              </p>
               <p class="mt-2 text-lg font-semibold text-slate-950">
                 {formatDateTime(data.nextAppointment.time)}
               </p>
             </div>
 
             <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Blood type</p>
+              <p
+                class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+              >
+                Blood type
+              </p>
               <p class="mt-2 text-sm text-slate-700">
                 {data.nextAppointment.donorBloodType ?? "Not registered"}
               </p>
@@ -91,7 +110,9 @@
       </section>
 
       <!-- Quick access -->
-      <section class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+      <section
+        class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm"
+      >
         <h2 class="text-2xl font-semibold text-slate-950">Quick access</h2>
         <p class="mt-1 text-sm text-slate-500">Go to the pages you use most.</p>
 
@@ -112,16 +133,22 @@
     <!-- RIGHT COLUMN -->
     <div class="space-y-6 lg:col-span-8">
       <!-- Today’s appointments -->
-      <section class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+      <section
+        class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm"
+      >
         <div class="mb-5 flex items-start justify-between gap-4">
           <div>
-            <h2 class="text-2xl font-semibold text-slate-950">Today’s appointments</h2>
+            <h2 class="text-2xl font-semibold text-slate-950">
+              Today’s appointments
+            </h2>
             <p class="mt-1 text-sm text-slate-500">
               Live data from the backend for your blood bank.
             </p>
           </div>
 
-          <span class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600">
+          <span
+            class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600"
+          >
             {data.appointments.length} items
           </span>
         </div>
@@ -133,35 +160,61 @@
         {:else}
           <div class="space-y-4">
             {#each data.appointments as appointment}
-              <div class="rounded-[24px] border border-slate-200 p-5 transition hover:bg-slate-50">
-                <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+              <div
+                class="rounded-[24px] border border-slate-200 p-5 transition hover:bg-slate-50"
+              >
+                <div
+                  class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between"
+                >
                   <div class="grid gap-4 sm:grid-cols-2 xl:flex-1">
                     <div>
-                      <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Donor</p>
-                      <p class="mt-2 text-xl font-semibold text-slate-950">{appointment.donorName}</p>
+                      <p
+                        class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+                      >
+                        Donor
+                      </p>
+                      <p class="mt-2 text-xl font-semibold text-slate-950">
+                        {appointment.donorName}
+                      </p>
                     </div>
 
                     <div>
-                      <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Time</p>
+                      <p
+                        class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+                      >
+                        Time
+                      </p>
                       <p class="mt-2 text-lg font-semibold text-slate-950">
                         {formatTime(appointment.time)}
                       </p>
                     </div>
 
                     <div>
-                      <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Email</p>
-                      <p class="mt-2 text-sm text-slate-700">{appointment.donorEmail}</p>
+                      <p
+                        class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+                      >
+                        Email
+                      </p>
+                      <p class="mt-2 text-sm text-slate-700">
+                        {appointment.donorEmail}
+                      </p>
                     </div>
 
                     <div>
-                      <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">Blood type</p>
+                      <p
+                        class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+                      >
+                        Blood type
+                      </p>
                       <p class="mt-2 text-sm text-slate-700">
                         {appointment.donorBloodType ?? "Not registered"}
                       </p>
                     </div>
                   </div>
 
-                  <div class="flex min-w-[220px] flex-col items-start gap-3 xl:items-end">
+                  <div
+                    class="flex min-w-[220px] flex-col items-start gap-3 xl:items-end"
+                  >
                     <span
                       class={`rounded-full px-3 py-1.5 text-xs font-medium ${
                         appointment.donations.length > 0
@@ -193,7 +246,9 @@
                 </div>
 
                 {#if appointment.notes.length > 0}
-                  <div class="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                  <div
+                    class="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600"
+                  >
                     <span class="font-medium text-slate-700">Latest note:</span>
                     {appointment.notes[appointment.notes.length - 1].message}
                   </div>

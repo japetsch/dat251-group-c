@@ -71,24 +71,27 @@ export const load: PageLoad = async ({ fetch, url }) => {
 
   const appointmentSlots = appointmentsRes.data;
 
-  const appointments: DashboardAppointment[] = appointmentSlots.flatMap((slot) =>
-    slot.appointments.map((appointment) => ({
-      appointmentId: appointment.appointment_id,
-      donorId: appointment.donor_id,
-      donorName: appointment.donor_name,
-      donorEmail: appointment.donor_email,
-      donorPhone: appointment.donor_phone,
-      donorBloodType: appointment.donor_blood_type,
-      cancelled: appointment.appointment_cancelled,
-      bookingslotId: slot.bookingslot_id,
-      time: slot.bookingslot_time,
-      duration: slot.bookingslot_duration,
-      notes: appointment.notes ?? [],
-      donations: appointment.donations ?? [],
-    })),
+  const appointments: DashboardAppointment[] = appointmentSlots.flatMap(
+    (slot) =>
+      slot.appointments.map((appointment) => ({
+        appointmentId: appointment.appointment_id,
+        donorId: appointment.donor_id,
+        donorName: appointment.donor_name,
+        donorEmail: appointment.donor_email,
+        donorPhone: appointment.donor_phone,
+        donorBloodType: appointment.donor_blood_type,
+        cancelled: appointment.appointment_cancelled,
+        bookingslotId: slot.bookingslot_id,
+        time: slot.bookingslot_time,
+        duration: slot.bookingslot_duration,
+        notes: appointment.notes ?? [],
+        donations: appointment.donations ?? [],
+      })),
   );
 
-  const activeAppointments = appointments.filter((appointment) => !appointment.cancelled);
+  const activeAppointments = appointments.filter(
+    (appointment) => !appointment.cancelled,
+  );
 
   activeAppointments.sort(
     (a, b) => new Date(a.time).getTime() - new Date(b.time).getTime(),
