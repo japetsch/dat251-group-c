@@ -386,6 +386,15 @@ export interface components {
             /** Message */
             message: string;
         };
+        /** AdminInfo */
+        AdminInfo: {
+            /** User Id */
+            user_id: number;
+            /** User Name */
+            user_name: string;
+            /** Admin Id */
+            admin_id: number;
+        };
         /** AppointmentType */
         AppointmentType: {
             /** Id */
@@ -593,6 +602,15 @@ export interface components {
             amount_ml: number;
             /** Is Blood Not Plasma */
             is_blood_not_plasma: boolean;
+        };
+        /** DonorInfo */
+        DonorInfo: {
+            /** User Id */
+            user_id: number;
+            /** User Name */
+            user_name: string;
+            /** Donor Id */
+            donor_id: number;
         };
         /** EntryFormDetailsRow */
         EntryFormDetailsRow: {
@@ -808,13 +826,6 @@ export interface components {
             /** Donor Id */
             donor_id: number;
         };
-        /** UserInfo */
-        UserInfo: {
-            /** User Id */
-            user_id: number;
-            /** User Name */
-            user_name: string;
-        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -908,7 +919,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["UserInfo"];
+                    "application/json": components["schemas"]["AdminInfo"] | components["schemas"]["DonorInfo"];
                 };
             };
         };

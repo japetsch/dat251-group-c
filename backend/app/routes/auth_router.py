@@ -11,6 +11,7 @@ from app.auth import (
     CurrentUserRequired,
     DonorInfo,
     UserInfo,
+    UserUnionRequired,
 )
 
 from ..db.db import DBConnection
@@ -95,5 +96,5 @@ class AuthRouter(APIRouter):
     ):
         auth_utils.clear_auth_cookie(response)
 
-    async def me(self, user: CurrentUserRequired) -> UserInfo:
+    async def me(self, user: UserUnionRequired) -> AdminInfo | DonorInfo:
         return user
