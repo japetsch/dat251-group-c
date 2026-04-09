@@ -70,7 +70,15 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserInfo"
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AdminInfo"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DonorInfo"
+                    }
+                  ],
+                  "title": "Response Me Auth Me Get"
                 }
               }
             }
@@ -795,6 +803,29 @@
         ],
         "title": "AddNoteRequest"
       },
+      "AdminInfo": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "user_name": {
+            "type": "string",
+            "title": "User Name"
+          },
+          "admin_id": {
+            "type": "integer",
+            "title": "Admin Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "user_name",
+          "admin_id"
+        ],
+        "title": "AdminInfo"
+      },
       "AppointmentNote": {
         "properties": {
           "message": {
@@ -1260,6 +1291,29 @@
           "is_blood_not_plasma"
         ],
         "title": "DonationType"
+      },
+      "DonorInfo": {
+        "properties": {
+          "user_id": {
+            "type": "integer",
+            "title": "User Id"
+          },
+          "user_name": {
+            "type": "string",
+            "title": "User Name"
+          },
+          "donor_id": {
+            "type": "integer",
+            "title": "Donor Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "user_name",
+          "donor_id"
+        ],
+        "title": "DonorInfo"
       },
       "EntryFormDetailsRow": {
         "properties": {
@@ -1745,24 +1799,6 @@
           "donor_id"
         ],
         "title": "UpdateAppointmentRow"
-      },
-      "UserInfo": {
-        "properties": {
-          "user_id": {
-            "type": "integer",
-            "title": "User Id"
-          },
-          "user_name": {
-            "type": "string",
-            "title": "User Name"
-          }
-        },
-        "type": "object",
-        "required": [
-          "user_id",
-          "user_name"
-        ],
-        "title": "UserInfo"
       },
       "ValidationError": {
         "properties": {
