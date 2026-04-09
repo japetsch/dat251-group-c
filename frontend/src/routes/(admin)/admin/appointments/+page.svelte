@@ -122,6 +122,8 @@
 </style>
 
 <script lang="ts">
+  import AdminAppointmentModal from "$lib/components/AdminAppointmentModal.svelte";
+  import type { AdminCalendarAppointment } from "$lib/types/admin";
   import type { PageData } from "./$types";
 
   export let data: PageData;
@@ -139,6 +141,7 @@
   }[] = [];
 
   let appointments: PageData["upcoming"] = data.upcoming;
+  let selectedAppointment: AdminCalendarAppointment | null = null;
   let selectedAppointments: PageData["upcoming"] = [];
 
   function updateCalendar() {
@@ -214,8 +217,21 @@
     }
   }
 
+  function openAppointmentModal(appointment: AdminCalendarAppointment) {
+    selectedAppointment = appointment;
+  }
+
+  function closeAppointmentModal() {
+    selectedAppointment = null;
+  }
+
   updateCalendar();
 </script>
+
+<AdminAppointmentModal
+  selectedAppointment={selectedAppointment}
+  onClose={closeAppointmentModal}
+/>
 
 <div class="header">
   <h1 class="page-title">Admin Appointments</h1>
@@ -266,8 +282,11 @@
         <div class="appointment-card">No bookings on this date</div>
       {:else}
         {#each selectedAppointments as appointment}
-          <div class="appointment-card">
-            <p><strong>{appointment.username}</strong></p>
+          <div
+            class="appointment-card"
+            on:click={() => openAppointmentModal(appointment)}
+          >
+            <p><strong>{appointment.donor_name}</strong></p>
             <p>
               {new Date(appointment.time).toLocaleTimeString([], {
                 hour: "2-digit",
