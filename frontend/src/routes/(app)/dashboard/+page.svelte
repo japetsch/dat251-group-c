@@ -6,7 +6,7 @@
 
   let nextAppointment: Appointment | null = {
     datetime: "2026-03-18T17:30:00",
-    location: "Haukeland universitetssjukehus"
+    location: "Haukeland universitetssjukehus",
   };
 
   let completedAppointments = 1;
@@ -18,19 +18,17 @@
       month: "long",
       year: "numeric",
       hour: "2-digit",
-      minute: "2-digit"
+      minute: "2-digit",
     });
 
   const progress =
-    yearlyGoal > 0
-      ? Math.round((completedAppointments / yearlyGoal) * 100)
-      : 0;
+    yearlyGoal > 0 ? Math.round((completedAppointments / yearlyGoal) * 100) : 0;
 
   const links = [
     { label: "Appointments", href: "/appointment/list" },
     { label: "My Blood", href: "/my-blood" },
     { label: "Settings", href: "/settings" },
-    { label: "More Info", href: "/more-info" }
+    { label: "More Info", href: "/more-info" },
   ];
 </script>
 
@@ -46,8 +44,8 @@
         Dashboard
       </h1>
       <p class="mt-3 max-w-3xl text-lg leading-relaxed text-[#5d7598]">
-        Here you can get an overview of your next donation, navigate to important
-        pages, and follow your progress this year.
+        Here you can get an overview of your next donation, navigate to
+        important pages, and follow your progress this year.
       </p>
     </div>
 
@@ -55,7 +53,9 @@
       <!-- Left column -->
       <div class="space-y-8">
         <!-- Up next -->
-        <section class="rounded-[2rem] border border-[#e6e7eb] bg-white p-8 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+        <section
+          class="rounded-[2rem] border border-[#e6e7eb] bg-white p-8 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
+        >
           <div class="mb-6 flex items-start justify-between gap-4">
             <div>
               <h2 class="text-2xl font-bold text-[#061b49]">Up next</h2>
@@ -81,7 +81,9 @@
                   {formatDate(nextAppointment.datetime)}
                 </p>
 
-                <p class="pt-3 text-sm uppercase tracking-[0.25em] text-[#94a8c4]">
+                <p
+                  class="pt-3 text-sm uppercase tracking-[0.25em] text-[#94a8c4]"
+                >
                   Location
                 </p>
                 <p class="text-lg text-[#1d3557]">{nextAppointment.location}</p>
@@ -93,7 +95,9 @@
         </section>
 
         <!-- Navigation -->
-        <section class="rounded-[2rem] border border-[#e6e7eb] bg-white p-8 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+        <section
+          class="rounded-[2rem] border border-[#e6e7eb] bg-white p-8 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
+        >
           <div class="mb-6">
             <h2 class="text-2xl font-bold text-[#061b49]">Quick access</h2>
             <p class="mt-2 text-lg text-[#5d7598]">
@@ -118,7 +122,9 @@
       <!-- Right column -->
       <div class="space-y-8">
         <!-- Progress -->
-        <section class="rounded-[2rem] border border-[#e6e7eb] bg-white p-8 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+        <section
+          class="rounded-[2rem] border border-[#e6e7eb] bg-white p-8 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
+        >
           <div class="mb-6 flex items-start justify-between gap-4">
             <div>
               <h2 class="text-2xl font-bold text-[#061b49]">Progress</h2>
@@ -134,7 +140,9 @@
             </span>
           </div>
 
-          <div class="rounded-[1.5rem] border border-[#ece7e7] bg-[#fcfbfb] p-6">
+          <div
+            class="rounded-[1.5rem] border border-[#ece7e7] bg-[#fcfbfb] p-6"
+          >
             <div class="mb-5 flex items-start justify-between gap-4">
               <div>
                 <p class="text-sm uppercase tracking-[0.25em] text-[#94a8c4]">
@@ -149,7 +157,9 @@
             <div class="mt-8">
               <div class="mb-3 flex items-center justify-between">
                 <span class="text-base text-[#5d7598]">Yearly progress</span>
-                <span class="text-base font-medium text-[#12305f]">{progress}%</span>
+                <span class="text-base font-medium text-[#12305f]"
+                  >{progress}%</span
+                >
               </div>
 
               <div class="h-5 w-full overflow-hidden rounded-full bg-[#edf2f7]">
@@ -163,7 +173,9 @@
         </section>
 
         <!-- Extra info card -->
-        <section class="rounded-[2rem] border border-[#e6e7eb] bg-white p-8 shadow-[0_1px_2px_rgba(0,0,0,0.03)]">
+        <section
+          class="rounded-[2rem] border border-[#e6e7eb] bg-white p-8 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
+        >
           <div class="mb-6">
             <h2 class="text-2xl font-bold text-[#061b49]">Donation overview</h2>
             <p class="mt-2 text-lg text-[#5d7598]">
