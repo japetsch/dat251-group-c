@@ -1,18 +1,19 @@
-from datetime import datetime, timedelta
-
 from fastapi import HTTPException, status
 from fastapi.routing import APIRouter
-from pydantic import BaseModel
 
 from app.auth import DonorInfo, DonorUserRequired, UserUnionRequired
 
 from ..db.db import DBConnection
 from ..db.sqlc.appointment import (
     AsyncQuerier as AppointmentQuerier,
-    GetAppointmentsByDonorIdRow,
     UpdateAppointmentRow,
 )
 from ..db.sqlc.auth import AsyncQuerier as AuthQuerier
+from ..schemas.appointment import (
+    AddNoteRequest,
+    AppointmentType,
+    AppointmentUpdateRequest,
+)
 
 
 class AppointmentRouter(APIRouter):
@@ -29,34 +30,14 @@ class AppointmentRouter(APIRouter):
             status_code=status.HTTP_204_NO_CONTENT,
         )
 
-    class AppointmentType(BaseModel):
-        id: int
-        username: str
-        time: datetime
-        duration: timedelta
-        bloodbank_name: str
-        cancelled: bool
-        notes: list[AppointmentRouter.NoteType]
-
-    # TODO: refactor (this is duplicate of a structure in AdminRouter)
-    class NoteType(BaseModel):
-        author_user_id: int
-        author_name: str
-        message: str
-        time: datetime
-
     async def find_all(
         self, user: DonorUserRequired, engine: DBConnection
-    ) -> list[AppointmentRouter.AppointmentType]:
+    ) -> list[AppointmentType]:
         q = AppointmentQuerier(engine)
 
-        rows: list[AppointmentRouter.AppointmentType] = []
+        rows: list[AppointmentType] = []
         async for x in q.get_appointments_by_donor_id(donor_id=user.donor_id):
-            rows.append(
-                AppointmentRouter.AppointmentType.model_validate(
-                    x, from_attributes=True
-                )
-            )
+            rows.append(AppointmentType.model_validate(x, from_attributes=True))
         return rows
 
     async def _assert_appointment_owner(
@@ -72,10 +53,6 @@ class AppointmentRouter(APIRouter):
                 status_code=404,
                 detail="Appointment not found",
             )
-
-    class AppointmentUpdateRequest(BaseModel):
-        bookingslot_id: int
-        cancelled: bool
 
     async def update(
         self,
@@ -120,14 +97,11 @@ class AppointmentRouter(APIRouter):
             )
         return updatedAppointment
 
-    class AppointmentNote(BaseModel):
-        message: str
-
     async def add_note(
         self,
         user: DonorUserRequired,
         appointment_id: int,
-        data: AppointmentNote,
+        data: AddNoteRequest,
         engine: DBConnection,
     ):
         await self._assert_appointment_owner(appointment_id, user.donor_id, engine)
