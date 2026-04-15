@@ -119,9 +119,20 @@
   .error-text {
     color: #dc2626;
   }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .right-text {
+    color: gray;
+  }
 </style>
 
 <script lang="ts">
+  import AdminAppointmentModal from "$lib/components/AdminAppointmentModal.svelte";
+  import type { AdminCalendarAppointment } from "$lib/types/admin";
   import type { PageData } from "./$types";
 
   export let data: PageData;
@@ -138,8 +149,9 @@
     hasAppointment: boolean;
   }[] = [];
 
-  let appointments: PageData["upcoming"] = data.upcoming;
-  let selectedAppointments: PageData["upcoming"] = [];
+  let appointments: PageData["appointments"] = data.appointments;
+  let selectedAppointment: AdminCalendarAppointment | null = null;
+  let selectedAppointments: PageData["appointments"] = [];
 
   function updateCalendar() {
     const currentYear = currentDate.getFullYear();
@@ -214,8 +226,21 @@
     }
   }
 
+  function openAppointmentModal(appointment: AdminCalendarAppointment) {
+    selectedAppointment = appointment;
+  }
+
+  function closeAppointmentModal() {
+    selectedAppointment = null;
+  }
+
   updateCalendar();
 </script>
+
+<AdminAppointmentModal
+  selectedAppointment={selectedAppointment}
+  onClose={closeAppointmentModal}
+/>
 
 <div class="header">
   <h1 class="page-title">Admin Appointments</h1>
@@ -266,8 +291,16 @@
         <div class="appointment-card">No bookings on this date</div>
       {:else}
         {#each selectedAppointments as appointment}
-          <div class="appointment-card">
-            <p><strong>{appointment.username}</strong></p>
+          <div
+            class="appointment-card"
+            on:click={() => openAppointmentModal(appointment)}
+          >
+            <div class="row">
+              <p><strong>{appointment.donor_name}</strong></p>
+              {#if appointment.appointment_cancelled}
+                <span class="right-text">Cancelled</span>
+              {/if}
+            </div>
             <p>
               {new Date(appointment.time).toLocaleTimeString([], {
                 hour: "2-digit",

@@ -37,6 +37,15 @@
     height: 40px;
     box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
   }
+  button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  .tooltip {
+    color: red;
+  }
 
   .days {
     display: grid;
@@ -257,6 +266,10 @@
     }
   }
 
+  function appointmentValid(appointment: Appointment): boolean {
+    return !appointment.valid;
+  }
+
   $: {
     if (selectedDate === null) {
       selectedAppointments = [];
@@ -324,10 +337,17 @@
       <div class="appointment-card">No available appointments</div>
     {:else}
       {#each selectedAppointments as appointment}
+        {#if !appointment.valid && appointment.capacity !== 0}
+          <span class="tooltip"
+            >Appointment not bookable because of exisitng appointment within
+            last/next 4 months</span
+          >
+        {/if}
         <button
           type="button"
           class="appointment-card"
           on:click={() => openBookingModal(appointment)}
+          disabled={appointmentValid(appointment)}
         >
           <p>
             {new Date(appointment.time).toLocaleTimeString([], {
@@ -336,6 +356,7 @@
             })}
           </p>
           <p>{appointment.bloodbank_name}</p>
+          <p>Slots left: {appointment.capacity}</p>
         </button>
       {/each}
     {/if}
