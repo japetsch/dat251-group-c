@@ -1,134 +1,15 @@
-<style>
-  .page-shell {
-    min-height: 100vh;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    padding: 2rem;
-    gap: 10rem;
-  }
-
-  .calendar {
-    width: 600px;
-    min-height: 600px;
-    display: flex;
-    flex-direction: column;
-    padding: 10px;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-  }
-
-  .header button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    background: white;
-    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
-  }
-
-  .days {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-  }
-
-  .day {
-    text-align: center;
-    padding: 5px;
-    color: #999fa6;
-    font-weight: 500;
-  }
-
-  .dates {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
-  }
-
-  .date {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 70px;
-  }
-
-  .date span {
-    width: 42px;
-    height: 42px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: 0.2s;
-  }
-
-  .date:hover span,
-  .date.active span {
-    background: pink;
-    color: white;
-  }
-
-  .date.inactive {
-    color: #ccc;
-  }
-
-  .appointment-dot {
-    position: absolute;
-    bottom: 10px;
-    width: 8px;
-    height: 8px;
-    background: #22c55e;
-    border-radius: 50%;
-  }
-
-  .appointments-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 320px;
-  }
-
-  .appointment-card {
-    min-height: 100px;
-    width: 100%;
-    background: white;
-    border-radius: 24px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-  }
-
-  .page-title {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-  }
-
-  .error-text {
-    color: #dc2626;
-  }
-</style>
-
 <script lang="ts">
   import type { PageData } from "./$types";
+  import NotesModal from "$lib/components/NotesModal.svelte";
 
   export let data: PageData;
 
   let selectedDate: string | null = null;
   let currentDate = new Date();
   let monthYear = "";
+
+  let notesOpen = false;
+  let selectedAppointment: any = null;
 
   let calendarDates: {
     day: number;
@@ -140,6 +21,11 @@
 
   let appointments: PageData["upcoming"] = data.upcoming;
   let selectedAppointments: PageData["upcoming"] = [];
+
+  function openNotes(appointment: any) {
+    selectedAppointment = appointment;
+    notesOpen = true;
+  }
 
   function updateCalendar() {
     const currentYear = currentDate.getFullYear();
@@ -207,9 +93,8 @@
     if (selectedDate === null) {
       selectedAppointments = [];
     } else {
-      const datekey = selectedDate;
       selectedAppointments = appointments.filter((appointment) =>
-        appointment.time.startsWith(datekey),
+        appointment.time.startsWith(selectedDate),
       );
     }
   }
@@ -250,11 +135,10 @@
             class:active={selectedDate === date.datekey}
             on:click={() => selectDate(date.datekey)}
           >
-            {#if date.day !== 0}
-              <span>{date.day}</span>
-              {#if date.hasAppointment}
-                <div class="appointment-dot"></div>
-              {/if}
+            <span>{date.day}</span>
+
+            {#if date.hasAppointment}
+              <div class="appointment-dot"></div>
             {/if}
           </div>
         {/each}
@@ -275,9 +159,166 @@
               })}
             </p>
             <p>{appointment.bloodbank_name}</p>
+
+            <button
+              class="notes-button"
+              type="button"
+              on:click={() => openNotes(appointment)}
+            >
+              Notes ({appointment.notes?.length ?? 0})
+            </button>
           </div>
         {/each}
       {/if}
     </div>
   </div>
 {/if}
+
+{#if selectedAppointment}
+  <NotesModal
+    bind:open={notesOpen}
+    appointmentId={selectedAppointment.appointment_id}
+    notes={selectedAppointment.notes ?? []}
+    isAdmin={true}
+  />
+{/if}
+
+<style>
+  .page-shell {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 2rem;
+    gap: 10rem;
+  }
+
+  .calendar {
+    width: 600px;
+    min-height: 600px;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+  }
+
+  .header button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    background: white;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+  }
+
+  .days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+  }
+
+  .day {
+    text-align: center;
+    padding: 5px;
+    color: #999fa6;
+    font-weight: 500;
+  }
+
+  .dates {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+  }
+
+  .date {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 70px;
+    cursor: pointer;
+  }
+
+  .date span {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: 0.2s;
+  }
+
+  .date:hover span,
+  .date.active span {
+    background: pink;
+    color: white;
+  }
+
+  .date.inactive {
+    color: #ccc;
+  }
+
+  .appointment-dot {
+    position: absolute;
+    bottom: 10px;
+    width: 8px;
+    height: 8px;
+    background: #22c55e;
+    border-radius: 50%;
+  }
+
+  .appointments-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 320px;
+  }
+
+  .appointment-card {
+    min-height: 100px;
+    width: 100%;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+  }
+
+  .notes-button {
+    margin-top: 0.75rem;
+    border: none;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .notes-button:hover {
+    background: #e2e8f0;
+  }
+
+  .page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+  }
+
+  .error-text {
+    color: #dc2626;
+  }
+</style>

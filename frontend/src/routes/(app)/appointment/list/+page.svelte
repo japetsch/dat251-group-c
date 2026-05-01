@@ -1,7 +1,11 @@
 <script lang="ts">
   import type { PageData } from "./$types";
+  import NotesModal from "$lib/components/NotesModal.svelte";
 
   export let data: PageData;
+
+  let notesOpen = false;
+  let selectedAppointment: any = null;
 
   const formatDate = (value: string) =>
     new Date(value).toLocaleString("en-DK", {
@@ -11,11 +15,15 @@
       hour: "2-digit",
       minute: "2-digit",
     });
+
+  function openNotes(appointment: any) {
+    selectedAppointment = appointment;
+    notesOpen = true;
+  }
 </script>
 
 <svelte:head>
   <title>My appointments</title>
-  <!-- <h1 class="text-3xl mb-4">My appointments</h1>-->
 </svelte:head>
 
 <div class="mb-8">
@@ -117,11 +125,19 @@
                   <p class="mt-1 text-base font-semibold text-slate-900">
                     {formatDate(appointment.time)}
                   </p>
+
                   <span
                     class="mt-3 inline-flex rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-600"
                   >
                     Upcoming
                   </span>
+
+                  <button
+                    class="mt-3 block rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600 transition hover:bg-slate-200 md:ml-auto"
+                    on:click={() => openNotes(appointment)}
+                  >
+                    Notes ({appointment.notes?.length ?? 0})
+                  </button>
                 </div>
               </div>
             </article>
@@ -195,11 +211,19 @@
                   <p class="mt-1 text-base font-semibold text-slate-900">
                     {formatDate(appointment.time)}
                   </p>
+
                   <span
                     class="mt-3 inline-flex rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600"
                   >
                     Completed
                   </span>
+
+                  <button
+                    class="mt-3 block rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600 transition hover:bg-slate-200 md:ml-auto"
+                    on:click={() => openNotes(appointment)}
+                  >
+                    Notes ({appointment.notes?.length ?? 0})
+                  </button>
                 </div>
               </div>
             </article>
@@ -208,4 +232,13 @@
       {/if}
     </section>
   </div>
+{/if}
+
+{#if selectedAppointment}
+  <NotesModal
+    bind:open={notesOpen}
+    appointmentId={selectedAppointment.id}
+    notes={selectedAppointment.notes ?? []}
+    isAdmin={false}
+  />
 {/if}

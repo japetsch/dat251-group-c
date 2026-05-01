@@ -49,13 +49,14 @@
         {/each}
       {/if}
 
-      <textarea bind:value={message} placeholder="Write a note..." />
+    <textarea bind:value={message} placeholder="Write a note..."></textarea>
+        <button type="button" on:click={addNote} disabled={loading}>
+            {loading ? "Saving..." : "Add note"}
+        </button>
 
-      <button on:click={addNote} disabled={loading}>
-        {loading ? "Saving..." : "Add note"}
-      </button>
-
-      <button on:click={() => open = false}>Close</button>
+        <button type="button" on:click={() => open = false}>
+            Close
+        </button>
     </div>
   </div>
 {/if}
