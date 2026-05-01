@@ -15,6 +15,7 @@ SELECT a.id as id,
     u.name as username,
     b.time as time,
     b.duration as duration,
+	b.id as bookingslot_id,
     ba.name as bloodbank_name,
     a.cancelled,
     COALESCE(n.nl, '[]'::json) as notes

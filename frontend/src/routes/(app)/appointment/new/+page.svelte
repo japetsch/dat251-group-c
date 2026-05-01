@@ -89,6 +89,11 @@
     color: white;
   }
 
+  .date.today span {
+    background: rgba(0, 255, 0, 0.3);
+    color: white;
+  }
+
   .date.inactive {
     color: #ccc;
   }
@@ -103,6 +108,15 @@
     width: 8px;
     height: 8px;
     background: #22c55e;
+    border-radius: 50%;
+  }
+
+  .appointment-dot-grey {
+    position: absolute;
+    bottom: 10px;
+    width: 8px;
+    height: 8px;
+    background: #aaaaaa;
     border-radius: 50%;
   }
 
@@ -139,17 +153,20 @@
 
   export let data: PageData;
 
-  let selectedDate: string | null = null;
-
-  let currentDate = new Date();
-  let monthYear = "";
-  let calendarDates: {
+  type CalendarDate = {
     day: number;
     inactive: boolean;
     active: boolean;
     datekey: string | null;
     hasAppointment: boolean;
-  }[] = [];
+    hasOnlyInvalidAppointment: boolean;
+  };
+
+  let selectedDate: CalendarDate | null = null;
+
+  let currentDate = new Date();
+  let monthYear = "";
+  let calendarDates: CalendarDate[] = [];
   let appointments: Appointment[] = data.availableAppointments;
   let selectedAppointments: Appointment[] = [];
   let selectedAppointment: AppointmentWithFormattedTime | null = null;
@@ -187,6 +204,7 @@
         active: false,
         datekey: null,
         hasAppointment: false,
+        hasOnlyInvalidAppointment: false,
       });
     }
 
@@ -194,8 +212,15 @@
       const date = new Date(currentYear, currentMonth, i);
       const isToday = date.toDateString() === new Date().toDateString();
       const datekey = date.toLocaleDateString("en-CA");
+      const appointmentsOnDay = appointments.filter((appointment) =>
+        appointment.time.startsWith(datekey),
+      );
       const hasAppointment = appointments.some((appointment) =>
         appointment.time.startsWith(datekey),
+      );
+      const hasOnlyInvalidAppointment = appointmentsOnDay.every(
+        (appointment) =>
+          appointment.valid === false && appointment.booked_by_user === false,
       );
 
       calendarDates.push({
@@ -204,6 +229,7 @@
         active: isToday,
         datekey,
         hasAppointment,
+        hasOnlyInvalidAppointment,
       });
     }
   }
@@ -218,9 +244,13 @@
     updateCalendar();
   }
 
-  function selectDate(datekey: string | null) {
-    if (!datekey) return;
-    selectedDate = datekey;
+  function isToday(date: CalendarDate): boolean {
+    return date.datekey === new Date().toLocaleDateString("en-CA");
+  }
+
+  function selectDate(date: CalendarDate | null) {
+    if (!date) return;
+    selectedDate = date;
   }
 
   function openBookingModal(appointment: Appointment) {
@@ -274,10 +304,12 @@
     if (selectedDate === null) {
       selectedAppointments = [];
     } else {
-      const datekey = selectedDate;
-      selectedAppointments = appointments.filter((appointment) =>
-        appointment.time.startsWith(datekey),
-      );
+      const datekey = selectedDate.datekey;
+      selectedAppointments = datekey
+        ? appointments.filter((appointment) =>
+            appointment.time.startsWith(datekey),
+          )
+        : [];
     }
   }
 
@@ -304,13 +336,13 @@
     </div>
 
     <div class="days">
+      <div class="day">Søn</div>
       <div class="day">Man</div>
       <div class="day">Tir</div>
       <div class="day">Ons</div>
       <div class="day">Tor</div>
       <div class="day">Fre</div>
       <div class="day">Lør</div>
-      <div class="day">Søn</div>
     </div>
 
     <div class="dates">
@@ -318,13 +350,17 @@
         <div
           class="date"
           class:inactive={date.inactive}
-          class:active={selectedDate === date.datekey}
-          on:click={() => selectDate(date.datekey)}
+          class:active={selectedDate === date}
+          class:today={isToday(date)}
+          on:click={() => selectDate(date)}
         >
           {#if date.day !== 0}
             <span>{date.day}</span>
-            {#if date.hasAppointment}
+            {#if date.hasAppointment && !date.hasOnlyInvalidAppointment}
               <div class="appointment-dot"></div>
+            {/if}
+            {#if date.hasAppointment && date.hasOnlyInvalidAppointment}
+              <div class="appointment-dot-grey"></div>
             {/if}
           {/if}
         </div>
@@ -336,12 +372,15 @@
     {#if selectedAppointments.length === 0}
       <div class="appointment-card">Ingen ledige timer</div>
     {:else}
+      {#if selectedDate && selectedDate.hasOnlyInvalidAppointment}
+        <span class="tooltip"
+          >Appointment not bookable because of exisitng appointment within
+          last/next 4 months</span
+        >
+      {/if}
       {#each selectedAppointments as appointment}
-        {#if !appointment.valid && appointment.capacity !== 0}
-          <span class="tooltip"
-            >Appointment not bookable because of exisitng appointment within
-            last/next 4 months</span
-          >
+        {#if appointment.capacity === 0}
+          <span class="tooltip">No free slots at this time</span>
         {/if}
         <button
           type="button"
@@ -349,6 +388,9 @@
           on:click={() => openBookingModal(appointment)}
           disabled={appointmentValid(appointment)}
         >
+          {#if appointment.booked_by_user}
+            <p>Booked</p>
+          {/if}
           <p>
             {new Date(appointment.time).toLocaleTimeString([], {
               hour: "2-digit",

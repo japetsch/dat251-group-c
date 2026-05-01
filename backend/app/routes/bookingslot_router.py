@@ -44,10 +44,28 @@ class BookingslotRouter(APIRouter):
             lower = x.time - MIN_WAITTIME
             upper = x.time + MIN_WAITTIME
 
+            booked_by_user = any((x.id == a.bookingslot_id) for a in appointments)
+            if booked_by_user:
+                rows.append(
+                    AvailableBookingSlot(
+                        **x.model_dump(), valid=False, booked_by_user=booked_by_user
+                    )
+                )
+                continue
+
             is_valid = x.capacity != 0 and not any(
-                (lower < a.time < upper and a.cancelled != True) for a in appointments
+                (
+                    lower < a.time < upper
+                    and a.cancelled != True
+                    and x.id != a.bookingslot_id
+                )
+                for a in appointments
             )
-            rows.append(AvailableBookingSlot(**x.model_dump(), valid=is_valid))
+            rows.append(
+                AvailableBookingSlot(
+                    **x.model_dump(), valid=is_valid, booked_by_user=False
+                )
+            )
         return rows
 
     async def book(

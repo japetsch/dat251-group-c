@@ -18,8 +18,6 @@ export const load: PageLoad<NewApptPreloaded> = async ({ fetch, url }) => {
     };
   }
 
-  console.log(r.data);
-
   return {
     availableAppointments: r.data,
     error: null,

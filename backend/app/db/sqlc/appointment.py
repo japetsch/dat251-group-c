@@ -35,6 +35,7 @@ SELECT a.id as id,
     u.name as username,
     b.time as time,
     b.duration as duration,
+	b.id as bookingslot_id,
     ba.name as bloodbank_name,
     a.cancelled,
     COALESCE(n.nl, '[]'\\:\\:json) as notes
@@ -52,6 +53,7 @@ class GetAppointmentsByDonorIdRow(pydantic.BaseModel):
     username: str
     time: datetime.datetime
     duration: datetime.timedelta
+    bookingslot_id: int
     bloodbank_name: str
     cancelled: bool
     notes: Any
@@ -123,9 +125,10 @@ class AsyncQuerier:
                 username=row[1],
                 time=row[2],
                 duration=row[3],
-                bloodbank_name=row[4],
-                cancelled=row[5],
-                notes=row[6],
+                bookingslot_id=row[4],
+                bloodbank_name=row[5],
+                cancelled=row[6],
+                notes=row[7],
             )
 
     async def update_appointment(self, *, id: int, cancelled: bool, bookingslot_id: int) -> Optional[UpdateAppointmentRow]:

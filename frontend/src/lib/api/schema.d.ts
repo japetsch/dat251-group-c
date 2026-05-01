@@ -520,6 +520,8 @@ export interface components {
             location_id: number;
             /** Valid */
             valid: boolean;
+            /** Booked By User */
+            booked_by_user: boolean;
         };
         /**
          * BloodType

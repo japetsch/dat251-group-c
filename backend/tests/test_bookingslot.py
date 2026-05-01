@@ -86,6 +86,9 @@ class TestBookingslot:
         for elem in response_json:
             if elem["id"] == 4:
                 assert elem["valid"] == False
+            elif elem["id"] == 2:
+                assert elem["valid"] == False
+                assert elem["booked_by_user"] == True
             else:
                 assert elem["valid"] == True
 

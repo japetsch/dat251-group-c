@@ -7,6 +7,7 @@ from ..db.sqlc.bookingslot import (
 
 class AvailableBookingSlot(GetBookingSlotsRow):
     valid: bool
+    booked_by_user: bool
 
 
 class BookAppointmentRequest(BaseModel):
