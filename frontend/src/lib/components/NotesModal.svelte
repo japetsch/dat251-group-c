@@ -1,4 +1,5 @@
 <script lang="ts">
+import { goto, invalidateAll } from "$app/navigation";
   import client from "$lib/api/client";
   import type { components } from "$lib/api/schema";
 
@@ -11,25 +12,29 @@
   let loading = false;
 
   async function addNote() {
-    if (!message.trim()) return;
+  if (!message.trim()) return;
 
-    loading = true;
+  loading = true;
 
-    const path = isAdmin
-      ? "/admin/appointment/{appointment_id}/note"
-      : "/appointment/{appointment_id}/note";
+  const path = isAdmin
+    ? "/admin/appointment/{appointment_id}/note"
+    : "/appointment/{appointment_id}/note";
 
+  try {
     await client.POST(path, {
       params: { path: { appointment_id: appointmentId } },
       body: { message }
     });
 
     message = "";
-    loading = false;
+    open = false;
 
-    // quick refresh (simple solution)
-    location.reload();
+    await invalidateAll();
+    await goto(isAdmin ? "/admin/appointment/list" : "/appointment/list");
+  } finally {
+    loading = false;
   }
+}
 </script>
 
 {#if open}
