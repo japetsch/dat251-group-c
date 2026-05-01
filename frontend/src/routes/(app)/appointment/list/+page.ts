@@ -2,6 +2,10 @@ import { createLoadClient } from "$lib/api/client";
 import type { components } from "$lib/api/schema";
 import type { PageLoad } from "./$types";
 
+import NotesModal from "lib/components/NotesModal.svelte";
+
+let notesOpen = false;
+
 type ApptListPreloaded = {
   upcoming: components["schemas"]["AppointmentType"][];
   previous: components["schemas"]["AppointmentType"][];
