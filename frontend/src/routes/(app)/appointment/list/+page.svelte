@@ -4,6 +4,7 @@
 
   export let data: PageData;
 
+  
   let notesOpen = false;
   let selectedAppointment: any = null;
 
