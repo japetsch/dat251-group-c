@@ -2,7 +2,6 @@ import { createLoadClient } from "$lib/api/client";
 import type { components } from "$lib/api/schema";
 import type { PageLoad } from "./$types";
 
-
 type AdminCalendarAppointment = {
   appointment_id: number;
   username: string;
