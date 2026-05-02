@@ -114,7 +114,12 @@
         <Buttons variant="primary">Logg inn</Buttons>
       </div>
     </a>
-
+     <!-- The sign-up button routed to /signup -->
+    <a href="/signup">
+      <div class="fixed right-36 top-6 z-50">
+        <Buttons variant="secondary">Registrer deg</Buttons>
+      </div>
+    </a>
     <!-- Formating of the contents inside the card -->
     <div
       class="relative z-10 inline-block rounded-[32px] border border-black/10 bg-white px-[7rem] py-[4rem] text-center shadow-[0_4px_18px_rgba(0,0,0,0.05)]"
@@ -154,7 +159,7 @@
       <div class="space-y-4 text-center">
         <h2 class="text-4xl font-semibold tracking-tight">Hvorfor gi blod?</h2>
         <p class="mx-auto max-w-3xl text-lg leading-8 text-black/65">
-          Bloddonasjon er en av de viktigste måtene du kan hjelpe andre på. Hvor
+          Bloddonasjon er en av de viktigste måtene du kan hjelpe andre på. Hver
           donasjon kan redde opptil tre liv.
         </p>
       </div>
@@ -447,7 +452,7 @@
                   Du bør kontakte blodbanken før du bestiller time.
                 </p>
                 <p class="mt-2 text-black/70">
-                  Ett ellere flere svar tyder på at du kanskje ikke kan donere
+                  Ett eller flere svar tyder på at du kanskje ikke kan donere
                   blod akkurat nå.
                 </p>
               {/if}
