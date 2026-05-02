@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+
 from ..db.sqlc.models import BloodType
 
 

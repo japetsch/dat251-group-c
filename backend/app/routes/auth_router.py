@@ -112,20 +112,22 @@ class AuthRouter(APIRouter):
         h = self.ph.hash(data.password)
 
         try:
-            uid = await q.register_donor(RegisterDonorParams(
-                name=data.name,
-                password_hash=h,
-                email=data.email,
-                phone_number=data.phone_number,
-                street_name=data.street_name,
-                street_number=data.street_number,
-                apt_number=data.apt_number,
-                postal_code=data.postal_code,
-                city=data.city,
-                country=data.country,
-                blood_type=data.blood_type,
-                preferred_bloodbank_id=data.preferred_bloodbank_id,
-            ))
+            uid = await q.register_donor(
+                RegisterDonorParams(
+                    name=data.name,
+                    password_hash=h,
+                    email=data.email,
+                    phone_number=data.phone_number,
+                    street_name=data.street_name,
+                    street_number=data.street_number,
+                    apt_number=data.apt_number,
+                    postal_code=data.postal_code,
+                    city=data.city,
+                    country=data.country,
+                    blood_type=data.blood_type,
+                    preferred_bloodbank_id=data.preferred_bloodbank_id,
+                )
+            )
         except IntegrityError:
             uid = None
 
