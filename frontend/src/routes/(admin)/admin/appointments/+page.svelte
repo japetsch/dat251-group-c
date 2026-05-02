@@ -236,7 +236,9 @@
       const dateKey = selectedDate;
 
       selectedAppointments = dateKey
-        ? appointments.filter((appointment) => appointment.time.startsWith(dateKey))
+        ? appointments.filter((appointment) =>
+            appointment.time.startsWith(dateKey),
+          )
         : [];
     }
   }
