@@ -233,9 +233,11 @@
     if (selectedDate === null) {
       selectedAppointments = [];
     } else {
-      selectedAppointments = appointments.filter((appointment) =>
-        appointment.time.startsWith(selectedDate),
-      );
+      const dateKey = selectedDate;
+
+      selectedAppointments = dateKey
+        ? appointments.filter((appointment) => appointment.time.startsWith(dateKey))
+        : [];
     }
   }
 
@@ -305,7 +307,7 @@
               type="button"
               on:click={() => openNotes(appointment)}
             >
-              Notes ({appointment.notes?.length ?? 0})
+              Notes
             </button>
           </div>
         {/each}

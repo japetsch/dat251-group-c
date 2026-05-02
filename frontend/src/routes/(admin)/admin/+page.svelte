@@ -59,6 +59,7 @@
     selectedAppointment.notes = [
       ...selectedAppointment.notes,
       {
+        author_name: "Admin",
         message,
         time: new Date().toISOString(),
       },
