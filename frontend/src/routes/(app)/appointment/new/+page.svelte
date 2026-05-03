@@ -141,7 +141,7 @@
     datekey: string | null;
     hasAppointment: boolean;
   }[] = [];
-  let appointments: Appointment[] = data.availableAppointments;
+  let appointments: Appointment[] = data.availableAppointments.filter((a) => a.valid);
   let selectedAppointments: Appointment[] = [];
   let selectedAppointment: AppointmentWithFormattedTime | null = null;
   let isBooking = false;
@@ -150,7 +150,6 @@
   const timeFormatter = new Intl.DateTimeFormat("en-GB", {
     hour: "2-digit",
     minute: "2-digit",
-    timeZone: "UTC",
   });
 
   function updateCalendar() {
@@ -186,7 +185,7 @@
       const isToday = date.toDateString() === new Date().toDateString();
       const datekey = date.toLocaleDateString("en-CA");
       const hasAppointment = appointments.some((appointment) =>
-        appointment.time.startsWith(datekey),
+        new Date(appointment.time).toLocaleDateString("en-CA") === datekey,
       );
 
       calendarDates.push({
@@ -263,7 +262,7 @@
     } else {
       const datekey = selectedDate;
       selectedAppointments = appointments.filter((appointment) =>
-        appointment.time.startsWith(datekey),
+        new Date(appointment.time).toLocaleDateString("en-CA") === datekey,
       );
     }
   }
