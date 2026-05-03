@@ -326,9 +326,16 @@ async function addNote() {
 
           {#if selectedAppointment.notes?.length > 0}
             <div class="mt-4 space-y-3">
-              {#each selectedAppointment.notes as note}
+              {#each [...selectedAppointment.notes].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()) as note}
                 <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
-                  {note.message}
+                  <div class="mb-2 flex justify-between gap-4">
+                    <strong>{note.author_name}</strong>
+                    <span class="whitespace-nowrap text-xs text-slate-400">
+                      {formatDate(note.time)}
+                    </span>
+                  </div>
+
+                  <p>{note.message}</p>
                 </div>
               {/each}
             </div>

@@ -9,6 +9,7 @@ type AdminCalendarAppointment = {
   time: string;
   bloodbank_name: string;
   cancelled: boolean;
+  notes: components["schemas"]["NoteType"][];
 };
 
 type AdminApptPreloaded = {
@@ -56,15 +57,16 @@ export const load: PageLoad<AdminApptPreloaded> = async ({ fetch, url }) => {
     };
   }
 
-  const appointments: AdminCalendarAppointment[] = r.data.flatMap((slot) =>
-    slot.appointments.map((appointment) => ({
-      appointment_id: appointment.appointment_id,
-      username: appointment.donor_name,
-      time: slot.bookingslot_time,
-      bloodbank_name: selectedBloodbank.name,
-      cancelled: appointment.appointment_cancelled,
-    })),
-  );
+    const appointments: AdminCalendarAppointment[] = r.data.flatMap((slot) =>
+      slot.appointments.map((appointment) => ({
+        appointment_id: appointment.appointment_id,
+        username: appointment.donor_name,
+        time: slot.bookingslot_time,
+        bloodbank_name: selectedBloodbank.name,
+        cancelled: appointment.appointment_cancelled,
+        notes: appointment.notes ?? [],
+      })),
+    );
 
   const now = new Date();
   return {
