@@ -230,11 +230,13 @@
   }
 
   $: {
-    if (selectedDate === null) {
+    if (!selectedDate) {
       selectedAppointments = [];
     } else {
+      const dateKey = selectedDate;
+
       selectedAppointments = appointments.filter((appointment) =>
-        appointment.time.startsWith(selectedDate),
+        appointment.time.startsWith(dateKey),
       );
     }
   }
