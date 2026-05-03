@@ -75,6 +75,10 @@
   }
 </script>
 
+<a href="/" class="fixed left-6 top-6 z-50 transition hover:opacity-80">
+  <img src="/tmp_logo.svg" alt="Til forsiden" class="h-20 w-20" />
+</a>
+
 <div class="page">
   <div class="panel-right">
     <form onsubmit={submitSignup}>
@@ -258,7 +262,6 @@
     border-radius: 999px;
     background: #dc2626;
     color: white;
-    font-weight: 700;
     font-size: 1rem;
     cursor: pointer;
     transition: background 0.15s;
