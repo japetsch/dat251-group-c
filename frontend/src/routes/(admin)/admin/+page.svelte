@@ -138,9 +138,7 @@
       >
         <div class="mb-5 flex items-start justify-between gap-4">
           <div>
-            <h2 class="text-2xl font-semibold text-slate-950">
-              Dagens timer
-            </h2>
+            <h2 class="text-2xl font-semibold text-slate-950">Dagens timer</h2>
             <p class="mt-1 text-sm text-slate-500">
               Direktedata fra systemet for din blodbank.
             </p>

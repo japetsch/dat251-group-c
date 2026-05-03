@@ -44,8 +44,8 @@
         Dashboard
       </h1>
       <p class="mt-3 max-w-3xl text-lg leading-relaxed text-[#5d7598]">
-        Her kan du få oversikt over din neste donasjon, navigere til viktige sider 
-        og følge fremgangen din i år.
+        Her kan du få oversikt over din neste donasjon, navigere til viktige
+        sider og følge fremgangen din i år.
       </p>
     </div>
 
@@ -143,7 +143,6 @@
           <div
             class="rounded-[1.5rem] border border-[#ece7e7] bg-[#fcfbfb] p-6"
           >
-          
             <div class="mb-5 flex items-start justify-between gap-4">
               <div>
                 <p class="text-sm uppercase tracking-[0.25em] text-[#94a8c4]">
