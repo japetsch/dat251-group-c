@@ -18,6 +18,19 @@
   .note {
     border-bottom: 1px solid #ddd;
     margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .note-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .note-header small {
+    color: #64748b;
+    white-space: nowrap;
   }
 
   textarea {
@@ -39,6 +52,19 @@
   let message = "";
   let loading = false;
 
+  $: sortedNotes = [...notes].sort(
+    (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime(),
+  );
+
+  const formatNoteTime = (value: string) =>
+    new Date(value).toLocaleString("en-DK", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
   async function addNote() {
     if (!message.trim()) return;
 
@@ -58,7 +84,7 @@
       open = false;
 
       await invalidateAll();
-      await goto(isAdmin ? "/admin/appointment/list" : "/appointment/list");
+      await goto(isAdmin ? "/admin/appointments" : "/appointment/list");
     } finally {
       loading = false;
     }
@@ -70,19 +96,22 @@
     <div class="modal" on:click|stopPropagation>
       <h2>Notes</h2>
 
-      {#if notes.length === 0}
+      {#if sortedNotes.length === 0}
         <p>No notes yet.</p>
       {:else}
-        {#each notes as note}
+        {#each sortedNotes as note}
           <div class="note">
-            <strong>{note.author_name}</strong>
-            <small>{new Date(note.time).toLocaleString()}</small>
+            <div class="note-header">
+              <strong>{note.author_name}</strong>
+              <small>{formatNoteTime(note.time)}</small>
+            </div>
             <p>{note.message}</p>
           </div>
         {/each}
       {/if}
 
       <textarea bind:value={message} placeholder="Write a note..."></textarea>
+
       <button type="button" on:click={addNote} disabled={loading}>
         {loading ? "Saving..." : "Add note"}
       </button>

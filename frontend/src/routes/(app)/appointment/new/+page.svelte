@@ -245,13 +245,13 @@
       });
 
       if (!response.ok) {
-        bookingMessage = "Could not book appointment.";
+        bookingMessage = "Kunne ikke bestille time.";
         return;
       }
 
-      bookingMessage = "Appointment booked successfully.";
+      bookingMessage = "Time bestilt!";
     } catch {
-      bookingMessage = "Could not book appointment.";
+      bookingMessage = "Kunne ikke bestille time.";
     } finally {
       isBooking = false;
     }
@@ -280,7 +280,7 @@
 />
 
 <div class="header">
-  <h1 class="page-title">New Appointment</h1>
+  <h1 class="page-title">Ny time</h1>
 </div>
 <div class="page-shell">
   <div class="calendar">
@@ -291,13 +291,13 @@
     </div>
 
     <div class="days">
-      <div class="day">Mon</div>
-      <div class="day">Tue</div>
-      <div class="day">Wed</div>
-      <div class="day">Thu</div>
-      <div class="day">Fri</div>
-      <div class="day">Sat</div>
-      <div class="day">Sun</div>
+      <div class="day">Man</div>
+      <div class="day">Tir</div>
+      <div class="day">Ons</div>
+      <div class="day">Tor</div>
+      <div class="day">Fre</div>
+      <div class="day">Lør</div>
+      <div class="day">Søn</div>
     </div>
 
     <div class="dates">
@@ -321,7 +321,7 @@
 
   <div class="appointments-panel">
     {#if selectedAppointments.length === 0}
-      <div class="appointment-card">No available appointments</div>
+      <div class="appointment-card">Ingen ledige timer</div>
     {:else}
       {#each selectedAppointments as appointment}
         <button

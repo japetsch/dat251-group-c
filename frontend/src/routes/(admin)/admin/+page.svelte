@@ -34,7 +34,7 @@
     const message = newNote.trim();
 
     if (!message) {
-      alert("Write a note first");
+      alert("Skriv et notat først");
       return;
     }
 
@@ -52,19 +52,18 @@
     savingNote = false;
 
     if (!res.ok) {
-      alert("Failed to save note");
+      alert("Kunne ikke lagre notat");
       return;
     }
 
     selectedAppointment.notes = [
       ...selectedAppointment.notes,
       {
-        author_name: "Admin",
+        author_name: "You",
         message,
         time: new Date().toISOString(),
       },
     ];
-
     newNote = "";
   }
 
@@ -88,7 +87,7 @@
     savingDonation = false;
 
     if (!res.ok) {
-      alert("Failed to register donation");
+      alert("Kunne ikke registrere donasjon");
       return;
     }
 
@@ -112,10 +111,10 @@
   }
 
   const quickLinks = [
-    { label: "Day-to-day appointments", href: "/admin/appointments" },
-    { label: "Register donation", href: "/admin/appointments" },
-    { label: "Register interview", href: "/admin/appointments" },
-    { label: "Register donation test", href: "/admin/appointments" },
+    { label: "Dagens timer", href: "/admin/appointments" },
+    { label: "Registrer donasjon", href: "/admin/appointments" },
+    { label: "Registrer intervju", href: "/admin/appointments" },
+    { label: "Registrer donasjonstest", href: "/admin/appointments" },
   ];
 </script>
 
@@ -126,11 +125,11 @@
 <div class="mx-auto max-w-7xl px-6 py-10">
   <div class="mb-8">
     <h1 class="text-5xl font-bold tracking-tight text-slate-950">
-      Admin Dashboard
+      Administrasjonspanel
     </h1>
     <p class="mt-3 max-w-2xl text-base leading-7 text-slate-500">
-      Get an overview of today’s appointments and move quickly between important
-      admin pages.
+      Få oversikt over dagens timer og naviger raskt mellom viktige
+      administrasjonssider.
     </p>
   </div>
 
@@ -141,7 +140,7 @@
       >
         <div class="mb-4 flex items-start justify-between gap-4">
           <div>
-            <h2 class="text-2xl font-semibold text-slate-950">Up next</h2>
+            <h2 class="text-2xl font-semibold text-slate-950">Neste time</h2>
             <p class="mt-1 text-sm text-slate-500">
               {#if data.bloodbank}
                 {data.bloodbank.name}
@@ -154,7 +153,7 @@
           <span
             class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600"
           >
-            {data.stats.todayCount} today
+            {data.stats.todayCount} i dag
           </span>
         </div>
 
@@ -175,7 +174,7 @@
               <p
                 class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
               >
-                Time
+                Tid
               </p>
               <p class="mt-2 text-lg font-semibold text-slate-950">
                 {formatDateTime(data.nextAppointment.time)}
@@ -186,16 +185,16 @@
               <p
                 class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
               >
-                Blood type
+                Blodtype
               </p>
               <p class="mt-2 text-sm text-slate-700">
-                {data.nextAppointment.donorBloodType ?? "Not registered"}
+                {data.nextAppointment.donorBloodType ?? "Ikke registrert"}
               </p>
             </div>
           </div>
         {:else}
           <div class="rounded-3xl bg-slate-50 p-5 text-sm text-slate-500">
-            No upcoming appointments today.
+            Ingen kommende timer i dag.
           </div>
         {/if}
       </section>
@@ -203,8 +202,8 @@
       <section
         class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm"
       >
-        <h2 class="text-2xl font-semibold text-slate-950">Quick access</h2>
-        <p class="mt-1 text-sm text-slate-500">Go to the pages you use most.</p>
+        <h2 class="text-2xl font-semibold text-slate-950">Hurtigtilgang</h2>
+        <p class="mt-1 text-sm text-slate-500">Gå til sidene du bruker mest.</p>
 
         <div class="mt-5 space-y-3">
           {#each quickLinks as link}
@@ -226,24 +225,22 @@
       >
         <div class="mb-5 flex items-start justify-between gap-4">
           <div>
-            <h2 class="text-2xl font-semibold text-slate-950">
-              Today’s appointments
-            </h2>
+            <h2 class="text-2xl font-semibold text-slate-950">Dagens timer</h2>
             <p class="mt-1 text-sm text-slate-500">
-              Live data from the backend for your blood bank.
+              Direktedata fra systemet for din blodbank.
             </p>
           </div>
 
           <span
             class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600"
           >
-            {data.appointments.length} items
+            {data.appointments.length}
           </span>
         </div>
 
         {#if data.appointments.length === 0}
           <div class="rounded-3xl bg-slate-50 p-5 text-sm text-slate-500">
-            No appointments found.
+            Ingen timer funnet.
           </div>
         {:else}
           <div class="space-y-4">
@@ -270,7 +267,7 @@
                       <p
                         class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
                       >
-                        Time
+                        Tid
                       </p>
                       <p class="mt-2 text-lg font-semibold text-slate-950">
                         {formatTime(appointment.time)}
@@ -281,7 +278,7 @@
                       <p
                         class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
                       >
-                        Email
+                        E-post
                       </p>
                       <p class="mt-2 text-sm text-slate-700">
                         {appointment.donorEmail}
@@ -292,10 +289,10 @@
                       <p
                         class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
                       >
-                        Blood type
+                        Blodtype
                       </p>
                       <p class="mt-2 text-sm text-slate-700">
-                        {appointment.donorBloodType ?? "Not registered"}
+                        {appointment.donorBloodType ?? "Ikke registrert"}
                       </p>
                     </div>
                   </div>
@@ -311,8 +308,8 @@
                       }`}
                     >
                       {appointment.donations.length > 0
-                        ? "Donation recorded"
-                        : "No donation recorded"}
+                        ? "Donasjon registrert"
+                        : "Ingen donasjon registrert"}
                     </span>
 
                     <div class="flex flex-wrap gap-2 xl:justify-end">
@@ -324,7 +321,7 @@
                           newNote = "";
                         }}
                       >
-                        View
+                        Vis time
                       </button>
 
                       <button
@@ -337,7 +334,7 @@
                           isBloodNotPlasma = true;
                         }}
                       >
-                        Register donation
+                        Registrer donasjon
                       </button>
                     </div>
                   </div>
@@ -347,7 +344,7 @@
                   <div
                     class="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600"
                   >
-                    <span class="font-medium text-slate-700">Latest note:</span>
+                    <span class="font-medium text-slate-700">Siste notat:</span>
                     {appointment.notes[appointment.notes.length - 1].message}
                   </div>
                 {/if}
@@ -369,7 +366,7 @@
     >
       <div class="flex items-start justify-between border-b p-6">
         <div>
-          <h2 class="text-3xl font-bold text-slate-950">Appointment details</h2>
+          <h2 class="text-3xl font-bold text-slate-950">Timedetaljer</h2>
           <p class="mt-1 text-sm text-slate-500">
             {selectedAppointment.donorName} · {formatDateTime(
               selectedAppointment.time,
@@ -382,7 +379,7 @@
           class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700 hover:bg-slate-200"
           on:click={() => (selectedAppointment = null)}
         >
-          Close
+          Lukk
         </button>
       </div>
 
@@ -394,7 +391,7 @@
           </div>
 
           <div class="rounded-2xl bg-slate-50 p-4">
-            <p class="text-xs uppercase text-slate-400">Time</p>
+            <p class="text-xs uppercase text-slate-400">Tid</p>
             <p class="mt-2 font-semibold">
               {formatDateTime(selectedAppointment.time)}
             </p>
@@ -402,18 +399,27 @@
         </div>
 
         <div class="mt-8">
-          <h3 class="text-xl font-semibold text-slate-950">All notes</h3>
+          <h3 class="text-xl font-semibold text-slate-950">Alle notater</h3>
 
           {#if selectedAppointment.notes.length > 0}
             <div class="mt-4 space-y-3">
-              {#each selectedAppointment.notes as note}
-                <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm">
-                  {note.message}
+              {#each [...selectedAppointment.notes].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()) as note}
+                <div
+                  class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700"
+                >
+                  <div class="mb-2 flex justify-between gap-4">
+                    <strong>{note.author_name}</strong>
+                    <span class="whitespace-nowrap text-xs text-slate-400">
+                      {formatDateTime(note.time)}
+                    </span>
+                  </div>
+
+                  <p>{note.message}</p>
                 </div>
               {/each}
             </div>
           {:else}
-            <p class="mt-4 text-sm text-slate-500">No notes yet.</p>
+            <p class="mt-4 text-sm text-slate-500">Ingen notater ennå.</p>
           {/if}
         </div>
       </div>
@@ -423,7 +429,7 @@
           bind:value={newNote}
           rows="3"
           class="w-full rounded-2xl border border-slate-200 p-4 text-sm"
-          placeholder="Write a note..."
+          placeholder="Legg til notat..."
         ></textarea>
 
         <div class="mt-3 flex justify-end gap-2">
@@ -432,7 +438,7 @@
             class="rounded-2xl border px-4 py-2"
             on:click={() => (selectedAppointment = null)}
           >
-            Cancel
+            Avbryt
           </button>
 
           <button
@@ -441,7 +447,7 @@
             class="rounded-2xl bg-slate-950 px-5 py-2 text-sm text-white disabled:opacity-50"
             on:click={addNote}
           >
-            {savingNote ? "Saving..." : "Save note"}
+            {savingNote ? "Lagrer..." : "Lagre notat"}
           </button>
         </div>
       </div>
@@ -458,7 +464,7 @@
     >
       <div class="flex items-start justify-between border-b p-6">
         <div>
-          <h2 class="text-3xl font-bold text-slate-950">Register donation</h2>
+          <h2 class="text-3xl font-bold text-slate-950">Registrer donasjon</h2>
           <p class="mt-1 text-sm text-slate-500">
             {donationAppointment.donorName} · {formatDateTime(
               donationAppointment.time,
@@ -471,13 +477,13 @@
           class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700 hover:bg-slate-200"
           on:click={() => (donationAppointment = null)}
         >
-          Close
+          Lukk
         </button>
       </div>
 
       <div class="p-6">
         <label class="text-sm font-medium text-slate-700" for="amount">
-          Amount donated (ml)
+          Donert mengde (ml)
         </label>
         <input
           id="amount"
@@ -488,11 +494,11 @@
         />
 
         <div class="mt-5 rounded-2xl bg-slate-50 p-4">
-          <p class="text-sm font-medium text-slate-700">Donation type</p>
+          <p class="text-sm font-medium text-slate-700">Donasjonstype</p>
 
           <label class="mt-3 flex items-center gap-2 text-sm text-slate-700">
             <input type="radio" bind:group={isBloodNotPlasma} value={true} />
-            Blood
+            Blod
           </label>
 
           <label class="mt-2 flex items-center gap-2 text-sm text-slate-700">
@@ -508,7 +514,7 @@
           class="rounded-2xl border px-4 py-2"
           on:click={() => (donationAppointment = null)}
         >
-          Cancel
+          Avbryt
         </button>
 
         <button
@@ -517,7 +523,7 @@
           class="rounded-2xl bg-slate-950 px-5 py-2 text-sm text-white disabled:opacity-50"
           on:click={registerDonation}
         >
-          {savingDonation ? "Saving..." : "Save donation"}
+          {savingDonation ? "Lagrer..." : "Lagre donasjon"}
         </button>
       </div>
     </div>

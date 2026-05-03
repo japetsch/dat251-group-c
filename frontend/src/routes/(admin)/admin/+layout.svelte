@@ -5,8 +5,8 @@
   let { children } = $props();
 
   const navItems = [
-    { name: "Home", href: "/admin" },
-    { name: "Appointments", href: "/admin/appointments" },
+    { name: "Dashboard", href: "/admin" },
+    { name: "Timer", href: "/admin/appointments" },
   ];
 
   async function signout() {
@@ -41,7 +41,7 @@
         onclick={signout}
         class="text-gray-700 transition hover:text-blue-600 hover:cursor-pointer"
       >
-        Sign Out
+        Logg ut
       </button>
     </nav>
   </div>
