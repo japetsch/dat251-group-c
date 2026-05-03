@@ -19,10 +19,10 @@
     });
 
   const quickLinks = [
-    { label: "Day-to-day appointments", href: "/admin/appointments" },
-    { label: "Register donation", href: "/admin/appointments" },
-    { label: "Register interview", href: "/admin/appointments" },
-    { label: "Register donation test", href: "/admin/appointments" },
+    { label: "Dagens timer", href: "/admin/appointments" },
+    { label: "Registrer donasjon", href: "/admin/appointments" },
+    { label: "Registrer intervju", href: "/admin/appointments" },
+    { label: "Registrer donasjonstest", href: "/admin/appointments" },
   ];
 </script>
 
@@ -33,11 +33,11 @@
 <div class="mx-auto max-w-7xl px-6 py-10">
   <div class="mb-8">
     <h1 class="text-5xl font-bold tracking-tight text-slate-950">
-      Admin Dashboard
+      Administrasjonspanel
     </h1>
     <p class="mt-3 max-w-2xl text-base leading-7 text-slate-500">
-      Get an overview of today’s appointments and move quickly between important
-      admin pages.
+      Få oversikt over dagens timer og naviger raskt mellom viktige
+      administrasjonssider.
     </p>
   </div>
 
@@ -50,7 +50,7 @@
       >
         <div class="mb-4 flex items-start justify-between gap-4">
           <div>
-            <h2 class="text-2xl font-semibold text-slate-950">Up next</h2>
+            <h2 class="text-2xl font-semibold text-slate-950">Neste time</h2>
             <p class="mt-1 text-sm text-slate-500">
               {#if data.bloodbank}
                 {data.bloodbank.name}
@@ -63,7 +63,7 @@
           <span
             class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600"
           >
-            {data.stats.todayCount} today
+            {data.stats.todayCount} i dag
           </span>
         </div>
 
@@ -84,7 +84,7 @@
               <p
                 class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
               >
-                Time
+                Tid
               </p>
               <p class="mt-2 text-lg font-semibold text-slate-950">
                 {formatDateTime(data.nextAppointment.time)}
@@ -95,16 +95,16 @@
               <p
                 class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
               >
-                Blood type
+                Blodtype
               </p>
               <p class="mt-2 text-sm text-slate-700">
-                {data.nextAppointment.donorBloodType ?? "Not registered"}
+                {data.nextAppointment.donorBloodType ?? "Ikke registrert"}
               </p>
             </div>
           </div>
         {:else}
           <div class="rounded-3xl bg-slate-50 p-5 text-sm text-slate-500">
-            No upcoming appointments today.
+            Ingen kommende timer i dag.
           </div>
         {/if}
       </section>
@@ -113,8 +113,8 @@
       <section
         class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm"
       >
-        <h2 class="text-2xl font-semibold text-slate-950">Quick access</h2>
-        <p class="mt-1 text-sm text-slate-500">Go to the pages you use most.</p>
+        <h2 class="text-2xl font-semibold text-slate-950">Hurtigtilgang</h2>
+        <p class="mt-1 text-sm text-slate-500">Gå til sidene du bruker mest.</p>
 
         <div class="mt-5 space-y-3">
           {#each quickLinks as link}
@@ -139,23 +139,23 @@
         <div class="mb-5 flex items-start justify-between gap-4">
           <div>
             <h2 class="text-2xl font-semibold text-slate-950">
-              Today’s appointments
+              Dagens timer
             </h2>
             <p class="mt-1 text-sm text-slate-500">
-              Live data from the backend for your blood bank.
+              Direktedata fra systemet for din blodbank.
             </p>
           </div>
 
           <span
             class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600"
           >
-            {data.appointments.length} items
+            {data.appointments.length}
           </span>
         </div>
 
         {#if data.appointments.length === 0}
           <div class="rounded-3xl bg-slate-50 p-5 text-sm text-slate-500">
-            No appointments found.
+            Ingen timer funnet.
           </div>
         {:else}
           <div class="space-y-4">
@@ -182,7 +182,7 @@
                       <p
                         class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
                       >
-                        Time
+                        Tid
                       </p>
                       <p class="mt-2 text-lg font-semibold text-slate-950">
                         {formatTime(appointment.time)}
@@ -193,7 +193,7 @@
                       <p
                         class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
                       >
-                        Email
+                        E-post
                       </p>
                       <p class="mt-2 text-sm text-slate-700">
                         {appointment.donorEmail}
@@ -204,10 +204,10 @@
                       <p
                         class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
                       >
-                        Blood type
+                        Blodtype
                       </p>
                       <p class="mt-2 text-sm text-slate-700">
-                        {appointment.donorBloodType ?? "Not registered"}
+                        {appointment.donorBloodType ?? "Ikke registrert"}
                       </p>
                     </div>
                   </div>
@@ -223,8 +223,8 @@
                       }`}
                     >
                       {appointment.donations.length > 0
-                        ? "Donation recorded"
-                        : "No donation recorded"}
+                        ? "Donasjon registrert"
+                        : "Ingen donasjon registrert"}
                     </span>
 
                     <div class="flex flex-wrap gap-2 xl:justify-end">
@@ -232,14 +232,14 @@
                         href="/admin/appointments"
                         class="rounded-2xl border border-slate-200 px-4 py-2 text-sm text-slate-700 transition hover:bg-slate-100"
                       >
-                        View
+                        Vis time
                       </a>
 
                       <a
                         href={`/admin/appointments?appointment=${appointment.appointmentId}`}
                         class="rounded-2xl bg-slate-950 px-4 py-2 text-sm text-white transition hover:opacity-90"
                       >
-                        Register donation
+                        Registrer donasjon
                       </a>
                     </div>
                   </div>
@@ -249,7 +249,7 @@
                   <div
                     class="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600"
                   >
-                    <span class="font-medium text-slate-700">Latest note:</span>
+                    <span class="font-medium text-slate-700">Siste notat:</span>
                     {appointment.notes[appointment.notes.length - 1].message}
                   </div>
                 {/if}

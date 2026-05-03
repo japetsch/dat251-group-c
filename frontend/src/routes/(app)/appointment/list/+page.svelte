@@ -14,8 +14,8 @@
 </script>
 
 <svelte:head>
-  <title>My appointments</title>
-  <!-- <h1 class="text-3xl mb-4">My appointments</h1>-->
+  <title>Mine timer</title>
+  <!-- <h1 class="text-3xl mb-4">Mine timer</h1>-->
 </svelte:head>
 
 <div class="mb-8">
@@ -38,16 +38,16 @@
   <div
     class="rounded-[32px] bg-white p-8 shadow-[0_16px_50px_rgba(15,23,42,0.06)] ring-1 ring-black/5"
   >
-    <h2 class="text-2xl font-semibold text-slate-900">No appointments yet</h2>
+    <h2 class="text-2xl font-semibold text-slate-900">Ingen timer ennå</h2>
     <p class="mt-2 text-slate-500">
-      You have no registered appointments at the moment.
+      Du har ingen registrerte timer for øyeblikket.
     </p>
 
     <a
       href="/appointment/new"
       class="mt-6 inline-flex items-center rounded-full bg-red-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-600"
     >
-      Book new appointment
+      Bestill ny time
     </a>
   </div>
 {:else}
@@ -57,9 +57,9 @@
     >
       <div class="mb-6 flex items-center justify-between gap-4">
         <div>
-          <h2 class="text-2xl font-semibold text-slate-900">Upcoming</h2>
+          <h2 class="text-2xl font-semibold text-slate-900">Kommende</h2>
           <p class="mt-1 text-sm text-slate-500">
-            Your upcoming scheduled donations.
+            Dine kommende donasjoner.
           </p>
         </div>
 
@@ -67,13 +67,13 @@
           class="rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-600"
         >
           {data.upcoming.length}
-          {data.upcoming.length === 1 ? "appointment" : "appointments"}
+          {data.upcoming.length === 1 ? "time" : "timer"}
         </span>
       </div>
 
       {#if data.upcoming.length === 0}
         <div class="rounded-2xl bg-slate-50 px-5 py-4 text-slate-500">
-          No upcoming appointments.
+          Ingen kommende timer.
         </div>
       {:else}
         <div class="space-y-4">
@@ -120,7 +120,7 @@
                   <span
                     class="mt-3 inline-flex rounded-full bg-red-50 px-3 py-1 text-sm font-medium text-red-600"
                   >
-                    Upcoming
+                    Kommende
                   </span>
                 </div>
               </div>
@@ -135,9 +135,9 @@
     >
       <div class="mb-6 flex items-center justify-between gap-4">
         <div>
-          <h2 class="text-2xl font-semibold text-slate-900">Previous</h2>
+          <h2 class="text-2xl font-semibold text-slate-900">Tidligere</h2>
           <p class="mt-1 text-sm text-slate-500">
-            Donations you have already completed.
+            Donasjoner du allerede har fullført.
           </p>
         </div>
 
@@ -145,13 +145,13 @@
           class="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600"
         >
           {data.previous.length}
-          {data.previous.length === 1 ? "appointment" : "appointments"}
+          {data.previous.length === 1 ? "time" : "timer"}
         </span>
       </div>
 
       {#if data.previous.length === 0}
         <div class="rounded-2xl bg-slate-50 px-5 py-4 text-slate-500">
-          No previous appointments.
+          Ingen tidligere timer.
         </div>
       {:else}
         <div class="space-y-4">
@@ -178,7 +178,7 @@
                     <p
                       class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
                     >
-                      Location
+                      Sted
                     </p>
                     <p class="mt-1 text-base text-slate-700">
                       {appointment.bloodbank_name}
@@ -190,7 +190,7 @@
                   <p
                     class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
                   >
-                    Time
+                    Tid
                   </p>
                   <p class="mt-1 text-base font-semibold text-slate-900">
                     {formatDate(appointment.time)}
@@ -198,7 +198,7 @@
                   <span
                     class="mt-3 inline-flex rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600"
                   >
-                    Completed
+                    Fullført
                   </span>
                 </div>
               </div>

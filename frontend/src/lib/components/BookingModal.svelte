@@ -72,20 +72,20 @@
   ></button>
 
   <div class="modal">
-    <h2>Book appointment</h2>
+    <h2>Bestill time</h2>
 
-    <p><strong>Place:</strong> {appointmentPlace}</p>
-    <p><strong>Date:</strong> {appointmentDate}</p>
-    <p><strong>Time:</strong> {appointmentTime}</p>
+    <p><strong>Sted:</strong> {appointmentPlace}</p>
+    <p><strong>Dato:</strong> {appointmentDate}</p>
+    <p><strong>Tid:</strong> {appointmentTime}</p>
 
     <div class="modal-buttons">
-      <button type="button" on:click={onClose}> Cancel </button>
+      <button type="button" on:click={onClose}> Avbryt </button>
 
       <button type="button" on:click={onBook} disabled={isBooking}>
         {#if isBooking}
-          Booking...
+          Bestiller...
         {:else}
-          Book
+          Bestill
         {/if}
       </button>
     </div>

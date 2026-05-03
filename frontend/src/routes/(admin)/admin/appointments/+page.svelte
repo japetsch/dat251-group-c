@@ -218,7 +218,7 @@
 </script>
 
 <div class="header">
-  <h1 class="page-title">Admin Appointments</h1>
+  <h1 class="page-title">Administrasjonstimer</h1>
 </div>
 
 {#if data.error}
@@ -233,13 +233,13 @@
       </div>
 
       <div class="days">
-        <div class="day">Mon</div>
-        <div class="day">Tue</div>
-        <div class="day">Wed</div>
-        <div class="day">Thu</div>
-        <div class="day">Fri</div>
-        <div class="day">Sat</div>
-        <div class="day">Sun</div>
+        <div class="day">Man</div>
+        <div class="day">Tir</div>
+        <div class="day">Ons</div>
+        <div class="day">Tor</div>
+        <div class="day">Fre</div>
+        <div class="day">Lør</div>
+        <div class="day">Søn</div>
       </div>
 
       <div class="dates">
@@ -263,7 +263,7 @@
 
     <div class="appointments-panel">
       {#if selectedAppointments.length === 0}
-        <div class="appointment-card">No bookings on this date</div>
+        <div class="appointment-card">Ingen timer på denne datoen</div>
       {:else}
         {#each selectedAppointments as appointment}
           <div class="appointment-card">

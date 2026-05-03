@@ -136,13 +136,14 @@
             <span
               class="rounded-full bg-[#eef2f7] px-4 py-2 text-base font-medium text-[#48678e]"
             >
-              {completedAppointments} of {yearlyGoal}
+              {completedAppointments} av {yearlyGoal}
             </span>
           </div>
 
           <div
             class="rounded-[1.5rem] border border-[#ece7e7] bg-[#fcfbfb] p-6"
           >
+          
             <div class="mb-5 flex items-start justify-between gap-4">
               <div>
                 <p class="text-sm uppercase tracking-[0.25em] text-[#94a8c4]">
@@ -156,7 +157,7 @@
 
             <div class="mt-8">
               <div class="mb-3 flex items-center justify-between">
-                <span class="text-base text-[#5d7598]">Yearly progress</span>
+                <span class="text-base text-[#5d7598]">Årslig fremgang</span>
                 <span class="text-base font-medium text-[#12305f]"
                   >{progress}%</span
                 >
@@ -177,16 +178,16 @@
           class="rounded-[2rem] border border-[#e6e7eb] bg-white p-8 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
         >
           <div class="mb-6">
-            <h2 class="text-2xl font-bold text-[#061b49]">Donation overview</h2>
+            <h2 class="text-2xl font-bold text-[#061b49]">Donasjonsoversikt</h2>
             <p class="mt-2 text-lg text-[#5d7598]">
-              A simple summary of where you are right now.
+              En enkel oversikt over hvor du er nå.
             </p>
           </div>
 
           <div class="grid gap-4 md:grid-cols-2">
             <div class="rounded-[1.5rem] bg-[#f2f5f9] p-6">
               <p class="text-sm uppercase tracking-[0.25em] text-[#94a8c4]">
-                Completed
+                Fullført
               </p>
               <p class="mt-3 text-3xl font-bold text-[#061b49]">
                 {completedAppointments}
@@ -195,7 +196,7 @@
 
             <div class="rounded-[1.5rem] bg-[#f2f5f9] p-6">
               <p class="text-sm uppercase tracking-[0.25em] text-[#94a8c4]">
-                Remaining
+                Gjenstående
               </p>
               <p class="mt-3 text-3xl font-bold text-[#061b49]">
                 {Math.max(yearlyGoal - completedAppointments, 0)}
