@@ -1,3 +1,44 @@
+<style>
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal {
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    width: 400px;
+  }
+
+  .note {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .note-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: flex-start;
+  }
+
+  .note-header small {
+    color: #64748b;
+    white-space: nowrap;
+  }
+
+  textarea {
+    width: 100%;
+    margin-top: 1rem;
+  }
+</style>
+
 <script lang="ts">
   import { goto, invalidateAll } from "$app/navigation";
   import client from "$lib/api/client";
@@ -75,50 +116,7 @@
         {loading ? "Saving..." : "Add note"}
       </button>
 
-      <button type="button" on:click={() => (open = false)}>
-        Close
-      </button>
+      <button type="button" on:click={() => (open = false)}> Close </button>
     </div>
   </div>
 {/if}
-
-<style>
-  .backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-
-  .modal {
-    background: white;
-    padding: 1rem;
-    border-radius: 10px;
-    width: 400px;
-  }
-
-  .note {
-    border-bottom: 1px solid #ddd;
-    margin-bottom: 0.5rem;
-    padding-bottom: 0.5rem;
-  }
-
-  .note-header {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    align-items: flex-start;
-  }
-
-  .note-header small {
-    color: #64748b;
-    white-space: nowrap;
-  }
-
-  textarea {
-    width: 100%;
-    margin-top: 1rem;
-  }
-</style>

@@ -68,47 +68,47 @@
   }
 
   async function registerDonation() {
-  if (!donationAppointment) return;
+    if (!donationAppointment) return;
 
-  savingDonation = true;
+    savingDonation = true;
 
-  const res = await fetch(
-    `/api/admin/appointment/${donationAppointment.appointmentId}/donation`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amount_ml: amountMl,
-        is_blood_not_plasma: isBloodNotPlasma,
-      }),
-    },
-  );
+    const res = await fetch(
+      `/api/admin/appointment/${donationAppointment.appointmentId}/donation`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          amount_ml: amountMl,
+          is_blood_not_plasma: isBloodNotPlasma,
+        }),
+      },
+    );
 
-  savingDonation = false;
+    savingDonation = false;
 
-  if (!res.ok) {
-    alert("Failed to register donation");
-    return;
+    if (!res.ok) {
+      alert("Failed to register donation");
+      return;
+    }
+
+    const savedDonation = {
+      amountMl,
+      isBloodNotPlasma,
+    } as any;
+
+    data.appointments = data.appointments.map((appointment) =>
+      appointment.appointmentId === donationAppointment?.appointmentId
+        ? {
+            ...appointment,
+            donations: [...appointment.donations, savedDonation],
+          }
+        : appointment,
+    );
+
+    donationAppointment = null;
+    amountMl = 450;
+    isBloodNotPlasma = true;
   }
-
-  const savedDonation = {
-    amountMl,
-    isBloodNotPlasma,
-  } as any;
-
-  data.appointments = data.appointments.map((appointment) =>
-    appointment.appointmentId === donationAppointment?.appointmentId
-      ? {
-          ...appointment,
-          donations: [...appointment.donations, savedDonation],
-        }
-      : appointment
-  );
-
-  donationAppointment = null;
-  amountMl = 450;
-  isBloodNotPlasma = true;
-}
 
   const quickLinks = [
     { label: "Day-to-day appointments", href: "/admin/appointments" },
@@ -135,7 +135,9 @@
 
   <div class="grid gap-6 lg:grid-cols-12">
     <div class="space-y-6 lg:col-span-4">
-      <section class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+      <section
+        class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm"
+      >
         <div class="mb-4 flex items-start justify-between gap-4">
           <div>
             <h2 class="text-2xl font-semibold text-slate-950">Up next</h2>
@@ -148,7 +150,9 @@
             </p>
           </div>
 
-          <span class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600">
+          <span
+            class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600"
+          >
             {data.stats.todayCount} today
           </span>
         </div>
@@ -156,7 +160,9 @@
         {#if data.nextAppointment}
           <div class="rounded-3xl bg-slate-50 p-5">
             <div class="mb-4">
-              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
+              <p
+                class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+              >
                 Donor
               </p>
               <p class="mt-2 text-2xl font-semibold text-slate-950">
@@ -165,7 +171,9 @@
             </div>
 
             <div class="mb-4">
-              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
+              <p
+                class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+              >
                 Time
               </p>
               <p class="mt-2 text-lg font-semibold text-slate-950">
@@ -174,7 +182,9 @@
             </div>
 
             <div>
-              <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
+              <p
+                class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+              >
                 Blood type
               </p>
               <p class="mt-2 text-sm text-slate-700">
@@ -189,7 +199,9 @@
         {/if}
       </section>
 
-      <section class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+      <section
+        class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm"
+      >
         <h2 class="text-2xl font-semibold text-slate-950">Quick access</h2>
         <p class="mt-1 text-sm text-slate-500">Go to the pages you use most.</p>
 
@@ -208,7 +220,9 @@
     </div>
 
     <div class="space-y-6 lg:col-span-8">
-      <section class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+      <section
+        class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm"
+      >
         <div class="mb-5 flex items-start justify-between gap-4">
           <div>
             <h2 class="text-2xl font-semibold text-slate-950">
@@ -219,7 +233,9 @@
             </p>
           </div>
 
-          <span class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600">
+          <span
+            class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-600"
+          >
             {data.appointments.length} items
           </span>
         </div>
@@ -231,11 +247,17 @@
         {:else}
           <div class="space-y-4">
             {#each data.appointments as appointment}
-              <div class="rounded-[24px] border border-slate-200 p-5 transition hover:bg-slate-50">
-                <div class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+              <div
+                class="rounded-[24px] border border-slate-200 p-5 transition hover:bg-slate-50"
+              >
+                <div
+                  class="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between"
+                >
                   <div class="grid gap-4 sm:grid-cols-2 xl:flex-1">
                     <div>
-                      <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
+                      <p
+                        class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+                      >
                         Donor
                       </p>
                       <p class="mt-2 text-xl font-semibold text-slate-950">
@@ -244,7 +266,9 @@
                     </div>
 
                     <div>
-                      <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
+                      <p
+                        class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+                      >
                         Time
                       </p>
                       <p class="mt-2 text-lg font-semibold text-slate-950">
@@ -253,7 +277,9 @@
                     </div>
 
                     <div>
-                      <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
+                      <p
+                        class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+                      >
                         Email
                       </p>
                       <p class="mt-2 text-sm text-slate-700">
@@ -262,7 +288,9 @@
                     </div>
 
                     <div>
-                      <p class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
+                      <p
+                        class="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400"
+                      >
                         Blood type
                       </p>
                       <p class="mt-2 text-sm text-slate-700">
@@ -271,7 +299,9 @@
                     </div>
                   </div>
 
-                  <div class="flex min-w-[220px] flex-col items-start gap-3 xl:items-end">
+                  <div
+                    class="flex min-w-[220px] flex-col items-start gap-3 xl:items-end"
+                  >
                     <span
                       class={`rounded-full px-3 py-1.5 text-xs font-medium ${
                         appointment.donations.length > 0
@@ -313,7 +343,9 @@
                 </div>
 
                 {#if appointment.notes.length > 0}
-                  <div class="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600">
+                  <div
+                    class="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-600"
+                  >
                     <span class="font-medium text-slate-700">Latest note:</span>
                     {appointment.notes[appointment.notes.length - 1].message}
                   </div>
@@ -328,22 +360,26 @@
 </div>
 
 {#if selectedAppointment}
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-6">
-    <div class="flex max-h-[90vh] w-full max-w-3xl flex-col rounded-[28px] bg-white shadow-xl">
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-6"
+  >
+    <div
+      class="flex max-h-[90vh] w-full max-w-3xl flex-col rounded-[28px] bg-white shadow-xl"
+    >
       <div class="flex items-start justify-between border-b p-6">
         <div>
-          <h2 class="text-3xl font-bold text-slate-950">
-            Appointment details
-          </h2>
+          <h2 class="text-3xl font-bold text-slate-950">Appointment details</h2>
           <p class="mt-1 text-sm text-slate-500">
-            {selectedAppointment.donorName} · {formatDateTime(selectedAppointment.time)}
+            {selectedAppointment.donorName} · {formatDateTime(
+              selectedAppointment.time,
+            )}
           </p>
         </div>
 
         <button
           type="button"
           class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700 hover:bg-slate-200"
-          on:click={() => selectedAppointment = null}
+          on:click={() => (selectedAppointment = null)}
         >
           Close
         </button>
@@ -370,7 +406,9 @@
           {#if selectedAppointment.notes.length > 0}
             <div class="mt-4 space-y-3">
               {#each [...selectedAppointment.notes].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()) as note}
-                <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                <div
+                  class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700"
+                >
                   <div class="mb-2 flex justify-between gap-4">
                     <strong>{note.author_name}</strong>
                     <span class="whitespace-nowrap text-xs text-slate-400">
@@ -394,13 +432,13 @@
           rows="3"
           class="w-full rounded-2xl border border-slate-200 p-4 text-sm"
           placeholder="Write a note..."
-        />
+        ></textarea>
 
         <div class="mt-3 flex justify-end gap-2">
           <button
             type="button"
             class="rounded-2xl border px-4 py-2"
-            on:click={() => selectedAppointment = null}
+            on:click={() => (selectedAppointment = null)}
           >
             Cancel
           </button>
@@ -420,22 +458,26 @@
 {/if}
 
 {#if donationAppointment}
-  <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-6">
-    <div class="flex w-full max-w-xl flex-col rounded-[28px] bg-white shadow-xl">
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-6"
+  >
+    <div
+      class="flex w-full max-w-xl flex-col rounded-[28px] bg-white shadow-xl"
+    >
       <div class="flex items-start justify-between border-b p-6">
         <div>
-          <h2 class="text-3xl font-bold text-slate-950">
-            Register donation
-          </h2>
+          <h2 class="text-3xl font-bold text-slate-950">Register donation</h2>
           <p class="mt-1 text-sm text-slate-500">
-            {donationAppointment.donorName} · {formatDateTime(donationAppointment.time)}
+            {donationAppointment.donorName} · {formatDateTime(
+              donationAppointment.time,
+            )}
           </p>
         </div>
 
         <button
           type="button"
           class="rounded-full bg-slate-100 px-4 py-2 text-sm text-slate-700 hover:bg-slate-200"
-          on:click={() => donationAppointment = null}
+          on:click={() => (donationAppointment = null)}
         >
           Close
         </button>
@@ -457,20 +499,12 @@
           <p class="text-sm font-medium text-slate-700">Donation type</p>
 
           <label class="mt-3 flex items-center gap-2 text-sm text-slate-700">
-            <input
-              type="radio"
-              bind:group={isBloodNotPlasma}
-              value={true}
-            />
+            <input type="radio" bind:group={isBloodNotPlasma} value={true} />
             Blood
           </label>
 
           <label class="mt-2 flex items-center gap-2 text-sm text-slate-700">
-            <input
-              type="radio"
-              bind:group={isBloodNotPlasma}
-              value={false}
-            />
+            <input type="radio" bind:group={isBloodNotPlasma} value={false} />
             Plasma
           </label>
         </div>
@@ -480,7 +514,7 @@
         <button
           type="button"
           class="rounded-2xl border px-4 py-2"
-          on:click={() => donationAppointment = null}
+          on:click={() => (donationAppointment = null)}
         >
           Cancel
         </button>

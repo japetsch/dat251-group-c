@@ -2,7 +2,6 @@ import { createLoadClient } from "$lib/api/client";
 import type { components } from "$lib/api/schema";
 import type { PageLoad } from "./$types";
 
-
 type AdminCalendarAppointment = {
   appointment_id: number;
   username: string;
@@ -57,16 +56,16 @@ export const load: PageLoad<AdminApptPreloaded> = async ({ fetch, url }) => {
     };
   }
 
-    const appointments: AdminCalendarAppointment[] = r.data.flatMap((slot) =>
-      slot.appointments.map((appointment) => ({
-        appointment_id: appointment.appointment_id,
-        username: appointment.donor_name,
-        time: slot.bookingslot_time,
-        bloodbank_name: selectedBloodbank.name,
-        cancelled: appointment.appointment_cancelled,
-        notes: appointment.notes ?? [],
-      })),
-    );
+  const appointments: AdminCalendarAppointment[] = r.data.flatMap((slot) =>
+    slot.appointments.map((appointment) => ({
+      appointment_id: appointment.appointment_id,
+      username: appointment.donor_name,
+      time: slot.bookingslot_time,
+      bloodbank_name: selectedBloodbank.name,
+      cancelled: appointment.appointment_cancelled,
+      notes: appointment.notes ?? [],
+    })),
+  );
 
   const now = new Date();
   return {
