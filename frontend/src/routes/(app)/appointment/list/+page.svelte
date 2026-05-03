@@ -29,7 +29,7 @@
     savingNote = false;
 
     if (!res.ok) {
-      alert("Failed to save note");
+      alert("Kunne ikke lagre notat");
       return;
     }
 
@@ -62,11 +62,11 @@
 
 <div class="mb-8">
   <h1 class="text-4xl font-bold tracking-tight text-slate-900">
-    My appointments
+    Mine timer
   </h1>
   <p class="mt-2 max-w-2xl text-base text-slate-500">
-    Here you can see upcoming and past appointments. Stay organized and plan
-    your next donation.
+    Her kan du se kommende og tidligere timer. Hold oversikt og planlegg din
+    neste donasjon.
   </p>
 </div>
 

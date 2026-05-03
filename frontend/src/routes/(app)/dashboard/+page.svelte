@@ -1,16 +1,9 @@
 <script lang="ts">
-  type Appointment = {
-    datetime: string;
-    location: string;
-  };
+  import type { PageData } from "./$types";
 
-  let nextAppointment: Appointment | null = {
-    datetime: "2026-03-18T17:30:00",
-    location: "Haukeland universitetssjukehus",
-  };
+  export let data: PageData;
 
-  let completedAppointments = 1;
-  let yearlyGoal = 4;
+  const yearlyGoal = 4;
 
   const formatDate = (value: string) =>
     new Date(value).toLocaleString("en-GB", {
@@ -21,8 +14,9 @@
       minute: "2-digit",
     });
 
-  const progress =
-    yearlyGoal > 0 ? Math.round((completedAppointments / yearlyGoal) * 100) : 0;
+  $: completedAppointments = data.completedThisYear;
+  $: nextAppointment = data.nextAppointment;
+  $: progress = yearlyGoal > 0 ? Math.round((completedAppointments / yearlyGoal) * 100) : 0;
 
   const links = [
     { label: "Timer", href: "/appointment/list" },
@@ -72,13 +66,15 @@
           </div>
 
           <div class="rounded-[1.5rem] bg-[#f2f5f9] px-6 py-5">
-            {#if nextAppointment}
+            {#if data.error}
+              <p class="text-lg text-red-500">{data.error}</p>
+            {:else if nextAppointment}
               <div class="space-y-2">
                 <p class="text-sm uppercase tracking-[0.25em] text-[#94a8c4]">
                   Tid
                 </p>
                 <p class="text-xl font-semibold text-[#061b49]">
-                  {formatDate(nextAppointment.datetime)}
+                  {formatDate(nextAppointment.time)}
                 </p>
 
                 <p
@@ -86,7 +82,7 @@
                 >
                   Sted
                 </p>
-                <p class="text-lg text-[#1d3557]">{nextAppointment.location}</p>
+                <p class="text-lg text-[#1d3557]">{nextAppointment.bloodbank_name}</p>
               </div>
             {:else}
               <p class="text-lg text-[#5d7598]">Ingen kommende timer.</p>
@@ -186,16 +182,16 @@
           <div class="grid gap-4 md:grid-cols-2">
             <div class="rounded-[1.5rem] bg-[#f2f5f9] p-6">
               <p class="text-sm uppercase tracking-[0.25em] text-[#94a8c4]">
-                Fullført
+                Totalt fullført
               </p>
               <p class="mt-3 text-3xl font-bold text-[#061b49]">
-                {completedAppointments}
+                {data.totalCompleted}
               </p>
             </div>
 
             <div class="rounded-[1.5rem] bg-[#f2f5f9] p-6">
               <p class="text-sm uppercase tracking-[0.25em] text-[#94a8c4]">
-                Gjenstående
+                Gjenstående i år
               </p>
               <p class="mt-3 text-3xl font-bold text-[#061b49]">
                 {Math.max(yearlyGoal - completedAppointments, 0)}

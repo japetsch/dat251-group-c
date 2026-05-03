@@ -249,7 +249,7 @@
         return;
       }
 
-      bookingMessage = "Time bestilt!";
+      window.location.href = "/appointment/list";
     } catch {
       bookingMessage = "Kunne ikke bestille time.";
     } finally {
