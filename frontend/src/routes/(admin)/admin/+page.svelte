@@ -59,11 +59,11 @@
     selectedAppointment.notes = [
       ...selectedAppointment.notes,
       {
+        author_name: "You",
         message,
         time: new Date().toISOString(),
       },
     ];
-
     newNote = "";
   }
 
@@ -369,9 +369,16 @@
 
           {#if selectedAppointment.notes.length > 0}
             <div class="mt-4 space-y-3">
-              {#each selectedAppointment.notes as note}
-                <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm">
-                  {note.message}
+              {#each [...selectedAppointment.notes].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()) as note}
+                <div class="rounded-2xl bg-slate-50 px-4 py-3 text-sm text-slate-700">
+                  <div class="mb-2 flex justify-between gap-4">
+                    <strong>{note.author_name}</strong>
+                    <span class="whitespace-nowrap text-xs text-slate-400">
+                      {formatDateTime(note.time)}
+                    </span>
+                  </div>
+
+                  <p>{note.message}</p>
                 </div>
               {/each}
             </div>
