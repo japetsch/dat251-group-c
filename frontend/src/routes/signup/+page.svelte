@@ -14,7 +14,6 @@
   let bloodType = "";
   let preferredBloodbankId: number | null = null;
   let error = "";
-  let success = "";
 
   let bloodbanks: { bloodbank_id: number; name: string }[] = [];
 
@@ -31,7 +30,6 @@
   async function submitSignup(event: SubmitEvent) {
     event.preventDefault();
     error = "";
-    success = "";
 
     const signupRes = await fetch("/api/auth/signup-donor", {
       method: "POST",
@@ -73,176 +71,200 @@
       body: JSON.stringify({ email, password }),
     });
 
-    if (loginRes.ok) {
-      window.location.href = "/appointment/list";
-    } else {
-      window.location.href = "/login";
-    }
+    window.location.href = loginRes.ok ? "/appointment/list" : "/login";
   }
 </script>
 
-<section class="signup-page">
-  <div class="card">
-    <h1>Registrer deg som blodgiver</h1>
-    <p>Fyll inn informasjonen din for å opprette en bruker.</p>
-
+<div class="page">
+  <div class="panel-right">
     <form onsubmit={submitSignup}>
-      <label>
-        Navn
-        <input bind:value={name} required />
-      </label>
+      <h2>Opprett konto</h2>
 
-      <label>
-        E-post
-        <input type="email" bind:value={email} required />
-      </label>
+      <div class="section-title">Personalia</div>
+      <div class="grid-2">
+        <label>
+          Navn
+          <input bind:value={name} required placeholder="Ola Nordmann" />
+        </label>
+        <label>
+          E-post
+          <input type="email" bind:value={email} required placeholder="ola@example.com" />
+        </label>
+        <label>
+          Telefonnummer
+          <input bind:value={phone} required placeholder="12345678" />
+        </label>
+        <label>
+          Passord
+          <input type="password" bind:value={password} required placeholder="••••••••" />
+        </label>
+      </div>
 
-      <label>
-        Telefonnummer
-        <input bind:value={phone} required />
-      </label>
+      <div class="section-title">Adresse</div>
+      <div class="grid-2">
+        <label class="span-2-on-small">
+          Gatenavn
+          <input bind:value={streetName} required placeholder="Storgaten" />
+        </label>
+        <label>
+          Gatenummer
+          <input bind:value={streetNumber} required placeholder="1" />
+        </label>
+        <label>
+          <span>Leilighetsnummer <span class="optional">(valgfritt)</span></span>
+          <input bind:value={aptNumber} placeholder="H0101" />
+        </label>
+        <label>
+          Postnummer
+          <input bind:value={postalCode} required placeholder="5000" />
+        </label>
+        <label>
+          By
+          <input bind:value={city} required placeholder="Bergen" />
+        </label>
+        <label>
+          Land
+          <input bind:value={country} required placeholder="Norge" />
+        </label>
+      </div>
 
-      <label>
-        Passord
-        <input type="password" bind:value={password} required />
-      </label>
-
-      <label>
-        Gatenavn
-        <input bind:value={streetName} required />
-      </label>
-
-      <label>
-        Gatenummer
-        <input bind:value={streetNumber} required />
-      </label>
-
-      <label>
-        Leilighetsnummer (valgfritt)
-        <input bind:value={aptNumber} />
-      </label>
-
-      <label>
-        Postnummer
-        <input bind:value={postalCode} required />
-      </label>
-
-      <label>
-        By
-        <input bind:value={city} required />
-      </label>
-
-      <label>
-        Land
-        <input bind:value={country} required />
-      </label>
-
-      <label>
-        Blodtype
-        <select bind:value={bloodType}>
-          <option value="">Ukjent</option>
-          <option value="A+">A+</option>
-          <option value="A-">A-</option>
-          <option value="B+">B+</option>
-          <option value="B-">B-</option>
-          <option value="AB+">AB+</option>
-          <option value="AB-">AB-</option>
-          <option value="O+">O+</option>
-          <option value="O-">O-</option>
-        </select>
-      </label>
-
-      <label>
-        Foretrukket blodbank
-        <select bind:value={preferredBloodbankId} required>
-          {#each bloodbanks as bb}
-            <option value={bb.bloodbank_id}>{bb.name}</option>
-          {/each}
-        </select>
-      </label>
+      <div class="section-title">Donasjon</div>
+      <div class="grid-2">
+        <label>
+          <span>Blodtype <span class="optional">(valgfritt)</span></span>
+          <select bind:value={bloodType}>
+            <option value="">Ukjent</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </label>
+        <label>
+          Foretrukket blodbank
+          <select bind:value={preferredBloodbankId} required>
+            {#each bloodbanks as bb}
+              <option value={bb.bloodbank_id}>{bb.name}</option>
+            {/each}
+          </select>
+        </label>
+      </div>
 
       {#if error}
         <p class="error">{error}</p>
       {/if}
 
-      {#if success}
-        <p class="success">{success}</p>
-      {/if}
-
       <button type="submit">Registrer deg</button>
     </form>
   </div>
-</section>
+</div>
 
 <style>
-  .signup-page {
+  .page {
     min-height: 100vh;
+    background: #f5f2f1;
     display: flex;
-    justify-content: center;
     align-items: center;
-    background: #fff3f5;
-    padding: 2rem;
+    justify-content: center;
+    padding: 3rem 2rem;
   }
 
-  .card {
-    background: white;
-    padding: 3rem;
-    border-radius: 2rem;
+  .panel-right {
     width: 100%;
-    max-width: 520px;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
-  }
-
-  h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-  }
-
-  p {
-    color: #444;
   }
 
   form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: 2rem;
+    width: 100%;
+    max-width: 780px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 1.5rem;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    padding: 3rem 3.5rem;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  }
+
+  h2 {
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: black;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(0, 0, 0, 0.4);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding-bottom: 0.4rem;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
   }
 
   label {
     display: flex;
     flex-direction: column;
+    font-size: 0.875rem;
     font-weight: 600;
-    gap: 0.4rem;
+    color: black;
+    gap: 0.35rem;
+  }
+
+  .optional {
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.4);
   }
 
   input,
   select {
-    padding: 0.9rem;
-    border-radius: 0.8rem;
-    border: 1px solid #ccc;
-    font-size: 1rem;
+    padding: 0.7rem 0.9rem;
+    border-radius: 0.6rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: 0.95rem;
+    background: #faf7f6;
+    transition: border-color 0.15s;
+  }
+
+  input:focus,
+  select:focus {
+    outline: none;
+    border-color: rgba(0, 0, 0, 0.3);
+  }
+
+  .error {
+    color: #dc2626;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-top: 0.75rem;
   }
 
   button {
-    margin-top: 1rem;
-    padding: 1rem;
-    border: none;
+    margin-top: 1.5rem;
+    width: 100%;
+    padding: 0.9rem;
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 999px;
-    background: #e60000;
+    background: #dc2626;
     color: white;
     font-weight: 700;
     font-size: 1rem;
     cursor: pointer;
+    transition: background 0.15s;
   }
 
-  .error {
-    color: #c40000;
-    font-weight: 600;
-  }
-
-  .success {
-    color: #067a2f;
-    font-weight: 600;
+  button:hover {
+    background: #b91c1c;
   }
 </style>
