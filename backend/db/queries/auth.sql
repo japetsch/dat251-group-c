@@ -28,3 +28,14 @@ FROM test_result t
 	LEFT JOIN appointment a ON don.appointment_id = a.id
 WHERE t.id = sqlc.arg(testresult_id) AND t.donor_id = sqlc.arg(donor_id) AND (a.donor_id = sqlc.arg(donor_id) OR a.donor_id IS NULL);
 
+-- name: RegisterDonor :one
+WITH a AS (
+    INSERT INTO address (street_name, street_number, apt_number, postal_code, city, country)
+    VALUES ($5, $6, $7, $8, $9, $10)
+    RETURNING id
+), d AS (
+    INSERT INTO donor (preferred_bloodbank_id, blood_type)
+    VALUES ($4, sqlc.narg(blood_type)) RETURNING id
+)
+INSERT INTO "user" (name, password_hash, email, phone_number, home_address_id, donor_id)
+VALUES ($1, $2, $3, sqlc.arg(phone_number)::TEXT, (SELECT id FROM a), (SELECT id FROM d)) RETURNING id;
