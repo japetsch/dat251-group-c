@@ -675,6 +675,8 @@ export interface components {
             user_name: string;
             /** Donor Id */
             donor_id: number;
+            /** Preferred Bloodbank Id */
+            preferred_bloodbank_id: number;
         };
         /** EntryFormDetailsRow */
         EntryFormDetailsRow: {

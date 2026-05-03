@@ -9,6 +9,7 @@ SELECT
 	b.location_id
 FROM bookingslot s
   INNER JOIN bloodbank b ON b.id = s.bloodbank_id
+  WHERE s.bloodbank_id = sqlc.arg(bloodbank_id)
   ORDER BY s.time ASC;
 
 -- name: BookBookingslot :one

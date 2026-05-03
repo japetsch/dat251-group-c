@@ -1479,13 +1479,18 @@
           "donor_id": {
             "type": "integer",
             "title": "Donor Id"
+          },
+          "preferred_bloodbank_id": {
+            "type": "integer",
+            "title": "Preferred Bloodbank Id"
           }
         },
         "type": "object",
         "required": [
           "user_id",
           "user_name",
-          "donor_id"
+          "donor_id",
+          "preferred_bloodbank_id"
         ],
         "title": "DonorInfo"
       },

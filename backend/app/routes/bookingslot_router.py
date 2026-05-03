@@ -40,7 +40,7 @@ class BookingslotRouter(APIRouter):
             appointments.append(x)
 
         rows: list[AvailableBookingSlot] = []
-        async for x in q.get_booking_slots():
+        async for x in q.get_booking_slots(bloodbank_id=user.preferred_bloodbank_id):
             lower = x.time - MIN_WAITTIME
             upper = x.time + MIN_WAITTIME
 

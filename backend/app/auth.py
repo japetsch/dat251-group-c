@@ -15,6 +15,7 @@ class UserInfo(BaseModel):
 
 class DonorInfo(UserInfo):
     donor_id: int
+    preferred_bloodbank_id: int
 
 
 class AdminInfo(UserInfo):

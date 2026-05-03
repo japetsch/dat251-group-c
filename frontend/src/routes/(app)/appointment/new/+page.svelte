@@ -47,6 +47,13 @@
     color: red;
   }
 
+  button.booked {
+    background-color: #ffffff;
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
   .days {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -385,6 +392,7 @@
         <button
           type="button"
           class="appointment-card"
+          class:booked={appointment.booked_by_user === true}
           on:click={() => openBookingModal(appointment)}
           disabled={appointmentValid(appointment)}
         >

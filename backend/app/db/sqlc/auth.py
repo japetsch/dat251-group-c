@@ -19,8 +19,10 @@ WHERE a.id = :p1 AND a.donor_id = :p2
 
 
 GET_USER = """-- name: get_user \\:one
-SELECT u.id, u.name, u.email, u.password_hash, u.donor_id, u.admin_id
-FROM "user" u WHERE u.email = :p1
+SELECT u.id, u.name, u.email, u.password_hash, u.donor_id, u.admin_id , d.preferred_bloodbank_id
+FROM "user" u
+LEFT JOIN donor d ON d.id = u.donor_id
+WHERE u.email = :p1
 """
 
 
@@ -31,6 +33,7 @@ class GetUserRow(pydantic.BaseModel):
     password_hash: Optional[str]
     donor_id: Optional[int]
     admin_id: Optional[int]
+    preferred_bloodbank_id: Optional[int]
 
 
 HAS_ADMIN_AT_BLOOD_BANK = """-- name: has_admin_at_blood_bank \\:one
@@ -110,6 +113,7 @@ class AsyncQuerier:
             password_hash=row[3],
             donor_id=row[4],
             admin_id=row[5],
+            preferred_bloodbank_id=row[6],
         )
 
     async def has_admin_at_blood_bank(self, *, admin_id: int, bloodbank_id: int) -> Optional[bool]:

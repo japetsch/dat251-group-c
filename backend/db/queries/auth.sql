@@ -1,6 +1,8 @@
 -- name: GetUser :one
-SELECT u.id, u.name, u.email, u.password_hash, u.donor_id, u.admin_id
-FROM "user" u WHERE u.email = $1;
+SELECT u.id, u.name, u.email, u.password_hash, u.donor_id, u.admin_id , d.preferred_bloodbank_id
+FROM "user" u
+LEFT JOIN donor d ON d.id = u.donor_id
+WHERE u.email = $1;
 
 -- name: AppointmentBelongsTo :one
 SELECT TRUE
