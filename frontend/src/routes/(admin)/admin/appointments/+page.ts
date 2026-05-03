@@ -8,6 +8,7 @@ type AdminCalendarAppointment = {
   time: string;
   bloodbank_name: string;
   cancelled: boolean;
+  notes: components["schemas"]["NoteType"][];
 };
 
 type AdminApptPreloaded = {
@@ -62,6 +63,7 @@ export const load: PageLoad<AdminApptPreloaded> = async ({ fetch, url }) => {
       time: slot.bookingslot_time,
       bloodbank_name: selectedBloodbank.name,
       cancelled: appointment.appointment_cancelled,
+      notes: appointment.notes ?? [],
     })),
   );
 

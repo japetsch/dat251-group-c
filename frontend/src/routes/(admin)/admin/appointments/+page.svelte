@@ -63,6 +63,7 @@
     align-items: center;
     justify-content: center;
     min-height: 70px;
+    cursor: pointer;
   }
 
   .date span {
@@ -110,6 +111,22 @@
     padding: 1rem;
   }
 
+  .notes-button {
+    margin-top: 0.75rem;
+    border: none;
+    border-radius: 999px;
+    background: #f1f5f9;
+    color: #475569;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .notes-button:hover {
+    background: #e2e8f0;
+  }
+
   .page-title {
     font-size: 2rem;
     font-weight: 700;
@@ -123,12 +140,16 @@
 
 <script lang="ts">
   import type { PageData } from "./$types";
+  import NotesModal from "$lib/components/NotesModal.svelte";
 
   export let data: PageData;
 
   let selectedDate: string | null = null;
   let currentDate = new Date();
   let monthYear = "";
+
+  let notesOpen = false;
+  let selectedAppointment: any = null;
 
   let calendarDates: {
     day: number;
@@ -140,6 +161,11 @@
 
   let appointments: PageData["upcoming"] = data.upcoming;
   let selectedAppointments: PageData["upcoming"] = [];
+
+  function openNotes(appointment: any) {
+    selectedAppointment = appointment;
+    notesOpen = true;
+  }
 
   function updateCalendar() {
     const currentYear = currentDate.getFullYear();
@@ -204,12 +230,13 @@
   }
 
   $: {
-    if (selectedDate === null) {
+    if (!selectedDate) {
       selectedAppointments = [];
     } else {
-      const datekey = selectedDate;
+      const dateKey = selectedDate;
+
       selectedAppointments = appointments.filter((appointment) =>
-        appointment.time.startsWith(datekey),
+        appointment.time.startsWith(dateKey),
       );
     }
   }
@@ -250,11 +277,10 @@
             class:active={selectedDate === date.datekey}
             on:click={() => selectDate(date.datekey)}
           >
-            {#if date.day !== 0}
-              <span>{date.day}</span>
-              {#if date.hasAppointment}
-                <div class="appointment-dot"></div>
-              {/if}
+            <span>{date.day}</span>
+
+            {#if date.hasAppointment}
+              <div class="appointment-dot"></div>
             {/if}
           </div>
         {/each}
@@ -275,9 +301,26 @@
               })}
             </p>
             <p>{appointment.bloodbank_name}</p>
+
+            <button
+              class="notes-button"
+              type="button"
+              on:click={() => openNotes(appointment)}
+            >
+              Notes ({appointment.notes?.length ?? 0})
+            </button>
           </div>
         {/each}
       {/if}
     </div>
   </div>
+{/if}
+
+{#if selectedAppointment}
+  <NotesModal
+    bind:open={notesOpen}
+    appointmentId={selectedAppointment.appointment_id}
+    notes={selectedAppointment.notes ?? []}
+    isAdmin={true}
+  />
 {/if}
