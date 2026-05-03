@@ -49,6 +49,35 @@ WHERE bba.admin_id = :p1 AND a.id = :p2
 """
 
 
+REGISTER_DONOR = """-- name: register_donor \\:one
+WITH a AS (
+    INSERT INTO address (street_name, street_number, apt_number, postal_code, city, country)
+    VALUES (:p5, :p6, :p7, :p8, :p9, :p10)
+    RETURNING id
+), d AS (
+    INSERT INTO donor (preferred_bloodbank_id, blood_type)
+    VALUES (:p4, :p12) RETURNING id
+)
+INSERT INTO "user" (name, password_hash, email, phone_number, home_address_id, donor_id)
+VALUES (:p1, :p2, :p3, :p11\\:\\:TEXT, (SELECT id FROM a), (SELECT id FROM d)) RETURNING id
+"""
+
+
+class RegisterDonorParams(pydantic.BaseModel):
+    name: str
+    password_hash: Optional[str]
+    email: str
+    preferred_bloodbank_id: int
+    street_name: str
+    street_number: str
+    apt_number: Optional[str]
+    postal_code: str
+    city: str
+    country: str
+    phone_number: str
+    blood_type: Optional[models.BloodType]
+
+
 TEST_RESULT_BELONGS_TO = """-- name: test_result_belongs_to \\:one
 SELECT TRUE
 FROM test_result t
@@ -91,6 +120,25 @@ class AsyncQuerier:
 
     async def has_admin_where_appointment_is(self, *, admin_id: int, appointment_id: int) -> Optional[bool]:
         row = (await self._conn.execute(sqlalchemy.text(HAS_ADMIN_WHERE_APPOINTMENT_IS), {"p1": admin_id, "p2": appointment_id})).first()
+        if row is None:
+            return None
+        return row[0]
+
+    async def register_donor(self, arg: RegisterDonorParams) -> Optional[int]:
+        row = (await self._conn.execute(sqlalchemy.text(REGISTER_DONOR), {
+            "p1": arg.name,
+            "p2": arg.password_hash,
+            "p3": arg.email,
+            "p4": arg.preferred_bloodbank_id,
+            "p5": arg.street_name,
+            "p6": arg.street_number,
+            "p7": arg.apt_number,
+            "p8": arg.postal_code,
+            "p9": arg.city,
+            "p10": arg.country,
+            "p11": arg.phone_number,
+            "p12": arg.blood_type,
+        })).first()
         if row is None:
             return None
         return row[0]

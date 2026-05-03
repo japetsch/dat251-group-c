@@ -43,6 +43,43 @@
         }
       }
     },
+    "/auth/signup-donor": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Sign Up Donor",
+        "operationId": "sign_up_donor",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDonorRequestData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "400": {
+            "description": "Unacceptable data provided"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/auth/logout": {
       "get": {
         "tags": [
@@ -1879,6 +1916,87 @@
           "donation_id"
         ],
         "title": "RegisterDonationTestRequest"
+      },
+      "RegisterDonorRequestData": {
+        "properties": {
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "password": {
+            "type": "string",
+            "title": "Password"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "phone_number": {
+            "type": "string",
+            "title": "Phone Number"
+          },
+          "street_name": {
+            "type": "string",
+            "title": "Street Name"
+          },
+          "street_number": {
+            "type": "string",
+            "title": "Street Number"
+          },
+          "apt_number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Apt Number"
+          },
+          "postal_code": {
+            "type": "string",
+            "title": "Postal Code"
+          },
+          "city": {
+            "type": "string",
+            "title": "City"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country"
+          },
+          "preferred_bloodbank_id": {
+            "type": "integer",
+            "title": "Preferred Bloodbank Id"
+          },
+          "blood_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/BloodType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "email",
+          "password",
+          "name",
+          "phone_number",
+          "street_name",
+          "street_number",
+          "apt_number",
+          "postal_code",
+          "city",
+          "country",
+          "preferred_bloodbank_id",
+          "blood_type"
+        ],
+        "title": "RegisterDonorRequestData"
       },
       "RegisterInterviewRequest": {
         "properties": {

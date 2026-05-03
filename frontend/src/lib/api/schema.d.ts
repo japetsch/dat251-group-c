@@ -21,6 +21,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/signup-donor": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sign Up Donor */
+        post: operations["sign_up_donor"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/logout": {
         parameters: {
             query?: never;
@@ -845,6 +862,32 @@ export interface components {
             /** Donation Id */
             donation_id: number;
         };
+        /** RegisterDonorRequestData */
+        RegisterDonorRequestData: {
+            /** Email */
+            email: string;
+            /** Password */
+            password: string;
+            /** Name */
+            name: string;
+            /** Phone Number */
+            phone_number: string;
+            /** Street Name */
+            street_name: string;
+            /** Street Number */
+            street_number: string;
+            /** Apt Number */
+            apt_number: string | null;
+            /** Postal Code */
+            postal_code: string;
+            /** City */
+            city: string;
+            /** Country */
+            country: string;
+            /** Preferred Bloodbank Id */
+            preferred_bloodbank_id: number;
+            blood_type: components["schemas"]["BloodType"] | null;
+        };
         /** RegisterInterviewRequest */
         RegisterInterviewRequest: {
             /**
@@ -915,6 +958,44 @@ export interface operations {
             };
             /** @description Unauthorized. Incorrect email or password */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sign_up_donor: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterDonorRequestData"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unacceptable data provided */
+            400: {
                 headers: {
                     [name: string]: unknown;
                 };
