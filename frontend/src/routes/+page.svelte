@@ -114,7 +114,7 @@
         <Buttons variant="primary">Logg inn</Buttons>
       </div>
     </a>
-     <!-- The sign-up button routed to /signup -->
+    <!-- The sign-up button routed to /signup -->
     <a href="/signup">
       <div class="fixed right-36 top-6 z-50">
         <Buttons variant="secondary">Registrer deg</Buttons>

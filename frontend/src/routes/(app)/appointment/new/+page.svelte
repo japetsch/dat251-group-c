@@ -141,7 +141,9 @@
     datekey: string | null;
     hasAppointment: boolean;
   }[] = [];
-  let appointments: Appointment[] = data.availableAppointments.filter((a) => a.valid);
+  let appointments: Appointment[] = data.availableAppointments.filter(
+    (a) => a.valid,
+  );
   let selectedAppointments: Appointment[] = [];
   let selectedAppointment: AppointmentWithFormattedTime | null = null;
   let isBooking = false;
@@ -184,8 +186,9 @@
       const date = new Date(currentYear, currentMonth, i);
       const isToday = date.toDateString() === new Date().toDateString();
       const datekey = date.toLocaleDateString("en-CA");
-      const hasAppointment = appointments.some((appointment) =>
-        new Date(appointment.time).toLocaleDateString("en-CA") === datekey,
+      const hasAppointment = appointments.some(
+        (appointment) =>
+          new Date(appointment.time).toLocaleDateString("en-CA") === datekey,
       );
 
       calendarDates.push({
@@ -261,8 +264,9 @@
       selectedAppointments = [];
     } else {
       const datekey = selectedDate;
-      selectedAppointments = appointments.filter((appointment) =>
-        new Date(appointment.time).toLocaleDateString("en-CA") === datekey,
+      selectedAppointments = appointments.filter(
+        (appointment) =>
+          new Date(appointment.time).toLocaleDateString("en-CA") === datekey,
       );
     }
   }

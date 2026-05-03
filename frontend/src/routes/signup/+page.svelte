@@ -1,172 +1,3 @@
-<script lang="ts">
-  import { onMount } from "svelte";
-
-  let name = "";
-  let email = "";
-  let phone = "";
-  let password = "";
-  let streetName = "";
-  let streetNumber = "";
-  let aptNumber = "";
-  let postalCode = "";
-  let city = "";
-  let country = "";
-  let bloodType = "";
-  let preferredBloodbankId: number | null = null;
-  let error = "";
-
-  let bloodbanks: { bloodbank_id: number; name: string }[] = [];
-
-  onMount(async () => {
-    const res = await fetch("/api/bloodbank");
-    if (res.ok) {
-      bloodbanks = await res.json();
-      if (bloodbanks.length > 0) {
-        preferredBloodbankId = bloodbanks[0].bloodbank_id;
-      }
-    }
-  });
-
-  async function submitSignup(event: SubmitEvent) {
-    event.preventDefault();
-    error = "";
-
-    const signupRes = await fetch("/api/auth/signup-donor", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        email,
-        password,
-        phone_number: phone,
-        street_name: streetName,
-        street_number: streetNumber,
-        apt_number: aptNumber || null,
-        postal_code: postalCode,
-        city,
-        country,
-        blood_type: bloodType || null,
-        preferred_bloodbank_id: preferredBloodbankId,
-      }),
-    });
-
-    if (!signupRes.ok) {
-      let data: any = null;
-      try {
-        data = await signupRes.json();
-      } catch {
-        data = null;
-      }
-      error =
-        data?.detail?.[0]?.msg ||
-        data?.detail ||
-        data?.message ||
-        "Kunne ikke registrere bruker.";
-      return;
-    }
-
-    const loginRes = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    window.location.href = loginRes.ok ? "/appointment/list" : "/login";
-  }
-</script>
-
-<a href="/" class="fixed left-6 top-6 z-50 transition hover:opacity-80">
-  <img src="/tmp_logo.svg" alt="Til forsiden" class="h-20 w-20" />
-</a>
-
-<div class="page">
-  <div class="panel-right">
-    <form onsubmit={submitSignup}>
-      <h2>Opprett konto</h2>
-
-      <div class="section-title">Personalia</div>
-      <div class="grid-2">
-        <label>
-          Navn
-          <input bind:value={name} required placeholder="Ola Nordmann" />
-        </label>
-        <label>
-          E-post
-          <input type="email" bind:value={email} required placeholder="ola@example.com" />
-        </label>
-        <label>
-          Telefonnummer
-          <input bind:value={phone} required placeholder="12345678" />
-        </label>
-        <label>
-          Passord
-          <input type="password" bind:value={password} required placeholder="••••••••" />
-        </label>
-      </div>
-
-      <div class="section-title">Adresse</div>
-      <div class="grid-2">
-        <label class="span-2-on-small">
-          Gatenavn
-          <input bind:value={streetName} required placeholder="Storgaten" />
-        </label>
-        <label>
-          Gatenummer
-          <input bind:value={streetNumber} required placeholder="1" />
-        </label>
-        <label>
-          <span>Leilighetsnummer <span class="optional">(valgfritt)</span></span>
-          <input bind:value={aptNumber} placeholder="H0101" />
-        </label>
-        <label>
-          Postnummer
-          <input bind:value={postalCode} required placeholder="5000" />
-        </label>
-        <label>
-          By
-          <input bind:value={city} required placeholder="Bergen" />
-        </label>
-        <label>
-          Land
-          <input bind:value={country} required placeholder="Norge" />
-        </label>
-      </div>
-
-      <div class="section-title">Donasjon</div>
-      <div class="grid-2">
-        <label>
-          <span>Blodtype <span class="optional">(valgfritt)</span></span>
-          <select bind:value={bloodType}>
-            <option value="">Ukjent</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-          </select>
-        </label>
-        <label>
-          Foretrukket blodbank
-          <select bind:value={preferredBloodbankId} required>
-            {#each bloodbanks as bb}
-              <option value={bb.bloodbank_id}>{bb.name}</option>
-            {/each}
-          </select>
-        </label>
-      </div>
-
-      {#if error}
-        <p class="error">{error}</p>
-      {/if}
-
-      <button type="submit">Registrer deg</button>
-    </form>
-  </div>
-</div>
-
 <style>
   .page {
     min-height: 100vh;
@@ -271,3 +102,183 @@
     background: #b91c1c;
   }
 </style>
+
+<script lang="ts">
+  import { onMount } from "svelte";
+
+  let name = "";
+  let email = "";
+  let phone = "";
+  let password = "";
+  let streetName = "";
+  let streetNumber = "";
+  let aptNumber = "";
+  let postalCode = "";
+  let city = "";
+  let country = "";
+  let bloodType = "";
+  let preferredBloodbankId: number | null = null;
+  let error = "";
+
+  let bloodbanks: { bloodbank_id: number; name: string }[] = [];
+
+  onMount(async () => {
+    const res = await fetch("/api/bloodbank");
+    if (res.ok) {
+      bloodbanks = await res.json();
+      if (bloodbanks.length > 0) {
+        preferredBloodbankId = bloodbanks[0].bloodbank_id;
+      }
+    }
+  });
+
+  async function submitSignup(event: SubmitEvent) {
+    event.preventDefault();
+    error = "";
+
+    const signupRes = await fetch("/api/auth/signup-donor", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        email,
+        password,
+        phone_number: phone,
+        street_name: streetName,
+        street_number: streetNumber,
+        apt_number: aptNumber || null,
+        postal_code: postalCode,
+        city,
+        country,
+        blood_type: bloodType || null,
+        preferred_bloodbank_id: preferredBloodbankId,
+      }),
+    });
+
+    if (!signupRes.ok) {
+      let data: any = null;
+      try {
+        data = await signupRes.json();
+      } catch {
+        data = null;
+      }
+      error =
+        data?.detail?.[0]?.msg ||
+        data?.detail ||
+        data?.message ||
+        "Kunne ikke registrere bruker.";
+      return;
+    }
+
+    const loginRes = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    window.location.href = loginRes.ok ? "/appointment/list" : "/login";
+  }
+</script>
+
+<a href="/" class="fixed left-6 top-6 z-50 transition hover:opacity-80">
+  <img src="/tmp_logo.svg" alt="Til forsiden" class="h-20 w-20" />
+</a>
+
+<div class="page">
+  <div class="panel-right">
+    <form onsubmit={submitSignup}>
+      <h2>Opprett konto</h2>
+
+      <div class="section-title">Personalia</div>
+      <div class="grid-2">
+        <label>
+          Navn
+          <input bind:value={name} required placeholder="Ola Nordmann" />
+        </label>
+        <label>
+          E-post
+          <input
+            type="email"
+            bind:value={email}
+            required
+            placeholder="ola@example.com"
+          />
+        </label>
+        <label>
+          Telefonnummer
+          <input bind:value={phone} required placeholder="12345678" />
+        </label>
+        <label>
+          Passord
+          <input
+            type="password"
+            bind:value={password}
+            required
+            placeholder="••••••••"
+          />
+        </label>
+      </div>
+
+      <div class="section-title">Adresse</div>
+      <div class="grid-2">
+        <label class="span-2-on-small">
+          Gatenavn
+          <input bind:value={streetName} required placeholder="Storgaten" />
+        </label>
+        <label>
+          Gatenummer
+          <input bind:value={streetNumber} required placeholder="1" />
+        </label>
+        <label>
+          <span>Leilighetsnummer <span class="optional">(valgfritt)</span></span
+          >
+          <input bind:value={aptNumber} placeholder="H0101" />
+        </label>
+        <label>
+          Postnummer
+          <input bind:value={postalCode} required placeholder="5000" />
+        </label>
+        <label>
+          By
+          <input bind:value={city} required placeholder="Bergen" />
+        </label>
+        <label>
+          Land
+          <input bind:value={country} required placeholder="Norge" />
+        </label>
+      </div>
+
+      <div class="section-title">Donasjon</div>
+      <div class="grid-2">
+        <label>
+          <span>Blodtype <span class="optional">(valgfritt)</span></span>
+          <select bind:value={bloodType}>
+            <option value="">Ukjent</option>
+            <option value="A+">A+</option>
+            <option value="A-">A-</option>
+            <option value="B+">B+</option>
+            <option value="B-">B-</option>
+            <option value="AB+">AB+</option>
+            <option value="AB-">AB-</option>
+            <option value="O+">O+</option>
+            <option value="O-">O-</option>
+          </select>
+        </label>
+        <label>
+          Foretrukket blodbank
+          <select bind:value={preferredBloodbankId} required>
+            {#each bloodbanks as bb}
+              <option value={bb.bloodbank_id}>{bb.name}</option>
+            {/each}
+          </select>
+        </label>
+      </div>
+
+      {#if error}
+        <p class="error">{error}</p>
+      {/if}
+
+      <button type="submit">Registrer deg</button>
+    </form>
+  </div>
+</div>

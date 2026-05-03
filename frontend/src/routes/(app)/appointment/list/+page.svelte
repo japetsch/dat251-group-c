@@ -61,9 +61,7 @@
 </svelte:head>
 
 <div class="mb-8">
-  <h1 class="text-4xl font-bold tracking-tight text-slate-900">
-    Mine timer
-  </h1>
+  <h1 class="text-4xl font-bold tracking-tight text-slate-900">Mine timer</h1>
   <p class="mt-2 max-w-2xl text-base text-slate-500">
     Her kan du se kommende og tidligere timer. Hold oversikt og planlegg din
     neste donasjon.

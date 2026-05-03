@@ -16,7 +16,12 @@ export const load: PageLoad<DashboardData> = async ({ fetch, url }) => {
   const r = await client.GET("/appointment");
 
   if (!r.response.ok || !r.data) {
-    return { nextAppointment: null, completedThisYear: 0, totalCompleted: 0, error: "Kunne ikke laste inn timer" };
+    return {
+      nextAppointment: null,
+      completedThisYear: 0,
+      totalCompleted: 0,
+      error: "Kunne ikke laste inn timer",
+    };
   }
 
   const now = new Date();
@@ -31,7 +36,9 @@ export const load: PageLoad<DashboardData> = async ({ fetch, url }) => {
 
   return {
     nextAppointment: upcoming[0] ?? null,
-    completedThisYear: previous.filter((a) => new Date(a.time).getFullYear() === thisYear).length,
+    completedThisYear: previous.filter(
+      (a) => new Date(a.time).getFullYear() === thisYear,
+    ).length,
     totalCompleted: previous.length,
     error: null,
   };
