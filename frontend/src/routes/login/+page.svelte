@@ -21,9 +21,9 @@
       });
 
       if (r.status === 401) {
-        error = "Invalid email or password.";
+        error = "Ugyldig e-post eller passord.";
       } else if (!r.ok) {
-        error = "An error occurred. Please try again.";
+        error = "En feil oppsto. Vennligst prøv igjen.";
       } else {
         const next = $page.url.searchParams.get("next") ?? "/dashboard";
         await goto(next);
@@ -53,7 +53,7 @@
     <form onsubmit={handleSubmit} class="space-y-6">
       <div>
         <label for="email" class="mb-2 block text-sm font-medium text-slate-700"
-          >Email</label
+          >E-post</label
         >
         <input
           id="email"

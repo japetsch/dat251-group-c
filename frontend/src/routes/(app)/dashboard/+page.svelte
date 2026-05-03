@@ -25,10 +25,10 @@
     yearlyGoal > 0 ? Math.round((completedAppointments / yearlyGoal) * 100) : 0;
 
   const links = [
-    { label: "Appointments", href: "/appointment/list" },
-    { label: "My Blood", href: "/my-blood" },
-    { label: "Settings", href: "/settings" },
-    { label: "More Info", href: "/more-info" },
+    { label: "Timer", href: "/appointment/list" },
+    { label: "Mitt blod", href: "/my-blood" },
+    { label: "Innstillinger", href: "/settings" },
+    { label: "Mer informasjon", href: "/more-info" },
   ];
 </script>
 
@@ -44,8 +44,8 @@
         Dashboard
       </h1>
       <p class="mt-3 max-w-3xl text-lg leading-relaxed text-[#5d7598]">
-        Here you can get an overview of your next donation, navigate to
-        important pages, and follow your progress this year.
+        Her kan du få oversikt over din neste donasjon, navigere til viktige sider 
+        og følge fremgangen din i år.
       </p>
     </div>
 
@@ -58,16 +58,16 @@
         >
           <div class="mb-6 flex items-start justify-between gap-4">
             <div>
-              <h2 class="text-2xl font-bold text-[#061b49]">Up next</h2>
+              <h2 class="text-2xl font-bold text-[#061b49]">Neste time</h2>
               <p class="mt-2 text-lg text-[#5d7598]">
-                Your next scheduled donation.
+                Din neste planlagte donasjon.
               </p>
             </div>
 
             <span
               class="rounded-full bg-[#eef2f7] px-4 py-2 text-base font-medium text-[#48678e]"
             >
-              {nextAppointment ? "1 appointment" : "0 appointments"}
+              {nextAppointment ? "1 time" : "0 timer"}
             </span>
           </div>
 
@@ -75,7 +75,7 @@
             {#if nextAppointment}
               <div class="space-y-2">
                 <p class="text-sm uppercase tracking-[0.25em] text-[#94a8c4]">
-                  Time
+                  Tid
                 </p>
                 <p class="text-xl font-semibold text-[#061b49]">
                   {formatDate(nextAppointment.datetime)}
@@ -84,12 +84,12 @@
                 <p
                   class="pt-3 text-sm uppercase tracking-[0.25em] text-[#94a8c4]"
                 >
-                  Location
+                  Sted
                 </p>
                 <p class="text-lg text-[#1d3557]">{nextAppointment.location}</p>
               </div>
             {:else}
-              <p class="text-lg text-[#5d7598]">No upcoming appointments.</p>
+              <p class="text-lg text-[#5d7598]">Ingen kommende timer.</p>
             {/if}
           </div>
         </section>
@@ -99,9 +99,9 @@
           class="rounded-[2rem] border border-[#e6e7eb] bg-white p-8 shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
         >
           <div class="mb-6">
-            <h2 class="text-2xl font-bold text-[#061b49]">Quick access</h2>
+            <h2 class="text-2xl font-bold text-[#061b49]">Hurtigvalg</h2>
             <p class="mt-2 text-lg text-[#5d7598]">
-              Go to the pages you use most.
+              Gå til de sidene du bruker mest.
             </p>
           </div>
 
@@ -127,9 +127,9 @@
         >
           <div class="mb-6 flex items-start justify-between gap-4">
             <div>
-              <h2 class="text-2xl font-bold text-[#061b49]">Progress</h2>
+              <h2 class="text-2xl font-bold text-[#061b49]">Fremgang</h2>
               <p class="mt-2 text-lg text-[#5d7598]">
-                Donations you have completed this year.
+                Donasjoner du har fullført dette året.
               </p>
             </div>
 
@@ -149,7 +149,7 @@
                   Status
                 </p>
                 <h3 class="mt-2 text-3xl font-bold text-[#061b49]">
-                  You’ve had {completedAppointments} out of {yearlyGoal} appointments
+                  Du har hatt {completedAppointments} av {yearlyGoal} timer i år.
                 </h3>
               </div>
             </div>
