@@ -1,44 +1,64 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+
   let name = "";
   let email = "";
   let phone = "";
-  let birthDate = "";
-  let bloodType = "";
   let password = "";
+  let streetName = "";
+  let streetNumber = "";
+  let aptNumber = "";
+  let postalCode = "";
+  let city = "";
+  let country = "";
+  let bloodType = "";
+  let preferredBloodbankId: number | null = null;
   let error = "";
   let success = "";
 
+  let bloodbanks: { bloodbank_id: number; name: string }[] = [];
+
+  onMount(async () => {
+    const res = await fetch("/api/bloodbank");
+    if (res.ok) {
+      bloodbanks = await res.json();
+      if (bloodbanks.length > 0) {
+        preferredBloodbankId = bloodbanks[0].bloodbank_id;
+      }
+    }
+  });
+
   async function submitSignup(event: SubmitEvent) {
     event.preventDefault();
-
     error = "";
     success = "";
 
-    const response = await fetch("/api/users", {
+    const signupRes = await fetch("/api/auth/signup-donor", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         name,
         email,
-        phone,
-        birth_date: birthDate,
-        blood_type: bloodType || null,
         password,
+        phone_number: phone,
+        street_name: streetName,
+        street_number: streetNumber,
+        apt_number: aptNumber || null,
+        postal_code: postalCode,
+        city,
+        country,
+        blood_type: bloodType || null,
+        preferred_bloodbank_id: preferredBloodbankId,
       }),
     });
 
-    let data: any = null;
-
-    try {
-      data = await response.json();
-    } catch {
-      data = null;
-    }
-
-    if (!response.ok) {
-      console.log("Registrering feilet:", data);
+    if (!signupRes.ok) {
+      let data: any = null;
+      try {
+        data = await signupRes.json();
+      } catch {
+        data = null;
+      }
       error =
         data?.detail?.[0]?.msg ||
         data?.detail ||
@@ -47,7 +67,17 @@
       return;
     }
 
-    success = "Brukeren ble registrert!";
+    const loginRes = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (loginRes.ok) {
+      window.location.href = "/appointment/list";
+    } else {
+      window.location.href = "/login";
+    }
   }
 </script>
 
@@ -73,28 +103,62 @@
       </label>
 
       <label>
-        Fødselsdato
-        <input type="date" bind:value={birthDate} required />
+        Passord
+        <input type="password" bind:value={password} required />
+      </label>
+
+      <label>
+        Gatenavn
+        <input bind:value={streetName} required />
+      </label>
+
+      <label>
+        Gatenummer
+        <input bind:value={streetNumber} required />
+      </label>
+
+      <label>
+        Leilighetsnummer (valgfritt)
+        <input bind:value={aptNumber} />
+      </label>
+
+      <label>
+        Postnummer
+        <input bind:value={postalCode} required />
+      </label>
+
+      <label>
+        By
+        <input bind:value={city} required />
+      </label>
+
+      <label>
+        Land
+        <input bind:value={country} required />
       </label>
 
       <label>
         Blodtype
         <select bind:value={bloodType}>
           <option value="">Ukjent</option>
-          <option value="A_POS">A+</option>
-          <option value="A_NEG">A-</option>
-          <option value="B_POS">B+</option>
-          <option value="B_NEG">B-</option>
-          <option value="AB_POS">AB+</option>
-          <option value="AB_NEG">AB-</option>
-          <option value="O_POS">O+</option>
-          <option value="O_NEG">O-</option>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
         </select>
       </label>
 
       <label>
-        Passord
-        <input type="password" bind:value={password} required />
+        Foretrukket blodbank
+        <select bind:value={preferredBloodbankId} required>
+          {#each bloodbanks as bb}
+            <option value={bb.bloodbank_id}>{bb.name}</option>
+          {/each}
+        </select>
       </label>
 
       {#if error}
