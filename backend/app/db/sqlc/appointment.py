@@ -39,7 +39,7 @@ SELECT a.id as id,
     a.cancelled,
     COALESCE(n.nl, '[]'\\:\\:json) as notes
 FROM appointment a
-INNER JOIN "user" u on a.donor_id = u.id
+INNER JOIN "user" u on u.donor_id = a.donor_id
 INNER JOIN bookingslot b on a.bookingslot_id = b.id
 INNER JOIN bloodbank ba on b.bloodbank_id = ba.id
 LEFT JOIN notes n ON n.appointment_id = a.id
