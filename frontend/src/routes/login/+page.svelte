@@ -52,7 +52,9 @@
     </div>
 
     {#if justRegistered}
-      <p class="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+      <p
+        class="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700"
+      >
         Kontoen din er opprettet. Logg inn for å fortsette.
       </p>
     {/if}

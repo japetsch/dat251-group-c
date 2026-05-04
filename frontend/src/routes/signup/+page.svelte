@@ -160,8 +160,14 @@
         error = "E-postadressen er allerede i bruk, eller dataene er ugyldige.";
       } else if (signupRes.status === 422) {
         let data: any = null;
-        try { data = await signupRes.json(); } catch { data = null; }
-        error = data?.detail?.[0]?.msg || "Ugyldig data – sjekk at alle felt er fylt ut riktig.";
+        try {
+          data = await signupRes.json();
+        } catch {
+          data = null;
+        }
+        error =
+          data?.detail?.[0]?.msg ||
+          "Ugyldig data – sjekk at alle felt er fylt ut riktig.";
       } else {
         error = "Noe gikk galt. Prøv igjen.";
       }

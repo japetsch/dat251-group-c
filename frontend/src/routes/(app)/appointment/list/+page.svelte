@@ -61,9 +61,7 @@
 </svelte:head>
 
 <div class="mb-8">
-  <h1 class="text-4xl font-bold tracking-tight text-slate-900">
-    Mine timer
-  </h1>
+  <h1 class="text-4xl font-bold tracking-tight text-slate-900">Mine timer</h1>
   <p class="mt-2 max-w-2xl text-base text-slate-500">
     Her ser du kommende og tidligere donasjonstimer.
   </p>
@@ -250,7 +248,9 @@
             <h2 class="text-2xl font-semibold text-slate-900">Avlyste</h2>
             <p class="mt-1 text-sm text-slate-500">Timer du har avlyst.</p>
           </div>
-          <span class="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600">
+          <span
+            class="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600"
+          >
             {data.cancelled.length}
             {data.cancelled.length === 1 ? "time" : "timer"}
           </span>
@@ -260,15 +260,32 @@
             <article
               class="rounded-[24px] bg-[#fcfbfb] p-5 shadow-sm ring-1 ring-[#efe7e7] opacity-60"
             >
-              <div class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+              <div
+                class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"
+              >
                 <div>
-                  <p class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400">Sted</p>
-                  <p class="mt-1 text-base text-slate-700">{appointment.bloodbank_name}</p>
+                  <p
+                    class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
+                  >
+                    Sted
+                  </p>
+                  <p class="mt-1 text-base text-slate-700">
+                    {appointment.bloodbank_name}
+                  </p>
                 </div>
                 <div class="md:text-right">
-                  <p class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400">Tid</p>
-                  <p class="mt-1 text-base font-semibold text-slate-900">{formatDate(appointment.time)}</p>
-                  <span class="mt-3 inline-flex rounded-full bg-slate-200 px-3 py-1 text-sm font-medium text-slate-500">Avlyst</span>
+                  <p
+                    class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
+                  >
+                    Tid
+                  </p>
+                  <p class="mt-1 text-base font-semibold text-slate-900">
+                    {formatDate(appointment.time)}
+                  </p>
+                  <span
+                    class="mt-3 inline-flex rounded-full bg-slate-200 px-3 py-1 text-sm font-medium text-slate-500"
+                    >Avlyst</span
+                  >
                 </div>
               </div>
             </article>

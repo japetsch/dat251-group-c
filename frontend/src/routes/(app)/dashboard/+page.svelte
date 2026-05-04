@@ -79,7 +79,9 @@
                 >
                   Sted
                 </p>
-                <p class="text-lg text-[#1d3557]">{nextAppointment.bloodbank_name}</p>
+                <p class="text-lg text-[#1d3557]">
+                  {nextAppointment.bloodbank_name}
+                </p>
               </div>
             {:else}
               <p class="text-lg text-[#5d7598]">Ingen kommende timer.</p>

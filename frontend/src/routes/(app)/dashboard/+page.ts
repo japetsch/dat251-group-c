@@ -14,7 +14,9 @@ export const load: PageLoad = async ({ fetch, url }) => {
     .filter((a) => !a.cancelled && new Date(a.time) >= now)
     .sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime());
 
-  const completed = r.data.filter((a) => !a.cancelled && new Date(a.time) < now).length;
+  const completed = r.data.filter(
+    (a) => !a.cancelled && new Date(a.time) < now,
+  ).length;
 
   return { upcoming, completed };
 };
