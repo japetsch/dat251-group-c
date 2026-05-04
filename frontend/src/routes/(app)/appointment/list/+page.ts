@@ -5,6 +5,7 @@ import type { PageLoad } from "./$types";
 type ApptListPreloaded = {
   upcoming: components["schemas"]["AppointmentType"][];
   previous: components["schemas"]["AppointmentType"][];
+  cancelled: components["schemas"]["AppointmentType"][];
   error: string | null;
 };
 
@@ -16,6 +17,7 @@ export const load: PageLoad<ApptListPreloaded> = async ({ fetch, url }) => {
     return {
       upcoming: [],
       previous: [],
+      cancelled: [],
       error: "Failed to load appointments",
     };
   }
