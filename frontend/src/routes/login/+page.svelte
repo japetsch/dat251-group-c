@@ -7,6 +7,7 @@
   let password = $state("");
   let error = $state<string | null>(null);
   let loading = $state(false);
+  let justRegistered = $state($page.url.searchParams.get("registrert") === "1");
 
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
@@ -49,6 +50,12 @@
         Logg inn for å fortsette i blodbankappen.
       </p>
     </div>
+
+    {#if justRegistered}
+      <p class="mb-6 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+        Kontoen din er opprettet. Logg inn for å fortsette.
+      </p>
+    {/if}
 
     <form onsubmit={handleSubmit} class="space-y-6">
       <div>

@@ -108,12 +108,15 @@
       style="background-image: url('/Background_Bloodbank.png');"
     ></div>
 
-    <!-- The login button routed to /login -->
-    <a href="/login">
-      <div class="fixed right-6 top-6 z-50">
+    <!-- Top-right nav buttons -->
+    <div class="fixed right-6 top-6 z-50 flex gap-3">
+      <a href="/signup">
+        <Buttons variant="secondary">Registrer deg</Buttons>
+      </a>
+      <a href="/login">
         <Buttons variant="primary">Logg inn</Buttons>
-      </div>
-    </a>
+      </a>
+    </div>
 
     <!-- Formating of the contents inside the card -->
     <div
