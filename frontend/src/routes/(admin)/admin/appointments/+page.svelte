@@ -149,6 +149,7 @@
 
 <script lang="ts">
   import AdminAppointmentModal from "$lib/components/AdminAppointmentModal.svelte";
+  import DonationModal from "$lib/components/DonationModal.svelte";
   import type { AdminCalendarAppointment } from "$lib/types/admin";
   import type { PageData } from "./$types";
   import NotesModal from "$lib/components/NotesModal.svelte";
@@ -160,7 +161,6 @@
   let monthYear = "";
 
   let notesOpen = false;
-  let selectedAppointment: any = null;
 
   let calendarDates: {
     day: number;
@@ -172,6 +172,7 @@
 
   let appointments: PageData["appointments"] = data.appointments;
   let selectedAppointment: AdminCalendarAppointment | null = null;
+  let donationAppointment: AdminCalendarAppointment | null = null;
   let selectedAppointments: PageData["appointments"] = [];
 
   function openNotes(appointment: any) {
@@ -261,12 +262,23 @@
     selectedAppointment = null;
   }
 
+  function closeDonationModal() {
+    donationAppointment = null;
+  }
+
   updateCalendar();
 </script>
 
 <AdminAppointmentModal
   selectedAppointment={selectedAppointment}
   onClose={closeAppointmentModal}
+  data={data}
+/>
+
+<DonationModal
+  donationAppointment={donationAppointment}
+  onClose={closeDonationModal}
+  data={data}
 />
 
 <div class="header">
@@ -317,14 +329,11 @@
         <div class="appointment-card">Ingen timer på denne datoen</div>
       {:else}
         {#each selectedAppointments as appointment}
-          <div
-            class="appointment-card"
-            on:click={() => openAppointmentModal(appointment)}
-          >
+          <div class="appointment-card">
             <div class="row">
               <p><strong>{appointment.donor_name}</strong></p>
               {#if appointment.appointment_cancelled}
-                <span class="right-text">Cancelled</span>
+                <span class="right-text">Avlyst</span>
               {/if}
             </div>
             <p>
@@ -335,13 +344,23 @@
             </p>
             <p>{appointment.bloodbank_name}</p>
 
-            <button
-              class="notes-button"
-              type="button"
-              on:click={() => openNotes(appointment)}
-            >
-              Notes ({appointment.notes?.length ?? 0})
-            </button>
+            <div class="row">
+              <button
+                class="notes-button"
+                type="button"
+                on:click={() => openAppointmentModal(appointment)}
+              >
+                Notater ({appointment.notes?.length ?? 0})
+              </button>
+              <button
+                class="notes-button disabled:cursor-not-allowed disabled:opacity-50 text-right"
+                type="button"
+                disabled={appointment.donations.length > 0}
+                on:click={() => {
+                  donationAppointment = appointment;
+                }}>Registrer donasjon</button
+              >
+            </div>
           </div>
         {/each}
       {/if}

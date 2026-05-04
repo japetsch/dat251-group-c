@@ -381,8 +381,8 @@
     {:else}
       {#if selectedDate && selectedDate.hasOnlyInvalidAppointment}
         <span class="tooltip"
-          >Appointment not bookable because of exisitng appointment within
-          last/next 4 months</span
+          >Kan ikke bestille time, grunnet allerede bestillt time i neste 4
+          måneder!</span
         >
       {/if}
       {#each selectedAppointments as appointment}
@@ -397,7 +397,7 @@
           disabled={appointmentValid(appointment)}
         >
           {#if appointment.booked_by_user}
-            <p>Booked</p>
+            <p>Bestillt</p>
           {/if}
           <p>
             {new Date(appointment.time).toLocaleTimeString([], {
