@@ -42,7 +42,7 @@
   }
 
   const formatDate = (value: string) =>
-    new Date(value).toLocaleString("en-DK", {
+    new Date(value).toLocaleString("nb-NO", {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -62,11 +62,10 @@
 
 <div class="mb-8">
   <h1 class="text-4xl font-bold tracking-tight text-slate-900">
-    My appointments
+    Mine timer
   </h1>
   <p class="mt-2 max-w-2xl text-base text-slate-500">
-    Here you can see upcoming and past appointments. Stay organized and plan
-    your next donation.
+    Her ser du kommende og tidligere donasjonstimer.
   </p>
 </div>
 
@@ -76,7 +75,7 @@
   >
     {data.error}
   </div>
-{:else if data.upcoming.length === 0 && data.previous.length === 0}
+{:else if data.upcoming.length === 0 && data.previous.length === 0 && data.cancelled.length === 0}
   <div
     class="rounded-[32px] bg-white p-8 shadow-[0_16px_50px_rgba(15,23,42,0.06)] ring-1 ring-black/5"
   >
@@ -125,17 +124,6 @@
                 class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"
               >
                 <div class="space-y-3">
-                  <div>
-                    <p
-                      class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
-                    >
-                      Donor
-                    </p>
-                    <p class="mt-1 text-lg font-semibold text-slate-900">
-                      {appointment.username}
-                    </p>
-                  </div>
-
                   <div>
                     <p
                       class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
@@ -211,17 +199,6 @@
                 class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"
               >
                 <div class="space-y-3">
-                  <div>
-                    <p
-                      class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
-                    >
-                      Donor
-                    </p>
-                    <p class="mt-1 text-lg font-semibold text-slate-900">
-                      {appointment.username}
-                    </p>
-                  </div>
-
                   <div>
                     <p
                       class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"

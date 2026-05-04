@@ -22,8 +22,9 @@ export const load: PageLoad<ApptListPreloaded> = async ({ fetch, url }) => {
 
   const now = new Date();
   return {
-    previous: r.data.filter((x) => new Date(x.time) < now),
-    upcoming: r.data.filter((x) => new Date(x.time) >= now),
+    upcoming: r.data.filter((x) => !x.cancelled && new Date(x.time) >= now),
+    previous: r.data.filter((x) => !x.cancelled && new Date(x.time) < now),
+    cancelled: r.data.filter((x) => x.cancelled),
     error: null,
   };
 };
