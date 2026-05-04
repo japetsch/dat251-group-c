@@ -84,10 +84,12 @@ class AuthRouter(APIRouter):
             )
 
         if user.donor_id is not None:
+            assert user.preferred_bloodbank_id is not None
             info = DonorInfo(
                 user_id=user.id,
                 user_name=user.name,
                 donor_id=user.donor_id,
+                preferred_bloodbank_id=user.preferred_bloodbank_id,
             )
         elif user.admin_id is not None:
             info = AdminInfo(

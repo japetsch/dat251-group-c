@@ -1,29 +1,9 @@
 import { error } from "@sveltejs/kit";
 import { createLoadClient } from "$lib/api/client";
 import type { PageLoad } from "./$types";
+import type { AdminCalendarAppointment } from "$lib/types/admin";
 
-type DashboardAppointment = {
-  appointmentId: number;
-  donorId: number;
-  donorName: string;
-  donorEmail: string;
-  donorPhone: string;
-  donorBloodType: string | null;
-  cancelled: boolean;
-  bookingslotId: number;
-  time: string;
-  duration: string;
-  notes: {
-    author_name: string;
-    message: string;
-    time: string;
-  }[];
-  donations: {
-    donation_id: number;
-    amount_ml: number;
-    is_blood_not_plasma: boolean;
-  }[];
-};
+type DashboardAppointment = AdminCalendarAppointment;
 
 export const load: PageLoad = async ({ fetch, url }) => {
   const client = createLoadClient(fetch, url);
@@ -74,23 +54,14 @@ export const load: PageLoad = async ({ fetch, url }) => {
   const appointments: DashboardAppointment[] = appointmentSlots.flatMap(
     (slot) =>
       slot.appointments.map((appointment) => ({
-        appointmentId: appointment.appointment_id,
-        donorId: appointment.donor_id,
-        donorName: appointment.donor_name,
-        donorEmail: appointment.donor_email,
-        donorPhone: appointment.donor_phone,
-        donorBloodType: appointment.donor_blood_type,
-        cancelled: appointment.appointment_cancelled,
-        bookingslotId: slot.bookingslot_id,
+        ...appointment,
         time: slot.bookingslot_time,
-        duration: slot.bookingslot_duration,
-        notes: appointment.notes ?? [],
-        donations: appointment.donations ?? [],
+        bloodbank_name: "",
       })),
   );
 
   const activeAppointments = appointments.filter(
-    (appointment) => !appointment.cancelled,
+    (appointment) => !appointment.appointment_cancelled,
   );
 
   activeAppointments.sort(

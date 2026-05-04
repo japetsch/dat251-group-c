@@ -136,9 +136,21 @@
   .error-text {
     color: #dc2626;
   }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .right-text {
+    color: gray;
+  }
 </style>
 
 <script lang="ts">
+  import AdminAppointmentModal from "$lib/components/AdminAppointmentModal.svelte";
+  import DonationModal from "$lib/components/DonationModal.svelte";
+  import type { AdminCalendarAppointment } from "$lib/types/admin";
   import type { PageData } from "./$types";
   import NotesModal from "$lib/components/NotesModal.svelte";
 
@@ -149,7 +161,6 @@
   let monthYear = "";
 
   let notesOpen = false;
-  let selectedAppointment: any = null;
 
   let calendarDates: {
     day: number;
@@ -159,8 +170,10 @@
     hasAppointment: boolean;
   }[] = [];
 
-  let appointments: PageData["upcoming"] = data.upcoming;
-  let selectedAppointments: PageData["upcoming"] = [];
+  let appointments: PageData["appointments"] = data.appointments;
+  let selectedAppointment: AdminCalendarAppointment | null = null;
+  let donationAppointment: AdminCalendarAppointment | null = null;
+  let selectedAppointments: PageData["appointments"] = [];
 
   function openNotes(appointment: any) {
     selectedAppointment = appointment;
@@ -241,8 +254,32 @@
     }
   }
 
+  function openAppointmentModal(appointment: AdminCalendarAppointment) {
+    selectedAppointment = appointment;
+  }
+
+  function closeAppointmentModal() {
+    selectedAppointment = null;
+  }
+
+  function closeDonationModal() {
+    donationAppointment = null;
+  }
+
   updateCalendar();
 </script>
+
+<AdminAppointmentModal
+  selectedAppointment={selectedAppointment}
+  onClose={closeAppointmentModal}
+  data={data}
+/>
+
+<DonationModal
+  donationAppointment={donationAppointment}
+  onClose={closeDonationModal}
+  data={data}
+/>
 
 <div class="header">
   <h1 class="page-title">Administrasjonstimer</h1>
@@ -293,7 +330,12 @@
       {:else}
         {#each selectedAppointments as appointment}
           <div class="appointment-card">
-            <p><strong>{appointment.username}</strong></p>
+            <div class="row">
+              <p><strong>{appointment.donor_name}</strong></p>
+              {#if appointment.appointment_cancelled}
+                <span class="right-text">Avlyst</span>
+              {/if}
+            </div>
             <p>
               {new Date(appointment.time).toLocaleTimeString([], {
                 hour: "2-digit",
@@ -302,13 +344,23 @@
             </p>
             <p>{appointment.bloodbank_name}</p>
 
-            <button
-              class="notes-button"
-              type="button"
-              on:click={() => openNotes(appointment)}
-            >
-              Notes ({appointment.notes?.length ?? 0})
-            </button>
+            <div class="row">
+              <button
+                class="notes-button"
+                type="button"
+                on:click={() => openAppointmentModal(appointment)}
+              >
+                Notater ({appointment.notes?.length ?? 0})
+              </button>
+              <button
+                class="notes-button disabled:cursor-not-allowed disabled:opacity-50 text-right"
+                type="button"
+                disabled={appointment.donations.length > 0}
+                on:click={() => {
+                  donationAppointment = appointment;
+                }}>Registrer donasjon</button
+              >
+            </div>
           </div>
         {/each}
       {/if}

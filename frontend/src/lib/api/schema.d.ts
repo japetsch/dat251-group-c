@@ -520,6 +520,8 @@ export interface components {
             location_id: number;
             /** Valid */
             valid: boolean;
+            /** Booked By User */
+            booked_by_user: boolean;
         };
         /**
          * BloodType
@@ -673,6 +675,8 @@ export interface components {
             user_name: string;
             /** Donor Id */
             donor_id: number;
+            /** Preferred Bloodbank Id */
+            preferred_bloodbank_id: number;
         };
         /** EntryFormDetailsRow */
         EntryFormDetailsRow: {

@@ -44,6 +44,7 @@ SELECT
 	b.location_id
 FROM bookingslot s
   INNER JOIN bloodbank b ON b.id = s.bloodbank_id
+  WHERE s.bloodbank_id = :p1
   ORDER BY s.time ASC
 """
 
@@ -73,8 +74,8 @@ class AsyncQuerier:
             cancelled=row[3],
         )
 
-    async def get_booking_slots(self) -> AsyncIterator[GetBookingSlotsRow]:
-        result = await self._conn.stream(sqlalchemy.text(GET_BOOKING_SLOTS))
+    async def get_booking_slots(self, *, bloodbank_id: int) -> AsyncIterator[GetBookingSlotsRow]:
+        result = await self._conn.stream(sqlalchemy.text(GET_BOOKING_SLOTS), {"p1": bloodbank_id})
         async for row in result:
             yield GetBookingSlotsRow(
                 id=row[0],
