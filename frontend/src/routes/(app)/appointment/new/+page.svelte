@@ -147,10 +147,9 @@
   let isBooking = false;
   let bookingMessage = "";
 
-  const timeFormatter = new Intl.DateTimeFormat("en-GB", {
+  const timeFormatter = new Intl.DateTimeFormat("nb-NO", {
     hour: "2-digit",
     minute: "2-digit",
-    timeZone: "UTC",
   });
 
   function updateCalendar() {

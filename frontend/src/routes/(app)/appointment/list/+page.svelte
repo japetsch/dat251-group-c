@@ -35,14 +35,14 @@
 
     selectedAppointment.notes = [
       ...(selectedAppointment.notes || []),
-      { message },
+      { message, time: new Date().toISOString(), author_name: "Deg" },
     ];
 
     newNote = "";
   }
 
   const formatDate = (value: string) =>
-    new Date(value).toLocaleString("en-DK", {
+    new Date(value.replace(" ", "T")).toLocaleString("nb-NO", {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -61,12 +61,9 @@
 </svelte:head>
 
 <div class="mb-8">
-  <h1 class="text-4xl font-bold tracking-tight text-slate-900">
-    My appointments
-  </h1>
+  <h1 class="text-4xl font-bold tracking-tight text-slate-900">Mine timer</h1>
   <p class="mt-2 max-w-2xl text-base text-slate-500">
-    Here you can see upcoming and past appointments. Stay organized and plan
-    your next donation.
+    Her ser du kommende og tidligere donasjonstimer.
   </p>
 </div>
 
@@ -76,7 +73,7 @@
   >
     {data.error}
   </div>
-{:else if data.upcoming.length === 0 && data.previous.length === 0}
+{:else if data.upcoming.length === 0 && data.previous.length === 0 && data.cancelled.length === 0}
   <div
     class="rounded-[32px] bg-white p-8 shadow-[0_16px_50px_rgba(15,23,42,0.06)] ring-1 ring-black/5"
   >
@@ -125,17 +122,6 @@
                 class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"
               >
                 <div class="space-y-3">
-                  <div>
-                    <p
-                      class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
-                    >
-                      Donor
-                    </p>
-                    <p class="mt-1 text-lg font-semibold text-slate-900">
-                      {appointment.username}
-                    </p>
-                  </div>
-
                   <div>
                     <p
                       class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
@@ -215,17 +201,6 @@
                     <p
                       class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
                     >
-                      Donor
-                    </p>
-                    <p class="mt-1 text-lg font-semibold text-slate-900">
-                      {appointment.username}
-                    </p>
-                  </div>
-
-                  <div>
-                    <p
-                      class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
-                    >
                       Sted
                     </p>
                     <p class="mt-1 text-base text-slate-700">
@@ -263,6 +238,61 @@
         </div>
       {/if}
     </section>
+
+    {#if data.cancelled.length > 0}
+      <section
+        class="rounded-[32px] bg-white p-6 shadow-[0_16px_50px_rgba(15,23,42,0.06)] ring-1 ring-black/5 md:p-8"
+      >
+        <div class="mb-6 flex items-center justify-between gap-4">
+          <div>
+            <h2 class="text-2xl font-semibold text-slate-900">Avlyste</h2>
+            <p class="mt-1 text-sm text-slate-500">Timer du har avlyst.</p>
+          </div>
+          <span
+            class="rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-600"
+          >
+            {data.cancelled.length}
+            {data.cancelled.length === 1 ? "time" : "timer"}
+          </span>
+        </div>
+        <div class="space-y-4">
+          {#each data.cancelled as appointment}
+            <article
+              class="rounded-[24px] bg-[#fcfbfb] p-5 shadow-sm ring-1 ring-[#efe7e7] opacity-60"
+            >
+              <div
+                class="flex flex-col gap-4 md:flex-row md:items-start md:justify-between"
+              >
+                <div>
+                  <p
+                    class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
+                  >
+                    Sted
+                  </p>
+                  <p class="mt-1 text-base text-slate-700">
+                    {appointment.bloodbank_name}
+                  </p>
+                </div>
+                <div class="md:text-right">
+                  <p
+                    class="text-sm font-medium uppercase tracking-[0.18em] text-slate-400"
+                  >
+                    Tid
+                  </p>
+                  <p class="mt-1 text-base font-semibold text-slate-900">
+                    {formatDate(appointment.time)}
+                  </p>
+                  <span
+                    class="mt-3 inline-flex rounded-full bg-slate-200 px-3 py-1 text-sm font-medium text-slate-500"
+                    >Avlyst</span
+                  >
+                </div>
+              </div>
+            </article>
+          {/each}
+        </div>
+      </section>
+    {/if}
   </div>
 {/if}
 
@@ -278,9 +308,7 @@
         <div>
           <h2 class="text-3xl font-bold text-slate-950">Timedetaljer</h2>
           <p class="mt-1 text-sm text-slate-500">
-            {selectedAppointment.username} · {formatDate(
-              selectedAppointment.time,
-            )}
+            {formatDate(selectedAppointment.time)}
           </p>
         </div>
 
@@ -296,11 +324,6 @@
       <!-- SCROLLABLE CONTENT -->
       <div class="flex-1 overflow-y-auto p-6">
         <div class="grid gap-4 sm:grid-cols-2">
-          <div class="rounded-2xl bg-slate-50 p-4">
-            <p class="text-xs uppercase text-slate-400">Donor</p>
-            <p class="mt-2 font-semibold">{selectedAppointment.username}</p>
-          </div>
-
           <div class="rounded-2xl bg-slate-50 p-4">
             <p class="text-xs uppercase text-slate-400">Tid</p>
             <p class="mt-2 font-semibold">

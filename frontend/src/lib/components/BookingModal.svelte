@@ -92,6 +92,14 @@
 
     {#if bookingMessage}
       <p>{bookingMessage}</p>
+      {#if bookingMessage === "Time bestilt!"}
+        <a
+          href="/appointment/list"
+          style="display:inline-block;margin-top:0.75rem;padding:0.75rem 1.25rem;background:#dc2626;color:white;border-radius:10px;text-decoration:none;font-weight:600;"
+        >
+          Vis mine timer
+        </a>
+      {/if}
     {/if}
   </div>
 {/if}

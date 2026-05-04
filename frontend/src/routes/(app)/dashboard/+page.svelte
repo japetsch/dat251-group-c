@@ -1,19 +1,14 @@
 <script lang="ts">
-  type Appointment = {
-    datetime: string;
-    location: string;
-  };
+  import type { PageData } from "./$types";
 
-  let nextAppointment: Appointment | null = {
-    datetime: "2026-03-18T17:30:00",
-    location: "Haukeland universitetssjukehus",
-  };
+  let { data }: { data: PageData } = $props();
 
-  let completedAppointments = 1;
-  let yearlyGoal = 4;
+  const nextAppointment = data.upcoming[0] ?? null;
+  const completedAppointments = data.completed;
+  const yearlyGoal = 4;
 
   const formatDate = (value: string) =>
-    new Date(value).toLocaleString("en-GB", {
+    new Date(value).toLocaleString("nb-NO", {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -25,10 +20,8 @@
     yearlyGoal > 0 ? Math.round((completedAppointments / yearlyGoal) * 100) : 0;
 
   const links = [
-    { label: "Timer", href: "/appointment/list" },
-    { label: "Mitt blod", href: "/my-blood" },
-    { label: "Innstillinger", href: "/settings" },
-    { label: "Mer informasjon", href: "/more-info" },
+    { label: "Mine timer", href: "/appointment/list" },
+    { label: "Ny time", href: "/appointment/new" },
   ];
 </script>
 
@@ -78,7 +71,7 @@
                   Tid
                 </p>
                 <p class="text-xl font-semibold text-[#061b49]">
-                  {formatDate(nextAppointment.datetime)}
+                  {formatDate(nextAppointment.time)}
                 </p>
 
                 <p
@@ -86,7 +79,9 @@
                 >
                   Sted
                 </p>
-                <p class="text-lg text-[#1d3557]">{nextAppointment.location}</p>
+                <p class="text-lg text-[#1d3557]">
+                  {nextAppointment.bloodbank_name}
+                </p>
               </div>
             {:else}
               <p class="text-lg text-[#5d7598]">Ingen kommende timer.</p>
