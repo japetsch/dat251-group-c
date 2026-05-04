@@ -35,14 +35,14 @@
 
     selectedAppointment.notes = [
       ...(selectedAppointment.notes || []),
-      { message },
+      { message, time: new Date().toISOString(), author_name: "Deg" },
     ];
 
     newNote = "";
   }
 
   const formatDate = (value: string) =>
-    new Date(value).toLocaleString("nb-NO", {
+    new Date(value.replace(" ", "T")).toLocaleString("nb-NO", {
       day: "numeric",
       month: "long",
       year: "numeric",
